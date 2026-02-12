@@ -15,11 +15,11 @@
 在本仓库根目录运行（需要 Python + `pypdf`）：
 
 ```powershell
-python writingskills/pipelines/collect_xchencs_last5y_se.py --refresh-missing
-python writingskills/pipelines/collect_yg_publications.py --refresh-missing
+python templog/writingskills/pipelines/collect_xchencs_last5y_se.py --refresh-missing
+python templog/writingskills/pipelines/collect_yg_publications.py --refresh-missing
+python templog/writingskills/pipelines/collect_arxiv_csse.py --max-results 50 --since-year 2021
 ```
 
 说明：
 - `outputs/` 中的部分路径字段来自作者本机运行环境，跨机器使用建议重新跑脚本生成新索引。
 - 本目录未同步 PDF 文件；如需 PDF，请在本机运行脚本自动下载（仅公开可获取的那部分）。
-

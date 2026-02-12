@@ -13,8 +13,8 @@ description: 总结杨光（Guang Yang）在软工/代码智能方向论文中�
 - 摘要来自网页嵌入数据（已在索引里落盘）。
 
 索引与汇总见：
-- `写作参考/papers/yg_publications_index.json`
-- `写作参考/papers/yg_publications_summary.md`
+- `templog/writingskills/outputs/yg_publications_index.json`
+- `templog/writingskills/outputs/yg_publications_summary.md`
 
 ---
 
@@ -108,11 +108,10 @@ description: 总结杨光（Guang Yang）在软工/代码智能方向论文中�
 在 `C:\\Users\\daoge\\Desktop\\codes` 下运行：
 
 ```powershell
-python 写作参考/papers/collect_yg_publications.py --no-resume
-python 写作参考/papers/collect_yg_publications.py --refresh-missing
+python templog/writingskills/pipelines/collect_yg_publications.py --no-resume
+python templog/writingskills/pipelines/collect_yg_publications.py --refresh-missing
 ```
 
 说明：
 - 脚本只下载公开可访问 PDF，不会尝试绕过付费墙/反爬；因此 PDF 下载率可能长期偏低。
 - 若你能在校内/机构网络手动补齐 PDF，再运行 `--refresh-missing` 可把写作信号统计变得更可靠。
-

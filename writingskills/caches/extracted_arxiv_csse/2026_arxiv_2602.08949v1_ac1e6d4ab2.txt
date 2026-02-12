@@ -1,0 +1,317 @@
+Digital Twin and Agentic AI for Wild Fire Disaster Management:
+Intelligent Virtual Situation Room
+Mohammad Morsalia, Siavash H.Khajavib,∗∗
+aIndependent Researcher,
+bDepartment of Industerial Engineering and Management, Aalto University, Espoo, 02150, Finland
+ARTICLE INFO
+Keywords:
+Digital Twin
+Wildfire Management
+Disaster Response
+AI Agents
+Smart Cities
+ABSTRACT
+According to the United Nations, wildfire frequency and intensity are projected to increase by
+approximately 14% by 2030 and 30% by 2050 due to global warming, posing critical threats to
+life, infrastructure, and ecosystems. Conventional disaster-management frameworks rely on static
+simulations and passive data acquisition, which hinders their ability to adapt to arbitrarily evolving
+wildfire episodes in real-time. To address these limitations, we introduce the Intelligent Virtual
+Situation Room (IVSR), a bidirectional Digital Twin(DT) platform augmented by autonomous AI
+agents. The IVSR continuously ingests multisource sensor imagery, weather data, and 3D forest
+modelstocreatealivevirtualreplicaofthefireenvironment.AsimilarityenginepoweredbyAIaligns
+emergingconditionswithaprecomputedDisasterSimulationLibrary,bringingdownandcalibrating
+intervention tactics under the watchful eyes of experts. Authorized action—ranging from UAV
+redeployment to crew reallocation—is cycled back through standardized procedures to the physical
+layer, completing the loop between response and analysis. We validate IVSR through detailed case-
+study simulations provided by an industrial partner, demonstrating capabilities in localized incident
+detection, privacy-preserving playback, collider-based fire-spread projection, and site-specific ML
+retraining. Our results indicate marked reductions in detection-to-intervention latency and more
+effectiveresourcecoordinationversustraditionalsystems.Byunitingreal-timebidirectionalDTswith
+agenticAI,IVSRoffersascalable,semi-automateddecision-supportparadigmforproactive,adaptive
+wildfire disaster management.
+1. Introduction
+Naturaldisasterscandevastateboththeenvironmentand
+urbaninfrastructure.Amongnaturaldisasters,wildfirespose
+aparticularlyseriousthreatduetotheextensivedamagethey
+cause.Inrecentyears,thefrequencyandseverityofwildfires
+have increased due to climate change [1]. Wildfires have
+led to billions in economic losses, irreversible ecological
+destruction, and the loss of lives and livelihoods. The 2023
+Maui wildfires in Hawaii, for instance, resulted in over 100
+deaths and destroyed nearly the entire town of Lahaina [2].
+In 2024, California experienced 8,024 wildfires, burning a
+total of 1,050,012 acres, destroying 1,716 structures, and
+resulting in one fatality [3]. Economic losses from the 2024
+California wildfires are estimated between $250 billion and
+$275billion,makingitoneofthecostliestwildfiredisasters
+in U.S. history [4]. In Europe, the 2021 wildfires in Greece
+andTurkeyburnedhundredsofthousandsofhectares,strain-
+ing national emergency services and displacing communi-
+ties [5, 6]. In Greece, approximately 50,000 hectares were
+burned on Evia Island [6]. In Turkey, over 95,000 hectares
+wereaffected,markingtheworstwildfiresinatleastadecade
+[5].
+Despiteadvancesindetectionandmodeling,the“golden
+window” of response—the critical early hours when in-
+tervention is most effective—is often missed. One of the
+primary reasons for this is the fragmented and inefficient
+mohammadmorsali1381@gmail.com(M. Morsali);
+siavash.khajavi@aalto.fi(S. H.Khajavi)
+ORCID(s):
+data flow between various actors involved in wildfire man-
+agement. Delays in situational awareness, limited interoper-
+abilitybetweensystems,andpoorvisibilityintogroundcon-
+ditions hinder the ability of decision-makers to coordinate
+and deploy resources effectively. The result is a slow and
+reactiveresponse,ratherthanaproactive,adaptiveapproach
+that could prevent escalation.
+Various novel technologies may hold the key to imple-
+menting effective solutions for better collecting, analyzing,
+and responding to fast-moving catastrophic fire events. A
+digital twin (DT) is a real-time virtual representation of a
+physical entity or system, continuously updated with live
+data to reflect its current state [7, 8]. In early versions of the
+DT,itwasusedtoimprovesystemunderstandingandpredict
+failures by utilizing a live digital model that collected data
+from the physical system with sensors [9, 10]. During the
+past two decades, the DT concept expanded from aerospace
+and manufacturing to many other domains [11] – including
+civilinfrastructure,energygrids,healthcare,andsmartcities
+– as advances in IoT and computing made real-time data
+integration feasible on larger scales [12].
+Smartcityisusedtodescribeanurbanspaceenrichedby
+ICT infrastructure and data-driven services. Modern digital
+cities utilize universal data capture and intelligent analy-
+sis, generating dynamic virtual simulations of urban areas
+(sometimes called city DTs) that mirror real-world status in
+real-time[13].Thismaylaythegroundworkforusingdigital
+cities for routine urban management and enhancing disaster
+resilience.
+First Author et al.:Preprint submitted to ElsevierPage 1 of 18
+arXiv:2602.08949v1  [cs.AI]  9 Feb 2026
+Digital Twin and Agentic AI for Wild Fire Disaster Management: Intelligent Virtual Situation Room
+Artificial intelligence (AI) is a rapidly advancing field
+withwide-rangingimplicationsacrossnearlyalldisciplines,
+including fire engineering [14, 15]. One emerging area
+within AI is the development of autonomous AI agents,
+where they are equipped with the ability to utilize tools
+and make decisions to complete tasks [16]. These AI agents
+have the potential to become a critical resource in modern
+disaster relief, offering enhanced speed, intelligence, and
+coordination to support more informed decision-making by
+humans [17].
+Yet, some fundamental questions remain unresolved,
+even as DT and AI technologies continue to evolve rapidly
+andbecomeincreasinglyintegratedintosmartsystems.This
+research investigates the following questions:
+RQ1: What are the current use cases of bidirectional
+digital twins (BDTs) in the context of wildfire manage-
+ment? RQ2: In what ways and configurations can an AI
+agent–basedBDTassistwithwildfireresponse?RQ3:Based
+on case studies from industry and literature, what are the
+implications of an AI agent–based BDT for wildfire man-
+agement?
+To answer these questions, we review the literature,
+collect industry case deployments and finally conceptualize
+an intelligence virtual situation room (IVSR) enabled by a
+BDTforreal-timewildfiremanagement.IVSRisenvisioned
+to integrate sensors, state-of-the-art AI-driven fire predic-
+tion models, and 3D representative models to establish a
+dynamic feedback loop between the physical environment
+anditsdigitalcounterpart.TheIVSRconceptimprovesearly
+warning, better-informed decision-making, and proactive
+firesuppressionincriticalemergencyscenariosbyallowing
+for instant communication of actionable knowledge.
+2. Related Works
+This section reviews the literature on digital cities and
+DT technologies, with a focus on their roles in wildfire
+disaster management.
+The use of DTs in disaster management, especially in
+wildfires,isanemergingfield.Previousstudieshavefocused
+on flood prediction, earthquake simulation, and wildfire
+tracking using GIS-based mapping, hydrological models,
+and remote sensing. However, many existing solutions lack
+real-time data integration and interactive scenario simula-
+tions.RecentadvancementsinAI-drivenanomalydetection,
+IoT-based monitoring, and climate modeling provide an
+opportunity to improve disaster preparedness and response
+[13].
+2.1. Digital Cities
+Digital City Infrastructure and Technologies
+Modern digital cities are built using advanced technol-
+ogy that works together [18]. Sensor networks (environ-
+mental sensors, cameras, smart meters) and IoT devices
+continuouslymonitorurbanconditions[19],fromweatherto
+traffictostructuralhealth.Wirelesscommunicationsystems
+also carry the data to improve the latency performance and
+providereal-time,citywide,andsituationalinformation[20].
+The collected data is input into cloud-based centralized
+platforms. Geographic Information Systems (GIS) and 3D
+city modeling [21] software play a key role by correlating
+data streams to spatial locations and creating interactive
+maps or virtual city models that reflect current conditions
+[22, 23]. Also, ML/DL techniques are employed to de-
+tect(safety monitoring [24, 25]) and predict outcomes [26–
+28]. Some examples include modeling the spread of fire
+[29, 30] or predicting traffic [31], anomaly detection [32],
+anddetectingabnormaltrends[33],likeanincreaseinwater
+usage that may reveal a leakage [34]. Also, more enabling
+technologies have been added, such as building DTs, which
+gives 3D representations of buildings [35]; encryption and
+cyber security systems, which securely communicate data
+[36, 37]; and edge computing, which processes the data
+locally [38, 39].
+These four key components—IoT sensing, communica-
+tionsnetworks,cloud/GIS,andAI-poweredanalytics—form
+thefoundationofadigitalcitythatcansupportservicessuch
+as disaster management.
+Role of Digital Cities in Disaster Management
+Digital city technologies have become critical tools in
+disaster management, as they improve how cities prepare
+for, respond to, and recover from emergencies by enabling
+more transparent communication and stronger coordination
+[40,41].Inthispart,themaincontributionsmadebydigital
+cities toward disaster management will be introduced as
+follows:
+Smart cities employ distributed sensors and analytics
+to detect threats or abnormal events immediately [42]. For
+instance, the city’s digital platform can sense a sudden drop
+inwaterpressureorsurgeinseismicmovementsandtrigger
+instant warnings. A good example involved using a DT for
+the city to process incoming sensor data intelligently and
+triggerautomatedSMSwarningsforemergencies(e.g.,fires
+within a building or flash flooding [43]).
+Also,withthefusionofreal-timemulti-sourcedata,digi-
+talcitiesgenerateacommonoperatingpictureduringacrisis
+[44, 45]. City dashboards synthesize the feeds from CCTV
+cameras,trafficsensors,weatherstations,andcrowdreports
+to give responders live maps of dynamic circumstances.
+For example, analysts employed a DT of a city to process
+livesurveillancecamfeeds,identifycongestionlevelsalong
+evacuationroutes,androuteemergencyvehiclesthroughthe
+most unobstructed courses [46].
+So, The detailed digital model presentations help man-
+agers use "what-if" simulations for planning and disaster
+preparedness[47].Scenariossuchasacategory-5hurricane
+strike [48] or chemical spill [49] can be simulated and
+tested via digital models. Studies have shown that a high-
+fidelity DT of a city can simulate disaster scenarios – e.g.,
+the spread of flooding and the damage resulting from a
+hypothetical flood –. By examining various scenarios (e.g.,
+varying earthquake magnitudes [50, 51] and flood levels),
+authorities can refine emergency plans, such as adjusting
+First Author et al.:Preprint submitted to ElsevierPage 2 of 18
+Digital Twin and Agentic AI for Wild Fire Disaster Management: Intelligent Virtual Situation Room
+evacuation zones and resource staging areas based on the
+simulation results [44].
+Resource coordination is one of the most widely used
+applications of digital cities. A digital city platform can
+monitorandcoordinatevitalresourceswithintheurbannet-
+workduringacrisis[52].Thestatusofhospitals(availability
+and ER status), emergency shelters (degree of occupancy),
+utilities (power grid or water supply outages), fleets of re-
+sponse vehicles, and number and distribution of available
+firstresponderscanbeshowninreal-timethroughintegrated
+dashboards[53,54].Thedigitalcitysystemcanfacilitatethe
+deployment of teams and equipment where necessary and
+adjust to crisis changes [55].
+Digital cities also facilitate the way management com-
+municates with citizens during emergencies [45, 56, 57].
+The data for the city is continuously updated, and it can
+be made available as live public data (e.g., through apps,
+websites, or social media) to inform citizens about actions.
+Many smart city systems ingest official sensor data, crowd-
+sourced inputs, and social media signals to create a two-
+way information flow [58]. This enables more localized and
+timely public warnings and instructions. For example, a
+city’s digital platform might push notifications about which
+neighborhoods should evacuate while also ingesting tweets
+or smartphone reports from citizens on the ground [59].
+Research indicates that a DT Smart City can give the public
+and decision-makers highly localized data about a develop-
+ing disaster. By keeping citizens informed (and sometimes
+engagingthemthroughreporting),digitalcitiesenhancethe
+community’s ability to respond and prevent the spread of
+misinformation during emergencies [60].
+Figure 1 illustrates the use case of DT for disaster
+management; this digital-city disaster management frame-
+work features a three-level architecture. At its foundation,
+the Sensors & Data Collection layer brings together asset-
+based IoT devices (e.g., building sensors, smart meters) and
+infrastructure-level sensors (e.g., satellites, ground-based
+radar) to aggregate real-time environmental and structural
+information. Such live data streams are then processed in
+the Data Analytics and processing layer, where AI/ML
+algorithms identify anomalies, and ETL pipelines scrub,
+integrate, and normalize multisource feeds to take action.
+Towards its upper end, the 3D Visualization layer provides
+operators with interactive dashboards and GIS-enabled 3D
+models, enabling them to view live conditions, simulate
+“what-if” scenarios, and coordinate resources with pinpoint
+accuracy—thereby closing the loop between sensing and
+decision-making in emergencies. With these capabilities,
+digital cities can better manage disasters.
+2.2. Bidirectional Digital Twin: Concepts and
+Architectures
+A defining characteristic of a true DT is bidirectional
+connectivity between the physical object and its virtual
+model. The DT continuously ingests data from the physical
+asset (e.g., through IoT sensors) [61]. In turn, the insights
+or outputs from the DT can be fed back to influence the
+physical asset’s operation [61]. For example, A DT of a
+building might receive information on temperature [62] and
+occupancy and, based on that, adjust the building’s HVAC
+settings through control signals and create a feedback loop
+[63]. As the physical system changes, the DT changes [64];
+and When the situation within the digital counterpart of a
+DTindicatesthatactionisnecessary,theintelligencecreated
+from the analytics of the digital counterpart can be used to
+initiate a response in the physical system. In a word, the DT
+isalivingvirtualmodel;itprovidesacontinuous,up-to-the-
+moment representation of a physical asset or process that
+enables constant monitoring, analysis, and even control of
+the asset in ways the static models of the past could never
+hope to provide [65].
+EnablingabidirectionalDTrequiresanarchitecturethat
+facilitates continuous data exchange and feedback [66, 67].
+In general, such an architecture contains several layers. At
+the foundation, sensors and IoT devices on the physical
+asset or environment collect real-time data (measurements,
+status signals) and transmit them using wireless networks
+or the internet to feed into the DT platform [68, 69]. The
+incoming data is processed and integrated into the asset’s
+virtual model. The DT platform (which may be hosted on
+cloud servers or edge computers) continuously updates the
+virtual model’s state. Advanced analytics, such as ML/DL
+techniques[70,71],mightbeappliedatthisstagetoanalyze
+the data, run simulations, or predict future states. Based on
+theupdatedmodelandanalyses,theDTgeneratesoutputs–
+alerts, optimization decisions, or direct control commands.
+In a fully bidirectional setup, specific outputs are sent back
+to the physical asset or to actuators in the environment to
+adjust operations. For example, a DT of a power grid might
+predictanoverloadandtriggeraload-balancingresponseby
+routing electricity differently [72, 73]. In many real cases,
+the"actuation"isindirect–theDTprovidesdecisionsupport
+for human operators, who then implement actions in the
+physical world [74].
+Traditional monitoring systems often stopped at uni-
+directional data reporting. By contrast, a bidirectional DT
+continuously cycles information [75]. A clear illustration of
+bidirectional DT is in next-generation early warning sys-
+tems. Conventional early warning collects sensor data and
+then issues warnings manually. With bidirectional DT early
+warning, live sensor data is inputted to a digital city model
+[76]. The system will automatically warn or trigger protec-
+tive measures if it recognizes the danger. Such systems can
+autonomouslyadaptandrespondtoevolvingrisksindisaster
+management [77]. The applications range from micro-level
+(e.g., an individual building’s DT helping firefighters navi-
+gate it safely) to macro-level (a whole-region DT modeling
+the spread of wildfires) [78–80].
+2.3. Wild Fire Disaster Management Using DT
+New advances in DT technology for wildfire manage-
+ment have demonstrated capabilities for near real-time sim-
+ulation, predictive modeling, and sensor integration. How-
+ever, several significant gaps remain in developing a fully
+First Author et al.:Preprint submitted to ElsevierPage 3 of 18

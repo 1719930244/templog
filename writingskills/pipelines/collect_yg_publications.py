@@ -14,11 +14,11 @@ What this script does:
   - Downloads PDFs and extracts text from first pages
   - Emits an index JSON + a summary markdown with aggregated signals
 
-Outputs (in this folder):
-  - yg_publications_index.json
-  - yg_publications_summary.md
-  - pdfs_yg/*.pdf
-  - extracted_yg/*.txt
+Outputs (under ../outputs and ../caches):
+  - outputs/yg_publications_index.json
+  - outputs/yg_publications_summary.md
+  - caches/pdfs_yg_publications/*.pdf
+  - caches/extracted_yg_publications/*.txt
 
 Notes:
   - Many publisher PDFs are not publicly accessible; those will be marked missing.
@@ -53,12 +53,15 @@ OPENALEX_WORKS_SEARCH = "https://api.openalex.org/works"
 ARXIV_API = "https://export.arxiv.org/api/query"
 
 ROOT = Path(__file__).resolve().parent
-PDF_DIR = ROOT / "pdfs_yg"
-EXTRACT_DIR = ROOT / "extracted_yg"
-INDEX_JSON = ROOT / "yg_publications_index.json"
-SUMMARY_MD = ROOT / "yg_publications_summary.md"
+WS_ROOT = ROOT.parent
+CACHE_DIR = WS_ROOT / "caches"
+OUT_DIR = WS_ROOT / "outputs"
+PDF_DIR = CACHE_DIR / "pdfs_yg_publications"
+EXTRACT_DIR = CACHE_DIR / "extracted_yg_publications"
+INDEX_JSON = OUT_DIR / "yg_publications_index.json"
+SUMMARY_MD = OUT_DIR / "yg_publications_summary.md"
 
-PUBLICATIONS_HTML_CACHE = (ROOT / ".." / "yg_publications.html").resolve()
+PUBLICATIONS_HTML_CACHE = (CACHE_DIR / "yg_publications.html").resolve()
 
 CTX = ssl.create_default_context()
 

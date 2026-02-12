@@ -8,7 +8,8 @@ description: 面向软件工程（ICSE/FSE/ASE/ISSTA/ICPC/SANER、TOSEM/TSE/EMSE
 本 Skill 目标：把“研究想法”转成“评审可读、可验证、可复现”的软工论文叙事与结构。
 
 本 Skill 的写作习惯总结来源于：
-- 陈翔老师（Xiang Chen）近五年公开可获取的论文 PDF（当前自动抓到 `9` 篇）+ OpenAlex 可获得摘要（当前 `64` 条）。索引与下载状态见 `写作参考/papers/xchencs_last5y_se_index.json` 与 `写作参考/papers/xchencs_last5y_se_summary.md`。
+- 陈翔老师（Xiang Chen）近五年公开可获取的论文 PDF（当前自动抓到 `9` 篇）+ OpenAlex 可获得摘要（当前 `64` 条）。索引与下载状态见 `templog/writingskills/outputs/xchencs_last5y_se_index.json` 与 `templog/writingskills/outputs/xchencs_last5y_se_summary.md`。
+- arXiv `cs.SE`（可批量下载、便于扩充样本）。索引与汇总见 `templog/writingskills/outputs/arxiv_csse_index.json` 与 `templog/writingskills/outputs/arxiv_csse_summary.md`。
 
 ---
 
@@ -165,7 +166,7 @@ Related Work 的目标不是“引用尽可能多”，而是让评审相信：
 
 ## 9) 本次可获取 PDF 列表（用于“细读对齐”）
 
-本地路径见 `写作参考/papers/pdfs/`；索引 JSON 里也记录了 URL 与下载状态。
+本地路径见 `caches/pdfs_*`；索引 JSON 里也记录了 URL 与下载状态。
 
 建议细读顺序（更偏软工写作范式）：
 1. ICSE/ASE/TOSEM/EMSE/JSS（结构更标准，Threats/RQ 更典型）

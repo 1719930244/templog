@@ -8,11 +8,11 @@ from the last ~5 years, then extract lightweight writing-style signals.
 Inputs:
   - Optionally uses ../xchencs_publications.html (cached). If missing, it will download it.
 
-Outputs (in this folder):
-  - xchencs_last5y_se_index.json: paper list, metadata, PDF status, extracted signals
-  - xchencs_last5y_se_summary.md: aggregated signals + missing PDF list
-  - pdfs/*.pdf: downloaded PDFs (best-effort, only if publicly accessible)
-  - extracted/*.txt: extracted first-page text (debug, small)
+Outputs (under ../outputs and ../caches):
+  - outputs/xchencs_last5y_se_index.json: paper list, metadata, PDF status, extracted signals
+  - outputs/xchencs_last5y_se_summary.md: aggregated signals + missing PDF list
+  - caches/pdfs_xchencs_last5y_se/*.pdf: downloaded PDFs (best-effort, only if publicly accessible)
+  - caches/extracted_xchencs_last5y_se/*.txt: extracted first-page text (debug, small)
 
 Notes:
   - This script does NOT bypass paywalls or anti-bot protections.
@@ -51,12 +51,15 @@ ARXIV_API = "https://export.arxiv.org/api/query"
 WINDOW_START_YEAR = 2021
 
 ROOT = Path(__file__).resolve().parent
-PDF_DIR = ROOT / "pdfs"
-EXTRACT_DIR = ROOT / "extracted"
-INDEX_JSON = ROOT / "xchencs_last5y_se_index.json"
-SUMMARY_MD = ROOT / "xchencs_last5y_se_summary.md"
+WS_ROOT = ROOT.parent
+CACHE_DIR = WS_ROOT / "caches"
+OUT_DIR = WS_ROOT / "outputs"
+PDF_DIR = CACHE_DIR / "pdfs_xchencs_last5y_se"
+EXTRACT_DIR = CACHE_DIR / "extracted_xchencs_last5y_se"
+INDEX_JSON = OUT_DIR / "xchencs_last5y_se_index.json"
+SUMMARY_MD = OUT_DIR / "xchencs_last5y_se_summary.md"
 
-PUBLICATIONS_HTML_CACHE = (ROOT / ".." / "xchencs_publications.html").resolve()
+PUBLICATIONS_HTML_CACHE = (CACHE_DIR / "xchencs_publications.html").resolve()
 
 CTX = ssl.create_default_context()
 
