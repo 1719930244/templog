@@ -1,0 +1,331 @@
+4196 IEEE TRANSACTIONS ON SOFTW ARE ENGINEERING, VOL. 49, NO. 8, AUGUST 2023
+Vulnerability Detection by Learning From
+Syntax-Based Execution Paths of Code
+Junwei Zhang , Zhongxin Liu ,X i n gH u ,X i nX i a , and Shanping Li
+Abstract—Vulnerability detection is essential to protect software
+systems. Various approaches based on deep learning have been
+proposed to learn the pattern of vulnerabilities and identify them.
+Although these approaches have shown vast potential in this task,
+they still suffer from the following issues: (1) It is difﬁcult for
+them to distinguish vulnerability-related information from a large
+amount of irrelevant information, which hinders their effectiveness
+in capturing vulnerability features. (2) They are less effective in
+handling long code because many neural models would limit the
+input length, which hinders their ability to represent the long
+vulnerable code snippets. To mitigate these two issues, in this work,
+we proposed to decompose the syntax-based Control Flow Graph
+(CFG) of the code snippet into multiple execution paths to detect
+the vulnerability. Speciﬁcally, given a code snippet, we ﬁrst build its
+CFG based on its Abstract Syntax Tree (AST), refer to such CFG
+as syntax-based CFG, and decompose the CFG into multiple paths
+from an entry node to its exit node. Next, we adopt a pre-trained
+code model and a convolutional neural network to learn the path
+representations with intra- and inter-path attention. The feature
+vectors of the paths are combined as the representation of the
+code snippet and fed into the classiﬁer to detect the vulnerability.
+Decomposing the code snippet into multiple paths can ﬁlter out
+some redundant information unrelated to the vulnerability and
+help the model focus on the vulnerability features. Besides, since
+the decomposed paths are usually shorter than the code snippet,
+the information located in the tail of the long code is more likely
+to be processed and learned. To evaluate the effectiveness of our
+model, we build a dataset with over 231 k code snippets, in which
+there are 24 k vulnerabilities. Experimental results demonstrate
+that the proposed approach outperforms state-of-the-art baselines
+by at least 22.30%, 42.92%, and 32.58% in terms of Precision,
+Recall, and F1-Score, respectively. Our further analysis investigates
+the reason for the proposed approach’s superiority.
+Index Terms —Vulnerability detection, deep learning, control
+ﬂow graph, pre-trained model.
+I. I NTRODUCTION
+T
+HE vulnerability detection system plays a vital role in
+software security [1], [2], [3], which can prevent a series
+of security incidents [4], [5], [6].
+Manuscript received 17 October 2022; revised 9 June 2023; accepted 10 June
+2023. Date of publication 15 June 2023; date of current version 15 August 2023.
+This work was supported by the National Natural Science Foundation of China
+under Grants 62202420 and 62141222. Zhongxin Liu gratefully acknowledges
+the support of the Zhejiang University Education Foundation Qizhen Scholar
+Foundation. Recommended for acceptance by J. Sun. (Corresponding author:
+Zhongxin Liu.)
+Junwei Zhang, Zhongxin Liu, Xin Xia, and Shanping Li are with the Col-
+lege of Computer Science and Technology, Zhejiang University, Hangzhou,
+Zhejiang 310027, China (e-mail: jw.zhang@zju.edu.cn; liu_zx@zju.edu.cn;
+xin.xia@acm.org; shan@zju.edu.cn).
+Xing Hu is with the School of Software Technology, Zhejiang University,
+Ningbo, Zhejiang 315103, China (e-mail: xinghu@zju.edu.cn).
+Digital Object Identiﬁer 10.1109/TSE.2023.3286586
+Consequently, interest in more accurate and efﬁcient au-
+tomated software vulnerability detection methods has in-
+creased [7], [8], [9], [10].
+In general, existing detection models can be broadly divided
+into two categories: (1) pattern-based vulnerability detection
+models [11], [12], [13], [14], [15] and (2) code similarity-based
+detection methods [9], [10], [16], [17], [18], [19]. Pattern-based
+vulnerability detection methods [11], [12], [13] rely on experts
+to manually deﬁne vulnerability rules or characteristics to de-
+tect vulnerabilities. These approaches require tedious manual
+efforts and are challenging to simultaneously achieve a low
+false positive rate and a low false negative rate [18], [20]. Code
+similarity-based methods adopt data mining and machine learn-
+ing techniques to predict the presence of software vulnerabili-
+ties [16], [17], [18], [21]. This kind of method does not require
+experts to manually-crafted heuristics, can automatically capture
+vulnerability features, and has become a promising alternative.
+Recently, beneﬁting from the powerful performance of deep
+learning (DL) techniques, a number of methods [16], [17], [18],
+[20], [21] have been proposed to leverage DL models to automat-
+ically learn vulnerability features from known vulnerabilities
+and identify unseen vulnerabilities in projects. For instance,
+Li et al. [18] proposed a program-slice-based approach named
+VulDeePecker, which slices source code based on library/API
+function calls and feds the sliced code into RNN [22] to detect
+vulnerabilities. Zhou et al. [10] proposed to convert a code snip-
+pet into a graph based on its Abstract Syntax Tree (AST), Control
+Flow Graph (CFG), Data Flow Graph (DFG), and natural code
+sequence and utilized Graph Neural Network (GNN) [23] to
+learn the code representation from the graph for identifying
+vulnerabilities.
+Despite the promising performance, existing DL-based vul-
+nerability detection methods are limited by two problems. (1) It
+is hard for them to identify and focus on vulnerability-related
+information from a large amount of irrelevant information.
+For instance, a buffer overﬂow vulnerability will be triggered
+when the amount of data in a memory buffer exceeds its stor-
+age capacity. This type of vulnerability is only related to the
+code that uses buffers. In other words, if many statements are
+unrelated to the buffer in the code snippet, these statements are
+not helpful for the detection of buffer overﬂow vulnerabilities.
+(2) Existing DL-based methods are less effective in handling the
+long code snippet. Due to limited GPU memory and computation
+resources, existing neural models often limit their input lengths,
+e.g., CodeBERT [24] only retains the ﬁrst 400 tokens and di-
+rectly truncates others in the input. Therefore, if the information
+0098-5589 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Zhejiang University. Downloaded on November 28,2023 at 06:04:25 UTC from IEEE Xplore.  Restrictions apply. 
+ZHANG et al.: VULNERABILITY DETECTION BY LEARNING FROM SYNTAX-BASED EXECUTION PA THS OF CODE 4197
+related to vulnerabilities locates in the truncated part of a code
+snippet, it would be very hard for existing methods to detect the
+vulnerability.
+To alleviate the two problems, in this work, we propose a novel
+approach that can better capture vulnerability features from the
+code snippet, especially the code with much information unre-
+lated to vulnerabilities and the long code snippet. We observe
+that a code snippet usually contains multiple execution paths to
+handle different situations, but it is often the case that only a
+few execution paths are vulnerable. Based on this observation,
+we propose to decouple a code snippet into multiple execution
+paths, use a neural model to learn the representation of each path,
+and combine the representations of multiple paths to obtain the
+ﬁnal code representation.
+F or the ﬁrst problem of existing methods mentioned above ,
+since each execution path is a cohesive unit with a simple
+and linear structure, decoupling the code snippet into execu-
+tion paths can help the model focus on coherent and highly
+correlated contextual information and better capture vulnera-
+bility features. For example, a use-after-free vulnerability is
+usually related to a single execution path. Compared to di-
+rectly encoding the whole code snippet, separately encoding
+its execution paths can ﬁlter out some information unrelated to
+vulnerabilities and ease the extraction of vulnerability features.
+Meanwhile, because the execution order of each statement in
+an execution path is linear, neural models do not need to under-
+stand complex code structures. They can focus on capturing
+more accurate semantic information in the code snippet. As
+for the second problem , for the code with multiple execution
+paths, each of its execution paths is shorter than the whole
+code snippet and less likely to exceed the length limit of
+neural models. Hence, the tail of the long code has a greater
+chance of being processed by the neural network rather than
+truncated.
+Based on the idea mentioned above, we propose a novel
+approach named EPVD, which decomposes a code snippet into
+several execution paths for vulnerability detection. Speciﬁcally,
+given a code snippet, EPVD ﬁrst parses it into an Abstract Syntax
+Tree (AST) and constructs its CFG based on the AST. We refer
+to such CFG as syntax-based CFG. Each node in the CFG refers
+to a statement, and each edge represents a control dependency
+between two statements. Then, EPVD selects a ﬁxed number
+of paths that start from the entry node and end at one of the
+exit nodes from the CFG using a greedy-based path selection
+algorithm. We refer to such CFG paths as execution paths in this
+paper. We only select a ﬁxed number of execution paths because
+loops in code may introduce inﬁnite paths, and we ﬁnd a few
+paths that can cover the information related to vulnerabilities
+in a code snippet. Each selected execution path is fed into a
+pre-trained code model to capture the intra-attention of the path
+and learn its feature vector. Further, we adopt a convolutional
+neural network (CNN) to capture the inter-path attention and
+fuse the representations of the selected paths to produce the
+code representation. Finally, a multi-layer perceptron (MLP)
+classiﬁer is leveraged to detect the vulnerability based on the
+code representation.
+To evaluate the effectiveness of EPVD, we curate a large
+C/C++ vulnerability dataset by merging three existing high-
+quality vulnerability datasets, i.e., the R EVEAL dataset [25],
+the Big-Vul dataset [26], and the Devign dataset [10].T h e
+new dataset contains more than 231 k code snippets with 24 k
+vulnerabilities. We evaluate our approach and compare it with
+ﬁve state-of-the-art DL-based methods. Experiments show that
+our model outperforms all the baselines by large margins.
+Speciﬁcally, EPVD improves the best-performing baseline by
+22.30%, 42.92%, and 32.58% in terms of Precision, Recall, and
+F1-score, respectively. Further analysis demonstrates the effec-
+tiveness of our model in capturing vulnerability features from
+the vulnerability code snippets with much unrelated information
+and handling the long code.
+In summary, the main contributions of this paper are as
+follows:
+1) We implement a method for building the CFG of a code
+snippet based on its AST and propose a greedy-based
+algorithm to select representative execution paths from
+the CFG.
+2) We propose a neural vulnerability detection model based
+on execution paths, named EPVD, which can better cap-
+ture vulnerability features and handle long code.
+3) We conduct comprehensive experiments to evaluate
+EPVD and justify the technical decisions in EPVD. Eval-
+uation results show that EPVD outperforms all baseline
+models and the technical decisions in EPVD are reason-
+able and beneﬁcial.
+4) We release our replication package [27], which includes
+the source code, the dataset, and our evaluation results.
+The remainder of this paper is organized as follows. We ﬁrst
+introduce the related work in Section II. Then, we describe
+the motivation of our method and provide preliminaries of
+the syntax-based CFG in Section III. Section IV presents our
+method. The experimental results are presented in Section V.
+Section VI shows the limitations of our approach and some
+threats to validity. Finally, we conclude our work and discuss
+future work in Section VII.
+II. R ELA TEDWORK
+A. Software Vulnerability Detection With Neural Network
+V arious techniques have been developed to detect vulnera-
+bilities. In the literature, early works mainly detected vulner-
+ability by manually-designed vulnerability patterns [11], [12],
+[13]. However, these works require tedious manual efforts to
+analyze and craft vulnerability patterns. On the other hand, since
+some rules often contain the same syntax elements appearing in
+different code snippets, these syntax elements may lead to high
+false-positive and false-negative rates [14], [15], [20].
+To reduce human efforts, recently, some studies leveraged
+neural network-based models to automatically learn the seman-
+tic features of the code snippet [17], [19]. Existing vulnerability
+detection models based on deep learning can be divided into two
+main categories: token-based and graph-based models. Token-
+based models regard the code as a ﬂat sequence and utilize the
+Authorized licensed use limited to: Zhejiang University. Downloaded on November 28,2023 at 06:04:25 UTC from IEEE Xplore.  Restrictions apply. 
+4198 IEEE TRANSACTIONS ON SOFTW ARE ENGINEERING, VOL. 49, NO. 8, AUGUST 2023
+neural network to capture the vulnerability features from known
+vulnerabilities and detect unseen vulnerabilities [17], [18], [28].
+For example, Russell et al. [17] leveraged the recurrent neural
+network (RNN) and convolutional neural network (CNN) to
+extract code features from code token sequences for vulner-
+ability detection. Li et al. [18] used BiLSTM [29] to encode
+the sliced version of the input code snippet, namely the code
+gadget, to detect vulnerabilities. The authors slice each code
+snippet based on the “key points”, such as library/API function
+calls. However, these token-based approaches do not consider
+the structure information of the source code, which leads to
+inaccurate detection.
+Graph-based detection models represent the code using vari-
+ous graph representations and adopt the neural network to learn
+the structure properties of the code snippets for vulnerability
+detection [7], [8], [9], [10], [25], [30], [31]. For instance, Zhou et
+al. [10] adopted the gated graph recurrent network[23] to capture
+the structure information of the code snippets from three types
+of graph representations of the source code (i.e., AST, CFG,
+and DFG). Chakraborty et al. [25] proposed R EVEAL, which
+learns the structure properties of the code snippet using the gated
+graph neural network [23], resampling techniques [32], and the
+triplet loss [33].L ie ta l .[9] proposed IVDetect, which represents
+the code as the Program Dependency Graph (PDG) and treats
+vulnerability detection as the graph-based classiﬁcation task via
+the graph convolution network. IVDetect ﬁrst utilizes the GloV e
+model [34] to learn the representations of nodes in the PDG
+and then adopts the graph convolutional neural network [35]
+to optimize the code representation for detection. Since the two
+stages do not interact with each other during training, the optimal
+solution in the ﬁrst stage may not lead to the optimal code
+representation in the second stage, resulting in the trained model
+failing to detect vulnerabilities effectively. We have tried our best
+to replicate and re-trained the IVDetect model (e.g., adopting
+multiple smaller learning rates and using the adaptive learning
+rate), but it cannot converge on our merged dataset. Hence, we
+do not compare it with the proposed model. Recently, Wu et
+al. [7] converted the PDG of the code snippets into an image
+to preserve the structure details. Further, they adopted three
+centrality indicators of the graph (i.e., degree centrality, katz
+centrality, and closeness centrality) to highlight the attention of
+vulnerable statements. Cao et al. [8] proposed a statement-level
+memory-related vulnerability detection approach based on the
+ﬂow-sensitive graph neural network to jointly learn semantic
+and structure information.
+Chen et al. [36] conducted a comprehensive empirical study
+to explore the gap in pinpointing bug-triggering paths between
+the traditional static bug detection approaches and existing
+neural network-based approaches. The authors ﬁrst formalized
+the general vulnerability detection process and divided eleven
+approaches into three categories: method-level, slice-level, and
+statement-level. Method and slice-level approaches report the
+method or slice of the code snippet as vulnerable. Statement-
+level approaches report the vulnerable statements. Then, they
+proposed a new ﬁne-grained metric called BTP to calculate the
+degree of overlap between the statements detected by the existing
+models and the statements on the bug-triggering paths. By
+conducting experiments on eleven approaches on the D2A [37]
+dataset, the authors found that existing vulnerability detection
+approaches are insufﬁcient in pinpointing bug-triggering paths.
+Our proposed approach can be regarded as a method-level vul-
+nerability detection method. Because it directly predicts whether
+a method is vulnerable or not based on multiple syntax-based
+execution paths instead of explicitly pinpointing vulnerable
+statements or slices.
+Our approach is technically different from existing methods:
+First, our approach decomposes the input code snippet into
+several execution paths in its syntax-based CFG, which can sim-
+plify code structure and help neural models capture vulnerability
+features. Second, we propose a new greedy-based path selection
+method, which can cover as many code statements as possible. In
+other words, the decomposed syntax-based execution paths can
+indicate how the vulnerability originates and is triggered. Third,
+different from the existing method-level detection approaches,
+our approach applies the CNN to fuse multiple path represen-
+tations to represent code snippets, which can help capture the
+bug-triggering information and inter-path attention. Fourth, our
+approach utilizes the pre-trained code model (i.e., CodeBERT)
+to learn code representations based on execution paths, which is
+not investigated by existing work.
+B. Code Representation Models Based on Pre-Trained Models
+Inspired by the excellent performance of pre-trained models
+in natural language processing (NLP), some researchers applied
+the pre-trained models to boost code-related tasks [24], [38],
+[39], [40], [41], [42]. Most work is dedicated to pre-training
+models on a massive corpus of source code and ﬁne-tuning for
+a series of downstream tasks [24], [38]. For example, Feng et
+al. [24] presented CodeBERT that incorporates masked language
+modeling and replaced token detection as the pre-training objec-
+tive to support code search and summarization tasks. CuBERT
+adopts masked language modeling and next sentence prediction
+as the pre-training objective to learn the code representation[38].
+Besides, some pre-trained models consider the structure in-
+formation of the code snippet at the pre-training stage [39],
+[40], [41], [43]. An example is that Guo et al. [43] proposed
+GraphCodeBERT, which learns data-ﬂow information of the
+code snippet with edge prediction and node alignment tasks.
+Due to the excellent performance of these pre-trained models
+on multiple code-related tasks to code representation, some
+studies have tried to adopt the pre-trained model to detect the
+vulnerability code [1], [2], [44]. However, all these methods
+directly utilize the pre-trained code model to perform prediction
+and face challenges in capturing vulnerability features from
+long code and code with complex structures. Instead, our model
+extracts multiple execution paths, which are more likely to learn
+vulnerability features from the tail statements in the long code.
+Besides, the order of each statement in the execution path is
+linear, which can ease the capture of the semantic information
+in the code.
+III. M OTIV A TION ANDPRELIMINARY
+In this section, we ﬁrs

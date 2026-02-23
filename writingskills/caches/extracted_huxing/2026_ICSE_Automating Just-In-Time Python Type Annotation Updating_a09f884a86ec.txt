@@ -1,0 +1,310 @@
+IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 34, NO. 10, OCTOBER 2015 1993
+The Multimodal Brain Tumor Image
+Segmentation Benchmark (BRA TS)
+Bjoern H. Menze*, Andras Jakab, Stefa n Bauer, Jayashree Kalpathy-Crame r, Keyvan Farahani, Justin Kirby,
+Y uliya Burren, Nicole Porz, Johannes S lotboom, Roland Wiest, Levente Lan czi, Elizabeth Gerstner,
+Marc-André Weber, Tal Arbel, Brian B. Avants, Nicholas Ayache, Patricia B uendia, D. Louis Collins,
+Nicolas Cordier, Jason J. Corso, Antonio Criminisi, Tilak Da s, Hervé Delingette, Çağatay Demiralp,
+Christopher R. Durst, Michel Dojat, Senan Doyle, Joana Festa, Florence Fo rbes, Ezequiel Geremia,
+Ben Glocker, Polina Golland, Xiaotao Guo, Andac Hamamci, Khan M. Iftekhar uddin, Raj Jena,
+Nigel M. John, Ender Konukoglu, Danial Lashkari, José Ant ónio Mariz, Raphael Meier, Sérgio Pereira,
+Doina Precup, Stephen J. Price, Tammy Riklin Raviv, Syed M. S. Reza, Michae l Ryan, Duygu Sarikaya,
+Lawrence Schwartz, Hoo-Chang Shin, Jamie Shotton, Carlos A. Silva, Nuno S ousa, Nagesh K. Subbanna,
+Gabor Szekely, Thomas J. Taylor, Owen M. Thomas, Nicholas J. Tustison, Gozde Unal, Flor V asseur,
+Max Wintermark, Dong Hye Y e, Liang Zhao, Binsheng Zhao, Darko Zikic, Marce l Prastawa,
+Mauricio Reyes, and Koen V an Leemput
+Abstract—In t his paper we report the set-up and results of
+the Multimodal Brain Tumor Image Segmentation Benchmark
+(BRATS) organized in conjunction with the MICCAI 2012 and
+2013 confe rences. Twenty state-of-the-art tumor segmentation
+algorithms were applied to a set of 65 multi-contrast MR scans of
+low- and high-grade glioma patients—manually annotated by up
+to four raters—and to 65 comparable scans generated using tumor
+image simulation software. Quantitative evaluations revealed con-
+siderable disagreement between the human raters in segmenting
+various tumor sub-regions (Dice scores in the range 74%–85%),
+illustrating the difﬁculty of this task. We found that different
+algorithms worked best for differe nt sub-regions (reaching per-
+formance comparable to human inter-rater variability), but that
+no single algorithm ranked in the top for all sub-regions simul-
+taneously. Fusing several good al gorithms using a hierarchical
+majority vote yielded segmentations that consistently ranked
+above all individual algorithms, indicating remaining opportuni-
+ties for further methodological improvements. The BRATS image
+data and manual annotations continue to be publicly available
+through an online evaluation system as an ongoing benchmarking
+resource.
+Index Terms— MRI, Brain, Oncology/tumor, Image segmenta-
+tion, Benchmark.
+I. I NTRODUCTION
+G
+LIOMAS are the most frequent primary brain tumors in
+adults, pres umably originating from glial cells and in-
+ﬁltrating the surrounding tissues [1]. Despite considerable ad-
+vances in glioma res earch, patient diagnosis remains poor. The
+clinical population with the more aggressive form of the disease,
+classiﬁed as high-grade gliomas, have a median survival rate of
+Manuscript received July 04, 2014; accepted September 01, 2014. Date of
+publication December 04, 2014; date of current version Se ptember 29, 2015 .
+B. H. Menze, A. Jakab, S. Bauer, J. Kalp athy-Cramer, K. Farahani, J. Kirby, Y.
+B u r r e n ,N .P o r z ,J .S l o t b o o m ,R .W i e s t ,L .L a n c z i ,E .G e r s t n e r ,M . - A .W e b e r,
+M. Prastawa, M. Reyes, and K. V an Leemput co-organized the benchmark;
+all others contributed results of their algorithms as indicated in the app endix.
+M. Reyes and K. V an Leemput contributed equally. Asterisk indicates corre-
+sponding author.
+Due to space constraints, funding information and author afﬁliations for this
+work appear in the acknowledgement section.
+Digital Object Identiﬁer 10.1109/TMI.2014.2377694
+two years or le ss and require immediate treatment [2], [3]. The
+slower growing low-grade variants, such as low-grade astrocy-
+tomas or oligodendrogliomas, come with a life expectancy of
+several years so aggressive treatment is often delayed as long as
+possible. For both groups, intensive neuroimaging protocols are
+used before and after treatment to evaluate the progression of the
+disease and the success of a chosen treatment strategy. In current
+clinical routine, as well as in cl inical studies, the resulting im-
+ages are evaluated either based on q ualitative criteria only (indi-
+cating, for example, the presence of characteristic hyper-intense
+tissue appearance in contrast -enhanced T1-weighted MRI), or
+by relying on such rudimentary quantitative measures as the
+largest diameter visible from axial images of the lesion [4], [5].
+By replacing the current basic assessments with highly
+accurate and reproducible measur ements of the relevant tumor
+substructures, image processing routines that can automatically
+analyze brain tumor scans would be of enormous potential value
+for improved diagnosis, treatment planning, and follow-up
+of indiv idual patients. However, developing automated brain
+tumor segmentation techniques is technically challenging,
+because lesion areas are only deﬁ ned through intensity changes
+that are relative to surrounding normal tissue, and even manual
+segmentations by expert raters show signiﬁcant variations when
+intensity gradients between ad jacent structures are smooth
+or obsc ured by partial voluming or bias ﬁeld artifacts. Fur-
+thermore, tumor structures vary considerably across patients
+in terms of size, extension, and localization, prohibiting the
+use of strong priors on shape and location that are important
+components in the segmentat ion of many other anatomical
+structures. Moreover, the so- called mass effect induced by the
+growing lesion may displace normal brain tissues, as do resec-
+tion cavities that are present aft er treatment, thereby limiting
+the reliability of spatial prior knowledge for the healthy part
+of th e brain. Finally, a large variety of imaging modalities can
+be used for mapping tumor-induced tissue changes, including
+T2 and FLAIR MRI (highlighting differences in tissue water
+relaxational properties), post-Gadolinium T1 MRI (showing
+pathological intratumoral take-u p of contrast agents), perfusion
+and diffusion MRI (local water diffusion and blood ﬂow), and
+0278-0062 © 2014 IEEE. Translations and content mining are permitted for a cademic research only. Personal use is also permitted, but republication /
+redistribution requires IEEE permission. See http://www.ieee.org/pub lications_standards/publications/rights/index.html for more inform ation.
+1994 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 34, NO. 10, OCTOBER 2015
+MRSI (relative concentrations of selected metabolites), among
+others. Each of these modalities provides different types of
+biological information, and therefore poses somewhat different
+information processing tasks.
+Because of its high clinical relevance and its challenging
+nature, the problem of computational brain tumor segmentation
+has attracted considerable atte ntion during the past 20 years,
+resulting in a wealth of different algorithms for automated,
+semi-automated, and interactiv e segmentation of tumor struc-
+tures (see [6] and [7] for good reviews). Virtually all of these
+methods, however, were validated on relatively small private
+datasets with varying metrics for performance quantiﬁcation,
+making objective comparisons between methods highly chal-
+lenging. Exacerbating this probl em is the fact that different
+combinations of imaging modalities are often used in validation
+studies, and that there is no consistency in the tumor sub-com-
+partments that are considered. As a consequence, it remains
+difﬁcult to judge which image s egmentation strategies may be
+worthwhile to pursue in clini cal practice and research; what
+exactly the performance is of the best computer algorit hms
+available today; and how well cu rrent automated algorithms
+perform in comparison with groups of human expert raters.
+In order to gauge the current state-of-the-art in auto mated
+brain tumor segmentation and compare between different
+methods, we organized in 2012 and 2013 a Multimodal Bra
+in
+Tumor Image S egmentation Benchmark (BRA TS) chal lenge
+in conjunction with the international conference on Med-
+ical Image Computing and Computer Assisted Interventions
+(MICCAI). For this purpose, we prepared and made available
+a unique dataset of MR scans of low- and high-grade glioma
+patients with repeat manual tu mor delineations by several
+human experts, as wel l as realistically gen erated synthetic
+brain tumor datasets for which the ground truth segmentation
+is known. Each of 20 different tumor segmentation algorithms
+was optimized by their respective develope rs on a subset of
+this particular dataset, and subsequently run on the remaining
+images to test performance against the (hidden) manual delin-
+eations by the expert raters. In this pap er we report the set-up
+and the results of this BRA TS benchmark effort. We also de-
+scribe the BRA TS reference dataset and online validation tools,
+which we make publicly available as an o ngoing benchmarking
+resource for future community efforts.
+The paper is organized as follows. We brieﬂy review the
+current state-of-the-art in automate d tumor segmentation, and
+survey benchmark efforts in other biomedical image inter-
+pretation tasks, in Section II. We then describe the BRA TS
+set-up and data, the manual annotat ion of tumor structures, and
+the evaluation process in Section III. Finally, we report and
+discuss the results of our comparisons in Sections IV and V,
+respectively. Section VI conclude s the paper.
+II. P
+RIOR WORK
+Algorithms for Brain Tumor Segmentation
+The number of clinical studies involving brain tumor quan-
+tiﬁcation based on medical imag es has increased signiﬁcantly
+over the past decades. Around a quarter of such studies relies on
+automated methods for tumor volumetry (Fig. 1). Most of the
+Fig. 1. Results of PubMed searches for brain tumor (glioma) imaging (red),
+tumor quantiﬁcation using image segmentation (blue), and automated tumo r
+segmentation (green). While the tumor imaging literature has seen a nearl y
+linear increase over the last 30 years, the number of publications involvi ng
+tumor segmentation has grown more than linearly since 5–10 years. Around
+25% of such publications refer to “ automated” tumor segmentation.
+existing algorithms for brain tumor analysis focus on the seg-
+mentation of glial tumor, as recen tly reviewed in [6], [7]. Com-
+paratively few methods deal with less frequent tumors such as
+meningioma [8]–[12] or speciﬁc glioma subtypes [13].
+Methodologically, many state-of-the-art algorithms for
+tumor segmentation are based o n techniques originally de-
+veloped for other structures or pathologies, most notably for
+automated white matter lesion segmentation that has reached
+considerable accuracy [14]. While many technologies have
+been tested for their applicab ility to brain tumor detection
+and segmentation—e.g., algorithms from image retrieval as
+an early example [9]—we can cat egorize most current tumor
+segmentation methods into one of two broad families. In the
+so-called generative probabilistic methods, explicit models of
+anatomy and appearance are combined to obtain automated
+segmentations, which offers the advantage that domain-speciﬁc
+prior knowledge can easily be incorporated. Discriminative
+approaches, on the other hand, di rectly learn the relationship
+between image intensities and s egmentation labels without any
+domain knowledge, concentrating instead on speciﬁc (local)
+image features that appear relevant for the tumor segmentation
+task.
+Generative models make use of d etailed prior information
+about the appearance and spatial distribution of the different
+tissue types. They often exhibit good generalization to unseen
+images, and represent the state-of-the-art for many brain tissue
+segmentation tasks [15]–[21]. Encoding prior knowledge for a
+lesion, however, is difﬁcult. Tumors may be modeled as out-
+liers relative to the expected shape [22], [23] or image signal
+of healthy tissues [17], [24] w hich is similar to approaches
+for other brain lesions, such as Multiple Sklerosis [25], [26].
+In [17], for instance, a criteri on for detecting outliers is used
+MENZE et al.: THE MULTIMODAL BRAIN TUMOR IMAGE SEGMENTA TION BENCHMARK (BRA TS) 1995
+to generate a tumor prior in a subsequent expectation-max-
+imizations segmentation which treats tumor as an additional
+tissue class. Alternatively, th e spatial prior for the tumor can be
+derived from the appearance of tumor-speciﬁc “bio-markers”
+[27], [28], or from using tumor growth models to infer the most
+likely localization of tumor structures for a given set of patient
+images [29]. All these models rel y on registration for accurately
+aligning images and spatial priors, which is often problematic
+in the presence of large lesions or resection cavities. In order
+to overcome this difﬁculty, both joint registration and tumor
+segmentation [18], [30] and joint registration and estimation
+of tumor displacement [31] have been studied. A limitation of
+generative models is the signiﬁcant effort required for trans-
+forming an arbitrary semantic interpretation of the image, for
+example, the set of expected tumo r substructures a radiologist
+would like to have mapped in the image, into appropriate prob-
+abilistic models.
+Discriminative models directly learn from (manually) an-
+notated training images the characteristic differences in the
+appearance of lesions and other tissues. In order to be ro-
+bust against imaging artifact s and intensity and shape vari-
+ations, they typically require substantial amounts of training
+data [32]–[38]. As a ﬁrst step, these methods typically extract
+dense, voxel-wise features from anatomical maps [35], [39]
+calculating, for example, local in tensity differences [40]–[42],
+or intensity distributions from the wider spatial context of the
+individual voxel [39], [43], [44]. As a second step, these fea-
+tures are then fed into classiﬁcat ion algorithms such as support
+vector machines [45] or decisi on trees [46] that learn bound-
+aries between classes in the hi gh-dimensional feature space,
+and return the desired tumor cl assiﬁcation maps when applied
+to new data. One drawback of this approach is that, because of
+the explicit dependency on intens ity features, segmentation is
+restricted to images acquired w ith the exact same imaging pro-
+tocol as the one used for the training data. Even then, careful
+intensity calibration remains a crucial part of discriminative
+segmentation methods in general [47]–[49], and tumor seg-
+mentation is no exception to this rule.
+A possible direction that avoids the calibration issues of dis-
+criminative approaches, as well as the limitations of genera-
+tive models, is the development of joint generative-discrimi-
+native methods. These techniques use a generative method in
+a pre-processing step to genera te stable input for a subsequent
+discriminative model that can be trained to predict more com-
+plex class labels [50], [51].
+Most generative and discriminative segmentation approaches
+exploit spatial regularity, often with extensions along the
+temporal dimension for longitudi nal tasks [52]–[54]. Local reg-
+ularity of tissue labels can be encoded via boundary modeling
+for both generative [17], [55] an d discriminative models [32],
+[33], [35], [55], [56], potentia lly enforcing non-local shape
+constraints [57]. Markov random ﬁeld (MRF) priors encourage
+similarity among neighboring la bels in the generative context
+[25], [37], [38]. Similarly, conditional random ﬁelds (CRFs)
+help enforce—or prohibit—the a djacency of speciﬁc labels and,
+hence, impose constraints considering the wider spatial context
+of voxels [36], [43]. While all these segmentation models
+act locally, more or less at the voxel level, other approaches
+consider prior knowledge about the relative location of tumor
+structures in a more global fashion. They learn, for example, the
+neighborhood relationships be tween such structures as edema,
+Gadolinium-enhancing tumor structures, or necrotic parts of
+the tumor through hierarchical models of super-voxel clusters
+[42], [58], or by relating image patterns with phenomenological
+tumor growth models adapt ed to patient scans [31].
+While each of the discussed algorithms was compared em-
+pirically against an expert segmentation by its authors, it is dif-
+ﬁcult to draw conclusions about the relative performance of
+different methods. This is becau se datasets and pre-processing
+steps differ between studies, th e image modalities considered,
+the annotated tumor structures, and the used evaluation scores
+all vary widely as well (Table I).
+Image Processing Benchmarks
+Benchmarks that compare how well different learning algo-
+rithms perform in speciﬁc task s have gained a prominent role
+in the machine learning commun ity. In recent years, the idea of
+benchmarking has also gained popularity in the ﬁeld of med-
+ical image analysis. Such benchmarks, sometimes referred to as
+“challenges,” all share the common characteristic that different
+groups optimize their own methods on a training dat aset pro-
+vided by the organizers, and then apply them in a structured way
+to a common, independent test dataset. This situation is different
+from many published comparisons,w h e r eone group applies
+different techniques to a dataset of their choice, which hampers
+a fair assessment as this group may not be equally knowledge-
+able about each method and invest more effort in optimizing
+some algorithms than others (see [59]).
+Once benchmarks have been established, their test dataset
+often becomes a new standard in the ﬁeld on how to evaluate fu-
+ture progress in the speciﬁc image processing task being tested.
+The annotation and evaluation protocols also may remain the
+same even when new data are a dded (to overcome the risk of
+over-ﬁtting this one particular dataset that may take place after
+a while), or when related benchmarks are initiated. A key com-
+ponent in benchmarking is an online tool for automatically eval-
+uating segmentations submitted by individual groups [60], as
+this allows the labels of the test set never to be made public.
+This helps ensure t hat any reported results are not inﬂuenced by
+unintentional overtraining of the method being tested, and that
+they are therefore truly representative of the method's segmen-
+tation perfor mance in practice.
+Recent examples of community benchmarks dealing with
+medical image segmentation and annotation include algorithms
+for artery centerline extraction [61], [62], vessel segmentation
+and stenosis grading [63], liver segmentation [64], [65], de-
+tection of microaneurysms in digital color fundus photographs
+[66], and extraction of airways from CT scans [67]. Rather few
+community-wide efforts have fo cused on segmentation algo-
+rithms applied to images of the brain (a current example deals
+with brain extraction (“masking”) [68]), although many of the
+validation frameworks that are used to compare different seg-
+menters and segmentation algorithms, such as STAPLE [69],
+[70], have been developed for applications in brain imaging, or
+even brain tumor segmentation [71].

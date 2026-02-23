@@ -1,0 +1,324 @@
+CREME: Robustness Enhancement of Code LLMs via Layer-Aware
+Model Editing
+Shuhan Liu
+Zhejiang University
+Hangzhou, Zhejiang, China
+liushuhan@zju.edu.cn
+Xing Hu∗
+Zhejiang University
+Ningbo, Zhejiang, China
+xinghu@zju.edu.cn
+Kerui Huang
+Zhejiang University
+Hangzhou, Zhejiang, China
+huangkerui@zju.edu.cn
+Xiaohu Yang
+Zhejiang University
+Hangzhou, Zhejiang, China
+yangxh@zju.edu.cn
+David Lo
+Singapore Management University
+Singapore
+davidlo@smu.edu.sg
+Xin Xia∗
+Zhejiang University
+Hangzhou, Zhejiang, China
+xin.xia@acm.org
+Abstract
+Large language models (LLMs) have demonstrated impressive ca-
+pabilities in code generation, where the natural language prompt
+plays a crucial role in conveying user intent to the model. How-
+ever, prior studies have shown that LLMs are highly sensitive to
+prompt perturbations. Minor modifications in wording, syntax, or
+formatting can significantly reduce the functional correctness of
+generated code. As perturbations frequently occur in real-world
+scenarios, improving the robustness of LLMs to prompt pertur-
+bations is essential for ensuring reliable performance in practical
+code generation. In this paper, we introduceCREME( CodeLLM
+Robustness Enhancement via Model Editing), a novel approach
+that enhances LLM robustness through targeted parameter updates.
+CREME first identifies robustness-sensitive layers by comparing
+hidden states between an original prompt and its perturbed variant.
+Then, it performs lightweight parameter editing at the identified
+layer to reduce performance degradation. We evaluate CREME on
+two widely used code generation benchmarks (HumanEval and
+MBPP) along with their perturbed counterparts. Experimental re-
+sults show that CREME improves Pass@1 accuracy by 63% on
+perturbed prompts while maintaining stable performance on clean
+inputs, with accuracy deviations within ±1%. Further analysis re-
+veals that robustness-sensitive layers are primarily concentrated in
+the middle and deeper layers of the network, and their locations
+vary across different model architectures. These insights provide
+a valuable foundation for developing future robustness-oriented
+editing strategies.
+CCS Concepts
+•Software and its engineering → Software creation and man-
+agement.
+Keywords
+Robustness, Code Generation, Model Editing, Large Language Model
+∗Corresponding authors: Xing Hu and Xin Xia
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+ICSE ’26, Rio de Janeiro, Brazil
+©2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2025-3/26/04
+https://doi.org/10.1145/3744916.3773111
+ACM Reference Format:
+Shuhan Liu, Xing Hu, Kerui Huang, Xiaohu Yang, David Lo, and Xin Xia.
+2026. CREME: Robustness Enhancement of Code LLMs via Layer-Aware
+Model Editing. In2026 IEEE/ACM 48th International Conference on Software
+Engineering (ICSE ’26), April 12–18, 2026, Rio de Janeiro, Brazil.ACM, New
+York, NY, USA, 13 pages. https://doi.org/10.1145/3744916.3773111
+1 Introduction
+In recent years, the rapid development of large language models
+(LLMs) has led to the emergence of powerful models, including
+ChatGPT [2], LLaMA [56], and DeepSeek [39]. Trained on large-
+scale textual corpora, these models exhibit strong generalization
+capabilities and have achieved notable success across a wide range
+of software engineering tasks. Among these tasks, code generation
+has emerged as a key application in AI-assisted software engineer-
+ing, attracting growing research attention [6, 8, 32, 37, 56]. Typi-
+cally, practitioners employ LLMs by providing natural language
+descriptions and LLMs generate the source code, which automates
+programming tasks and accelerates development workflows.
+The natural language description in a prompt is crucial for con-
+veying the requirements defined by users to LLMs. Prior stud-
+ies [4, 8, 14] have evaluated the code generation capabilities of LLMs
+using datasets consisting of human-verified prompts. However, in
+real-world scenarios, prompts submitted to LLMs often differ in
+wording, syntax, and formatting. They may also contain typograph-
+ical errors or redundant expressions. Prior studies [ 7, 52, 53, 60]
+have shown that LLMs are sensitive to such minor variations, even a
+slight change may lead to a completely different result. Not all users
+of LLMs are skilled prompt engineers capable of making precise,
+error-free prompts. Therefore, it is essential to ensure output stabil-
+ity when semantically equivalent prompts contain minor variations.
+This underscores the importance of improving the robustness of
+LLMs to natural prompt perturbations.
+Existing studies have proposed various strategies to improve
+the robustness of LLMs, varying from Input-level interventions to
+model-augmentation approaches. Input-level interventions [3, 58]
+aim to sanitize or rephrase perturbed prompts before passing them
+into the model. For example, LLMs can be used to denoise inputs
+or generate multiple paraphrased variants, from which the most
+effective is selected. Although these techniques improve perfor-
+mance under prompt perturbations, they do not modify the internal
+robustness of the model itself. In contrast, model-augmentation ap-
+proaches [3, 24, 55] add trainable components such as soft prompts,
+arXiv:2507.16407v3  [cs.SE]  10 Dec 2025
+ICSE ’26, April 12–18, 2026, Rio de Janeiro, Brazil Shuhan Liu, Xing Hu, Kerui Huang, Xiaohu Yang, David Lo, and Xin Xia
+retrieval-augmented generation (RAG), or Low-Rank Adaptation
+(LoRA) to handle input variability. However, these methods increase
+system complexity and require additional training efforts. These
+limitations underscore the need for a lightweight method to di-
+rectly enhance the inherent robustness of LLMs without extensive
+retraining or architectural modifications.
+In recent years, knowledge editing techniques have been pro-
+posed for LLMs [36, 63, 67], enabling efficient post-training updates
+without full model retraining. Therefore, it is an intuitive idea to
+explore whether such localized modifications can also improve the
+robustness of CodeLLMs. However, existing knowledge editing
+methods mainly tackle factual knowledge [11, 35, 45, 65]. They de-
+pend on the subject tokens or specific phrases in a single sentence
+to locate the areas for editing. In contrast, robustness-oriented tasks
+often involve complex, multi-sentence natural language prompts,
+making it more difficult to identify meaningful intervention targets.
+DINM [61] recently applies knowledge editing to detoxification
+tasks. While the inputs in these tasks are also complex, the avail-
+ability of gold-standard safe responses enables direct supervision
+during editing. In contrast, code generation tasks lack a single cor-
+rect output, presenting unique challenges for applying knowledge
+editing in this context.
+In this paper, we introduceCREME, a lightweight framework
+that uses a pair of prompts (i.e., an original prompt and its perturbed
+variant) to enhance the robustness of LLMs under specific types of
+prompt perturbations. Unlike traditional robustness enhancement
+methods, which focus on input modification or additional compo-
+nents, CREME targets the internal mechanisms of the model itself.
+Specifically, CREME first locates the key layers most responsible for
+the robustness degradation of the models under perturbations via
+a layer-wise causal intervention strategy. Then, CREME performs
+lightweight parameter editing at this layer to align the representa-
+tions of the perturbed prompt with those of the original prompt,
+while preserving the behavior of the model on clean inputs.
+To assess the effectiveness of the proposed framework, we con-
+duct experiments on two widely used code generation benchmarks:
+HumanEval [8] and MBPP [4], along with their perturbed coun-
+terparts provided by NLPerturbator [7]. These perturbations are
+designed based on empirical observations of real-world user interac-
+tions with code LLMs. We evaluate our method on two representa-
+tive open-source LLMs: CodeLlama-7b and Qwen2.5-Coder-7B. To
+provide a comprehensive evaluation, we compare CREME with four
+strong baselines. These include two robustness-enhancement meth-
+ods (i.e., Self-Denoising [3] and LoRA Fine-Tuning [24]) and two
+knowledge-editing approaches (i.e., ROME [45] and DINM [61]).
+Experimental results demonstrate that ❶ CREME significantly im-
+proves model robustness, yielding a 63% relative increase in Pass@1
+accuracy on perturbed prompts. ❷ CREME exhibits strong general-
+ization across diverse perturbation types. Editing the model based
+on a single perturbed instance restores up to 30% of the overall code
+generation accuracy within that perturbation category. ❸ Causal
+tracing-based layer localization plays a critical role in robustness
+enhancement by accurately identifying the robustness-sensitive
+regions within the model. ❹ Robustness-sensitive layers exhibit
+a clustering pattern, and their positions shift depending on the
+model architecture. ❺ CREME maintains stable performance on
+clean inputs, with accuracy deviations within±1%.
+Contributions:In summary, the main contributions of this paper
+can be summarized as follows:
+• We introduceCREME, a novel editing framework that uses a sin-
+gle pair of original and perturbed prompts to identify robustness-
+sensitive layers and update targeted parameters to enhance the
+robustness of LLMs. The replication package of our work is pub-
+licly available at [1].
+• We proposeG-RIR, an evaluation metric designed to quantify
+the generalization ability of robustness enhancement methods.
+• We analyze where robustness-sensitive layers are located within
+LLM architectures, providing insights to guide future robustness
+enhancement methods.
+2 Background
+2.1 Motivating Example
+In real-world scenarios, developers interact with code LLMs by
+providing natural language prompts to generate desired code com-
+pletions. However, users may inadvertently introduce minor errors
+into prompts, such as typographical mistakes, repeated words, or
+slight phrasing inconsistencies. Although such errors are seman-
+tically negligible and easily overlooked by human programmers,
+they can cause LLMs to produce significantly different outputs.
+As shown in Figure 1, we provide an example using theCodeLlama
+model to illustrate this issue. The original prompt correctly de-
+scribes the task, and the model generates a functionally correct
+implementation that passes the corresponding test cases. However,
+when “modulo” is misspelled as “mmodulo” and “numerics” as “nu-
+merixs” in this case, the model generates a substantially different
+implementation that fails the functional tests.
+This example highlights a critical limitation of current code
+LLMs: their generation behavior is sensitive to minor prompt per-
+turbations. In real-world software development scenarios, where
+prompts naturally vary across users and situations, such weakness
+reduces the reliability and effectiveness of LLMs. Therefore, there
+is an urgent need for robustness-oriented techniques that improve
+model robustness to natural language perturbations without requir-
+ing model retraining or explicit prompt rewriting.
+Model︓CodeLlama-7b，Data︓HumanEval/49OriginalPromptPerturbedPrompt1defmodp(n: int, p: int):2"""Return 2^n modulo p (be aware of numerics).3>>> modp(3, 5)435>>> modp(1101, 101)627>>> modp(0, 101)819 >>> modp(3, 11)10811>>> modp(100, 101)12113"""Output (original)Output (perturbed)
+1defmodp(n: int, p: int):2"""Return 2^n mmodulop (beaware of numerixs).3>>> modp(3, 5)435>>> modp(1101, 101)627>>> modp(0, 101)819 >>> modp(3, 11)10811>>> modp(100, 101)12113"""
+14returnpow(2, n, p)14return(n * 2) % p
+Figure 1: Example of Code Generation using Original and
+Perturbed Prompts
+2.2 Task Definition
+We formulate the task of robustness enhancement through model
+editing in the context of code generation. Let 𝐺: 𝑃→𝑌 be a
+pre-trained autoregressive language model that takes a natural
+CREME: Robustness Enhancement of Code LLMs via Layer-Aware Model Editing ICSE ’26, April 12–18, 2026, Rio de Janeiro, Brazil
+language prompt 𝑃 as input and generates a code snippet 𝑌 as
+output. Let 𝑃𝑜𝑟𝑖 denote an original, unperturbed prompt, and 𝑃𝑝𝑒𝑟𝑡
+be a perturbed variant. Although a human programmer would
+interpret both prompts as describing the same task, the model often
+produces different outputs:
+𝑃𝑜𝑟𝑖 ≈𝑃 𝑝𝑒𝑟𝑡 (slight perturbations)⇏
+𝐺(𝑃 𝑜𝑟𝑖 ) ≈𝐺(𝑃 𝑝𝑒𝑟𝑡 )(output equivalence) (1)
+To address this issue, we aim to construct a locally updated model
+𝐺 W′ whose behavior on 𝑃𝑝𝑒𝑟𝑡 aligns with the robust output for𝑃𝑜𝑟𝑖 ,
+without requiring full retraining or additional external data. Let
+W denote the original parameters of 𝐺. We introduce a robustness
+editor 𝜉 that modifies only a small subset of W to obtain the edited
+model𝐺 W′:
+𝐺 W′ =𝜉  𝐺 W,(𝑃 𝑜𝑟𝑖 , 𝑃𝑝𝑒𝑟𝑡 ) (2)
+W′ are the edited parameters after applying 𝜉 based on a single
+prompt pair (𝑃𝑜𝑟𝑖 , 𝑃𝑝𝑒𝑟𝑡 ). This procedure yields a model that not
+only produces consistent outputs for 𝑃𝑝𝑒𝑟𝑡 but also generalizes to
+other prompts exhibiting similar types of perturbations, thereby
+enhancing the robustness of𝐺to natural language variations.
+3 Approach
+In this section, we first provide an overview of CREME and its
+architecture. Then, we introduce each component in detail.
+3.1 Overview
+In traditional knowledge editing, the primary objective is to identify
+the key neurons or layers associated with a specific factual state-
+ment and modify them to ensure the model internalizes the new
+knowledge. In contrast, our goal is to enhance the overall robustness
+of LLMs against perturbed prompts. Given a pair of prompts—an
+original prompt 𝑃𝑜𝑟𝑖 and its perturbed counterpart 𝑃𝑝𝑒𝑟𝑡 —we aim to
+adjust the model such that its generation behavior on 𝑃𝑝𝑒𝑟𝑡 closely
+aligns with that on 𝑃𝑜𝑟𝑖 , thereby preserving functional correctness.
+This differs from traditional knowledge editing in two key aspects:
+❶ Prompts often have complex expressions, making it difficult to
+identify a clear subject; ❷ The success criterion is based on the
+functional correctness of the generated code, rather than matching
+a fixed output.
+To address these challenges, we proposeCREME( CodeLLM
+Robustness Enhancement via Model Editing). Notably, our ap-
+proach requires only a single pair of prompts (i.e.,𝑃𝑜𝑟𝑖 and 𝑃𝑝𝑒𝑟𝑡 ) to
+improve the model’s robustness against a specific type of prompt
+perturbation. As illustrated in Figure 2, CREME comprises two
+main components. First, we perform a causal analysis to identify
+the key layer responsible for robustness degradation. Then, we ap-
+ply representation-aligned model editing at the identified key layer
+to mitigate the effects of prompt perturbations. Each component is
+detailed in the following subsections.
+3.2 Key Layer Localization
+To identify the layer most responsible for robustness degradation
+under prompt perturbations, we conduct a layer-wise causal in-
+tervention procedure. The objective is to determine the key layer
+whose hidden states are most sensitive to input variations and
+whose correction most effectively restores the output behavior.
+An autoregressive transformer-based language model 𝐺: 𝑃→𝑌
+typically consists of an embedding layer 𝐸 followed by a stack
+of 𝑛 transformer layers {𝐿1, 𝐿2, . . . ,𝐿𝑛}. Each transformer layer 𝐿ℓ
+comprises a multi-head self-attention mechanism and a multilayer
+perceptron (MLP). Given an input prompt 𝑃, the model first applies
+the embedding layer𝐸 to produce an initial hidden stateℎ0. This rep-
+resentation is then iteratively updated by each layer𝐿ℓ, where both
+the attention heads and the MLP contribute to the transformation
+of the hidden state:
+ℎℓ =ℎ ℓ−1 +MLP ℓ (ℎℓ−1 +Att ℓ (ℎℓ−1 )) (3)
+ℎℓ is the hidden state obtained after passing through the𝐿 ℓ.
+Given a pair of prompts (an original prompt𝑃𝑜𝑟𝑖 and a perturbed
+prompt 𝑃𝑝𝑒𝑟𝑡 ), we follow three steps to find the key layer responsible
+for the result variation under the perturbation:
+❶ Setup.We first compute the baseline performance of 𝑃𝑜𝑟𝑖 and
+𝑃𝑝𝑒𝑟𝑡 using the pass@k metric [8] by generating outputs from the
+model G and checking functional correctness (e.g., via unit tests).
+Let Acc𝑜𝑟𝑖 and Acc𝑝𝑒𝑟𝑡 denote the pass@1 for𝑃 𝑜𝑟𝑖 and𝑃 𝑝𝑒𝑟𝑡 .
+❷ Layer-wise Intervention.To ensure a fair comparison and
+stable intervention, we construct a mini-batch that includes one
+instance of 𝑃𝑜𝑟𝑖 and multiple instances (e.g., five copies) of 𝑃𝑝𝑒𝑟𝑡 .
+This design allows us to stably compute restoration improvement
+(as defined in Equation 5) across all layers by averaging over re-
+peated forward passes. The batch is tokenized using left padding,
+ensuring alignment of token positions across all samples. We input
+the batch into the model 𝐺. For each transformer layer 𝐿ℓ, where
+ℓ∈ {1,2, . . . , 𝑁}, we intervene in the forward pass as follows:
+• During the forward pass, we modify the hidden states of 𝑃𝑝𝑒𝑟𝑡
+at layer 𝐿ℓ by replacing them with the corresponding hidden
+states from𝑃 𝑜𝑟𝑖 :
+ℎ (𝑖)
+ℓ (𝑡) ←ℎ 𝑜𝑟𝑖
+ℓ (𝑡),∀𝑖∈ {1, . . . , 𝐵},∀𝑡∈ T(4)
+ℎ (𝑖)
+ℓ (𝑡) denotes the hidden state of the i-th 𝑃𝑝𝑒𝑟𝑡 at layer 𝐿ℓ and
+token position t; ℎ𝑜𝑟𝑖
+ℓ (𝑡) is the corresponding hidden state of
+𝑃𝑜𝑟𝑖 . T represents the set of all non-padding token positions,
+and𝐵is the number of perturbed samples in the batch.
+• The modified hidden states are then propagated forward through
+layers 𝐿ℓ+1 to 𝐿𝑁 to generate output sequences based on the
+intervened representation.
+• We then run the model from layer 𝐿ℓ+1 onward to generate
+outputs for the perturbed inputs with patched hidden states.
+For each generated output, we decode the predicted code, nor-
+malize its format, and evaluate it using functional test cases.
+Let Accpatched
+ℓ denote the pass@1 accuracy under this patched
+configuration at layer𝐿 ℓ.
+❸ Key Layer Selection.To quantify the effectiveness of each
+intervention, we define the restoration improvement at layer 𝐿ℓ as:
+Restoration Improvementℓ = Accpatched
+ℓ −Acc 𝑝𝑒𝑟𝑡
+Acc𝑜𝑟𝑖 −Acc 𝑝𝑒𝑟𝑡
+(5)
+This ratio captures how much of the accuracy gap between 𝑃𝑜𝑟𝑖
+and 𝑃𝑝𝑒𝑟𝑡 is recovered by intervention at layer 𝐿ℓ, normalized to
+the maximum possible improvement. We define the key layer𝐿ℓ∗
+as the one with the highest restoration improvement. If multiple
+layers achieve the highest restoration improvement, we adopt the
+approach proposed by Wang et al. [61]. We compute the Euclidean

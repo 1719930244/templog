@@ -1,0 +1,370 @@
+Streamlining Java Programming: Uncovering Well-Formed
+Idioms with IdioMine
+Yanming Yang
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University, China
+yanmingyang@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University, China
+xinghu@zju.edu.cn
+Xin Xia
+Zhejiang University, China
+xin.xia@acm.org
+David Lo
+Singapore Management University,
+Singapore
+davidlo@smu.edu.sg
+Xiaohu Yang
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University, China
+yangxh@zju.edu.cn
+ABSTRACT
+Code idioms are commonly used patterns, techniques, or practices
+that aid in solving particular problems or specific tasks across multi-
+ple software projects. They can improve code quality, performance,
+and maintainability, and also promote program standardization
+and reuse across projects. However, identifying code idioms is sig-
+nificantly challenging, as existing studies have still suffered from
+three main limitations. First, it is difficult to recognize idioms that
+span non-contiguous code lines. Second, identifying idioms with
+intricate data flow and code structures can be challenging. More-
+over, they only extract dataset-specific idioms, so common idioms
+or well-established code/design patterns that are rarely found in
+datasets cannot be identified.
+To overcome these limitations, we propose a novel approach,
+named IdioMine, to automatically extract generic and specific
+idioms from both Java projects and libraries. We perform program
+analysis on Java functions to transform them into concise PDGs, for
+integrating the data flow and control flow of code fragments. We
+then develop a novel chain structure, Data-driven Control Chain
+(DCC), to extract sub-idioms that possess contiguous semantic
+meanings from PDGs. After that, we utilize GraphCodeBERT to
+generate code embeddings of these sub-idioms and perform density-
+based clustering to obtain frequent sub-idioms. We use heuristic
+rules to identify interrelated sub-idioms among the frequent ones.
+Finally, we employ ChatGPT to synthesize interrelated sub-idioms
+into potential code idioms and infer real idioms from them.
+We conduct well-designed experiments and a user study to eval-
+uate IdioMine’s correctness and the practical value of the extracted
+idioms. Our experimental results show that IdioMine effectively
+extracts more idioms with better performance in most metrics. We
+∗Corresponding author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0217-4/24/04
+https://doi.org/10.1145/3597503.3639135
+compare our approach with Haggis and ChatGPT, IdioMine outper-
+forms them by 22.8% and 35.5% in Idiom Set Precision (ISP) and by
+9.7% and 22.9% in Idiom Coverage (IC) when extracting idioms from
+libraries. IdioMine also extracts almost twice the size of idioms
+than the baselines, exhibiting its ability to identify complete idioms.
+Our user study indicates that idioms extracted byIdioMine are well-
+formed and semantically clear. Moreover, we conduct a qualitative
+and quantitative analysis to investigate the primary functionalities
+of IdioMine’s extracted idioms from various projects and libraries.
+CCS CONCEPTS
+•Software and its engineering → Maintaining software.
+KEYWORDS
+Code Idiom Mining, Code Pattern, Large Language Model (LLM),
+Clustering
+ACM Reference Format:
+Yanming Yang, Xing Hu, Xin Xia, David Lo, and Xiaohu Yang. 2024. Stream-
+lining Java Programming: Uncovering Well-Formed Idioms with IdioMine.
+In 2024 IEEE/ACM 46th International Conference on Software Engineering
+(ICSE ’24), April 14–20, 2024, Lisbon, Portugal. ACM, New York, NY, USA,
+12 pages. https://doi.org/10.1145/3597503.3639135
+1 INTRODUCTION
+A code idiom is a programming pattern used to solve a specific
+problem efficiently and concisely [1, 64], and it is commonly en-
+countered across diverse software projects [ 2]. According to Di
+Nucci et al. [40], if a piece of code is written in a natural and in-
+tuitive manner, it can be considered idiomatic. Well-established
+idioms can reduce ambiguity [55], optimize code performance and
+efficiency [58], and enhance code readability and understanding
+for programmers [54]. They also help establish coding standards
+and best practices in development activities [49] and facilitate their
+reuse in various contexts, such as data processing and resource
+management [40, 55]. In addition, developers widely recognize the
+significance of writing idiomatic code, evident from the abundance
+of relevant resources dedicated to this topic [36]. For example, A
+dedicated book on C++ idioms can be found on Wikibooks [3], and
+similar guides are also available for Java [4] and JavaScript [5, 6].
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal Yanming Yang, Xing Hu, Xin Xia, David Lo, and Xiaohu Yang
+An idiomatic JavaScript guide on GitHub [6] has gained consider-
+able popularity, amassing over 22.8k stars and 3.2k forks. Therefore,
+mining code idioms is critical for enhancing the efficiency and
+effectiveness of software development and maintenance [44].
+Several existing studies focus on code idiom extraction. Alla-
+manis et al. [36] proposed a pioneering model, Haggis, a machine
+learning-based statistical method that mines code idioms based
+on code syntax. However, their approach relies heavily on manual
+annotations and is unable to identify code idioms with interleaved
+dataflow [64]. This indicates that Haggis is a labor-intensive ap-
+proach, and less experienced programmers may find it difficult to
+generalize code patterns. To overcome this limitation, Sivaraman
+et al. [64] introduced dataflow information to improve the tree rep-
+resentation method used by Allamanis et al. [34, 36]. However, this
+approach only resulted in a marginal enhancement in Haggis’s per-
+formance, as it failed to merge the full semantic context of source
+code to identify code idioms.
+Extracting code idioms with complete semantic information
+from software projects remains a challenging task due to three
+unresolved limitations in existing studies:
+1) Existing studies cannot extract idioms that are composed of non-
+contiguous lines of code from a code fragment. Existing methods, as
+demonstrated by previous studies [36, 64], are unable to extract code
+idioms from non-contiguous lines of code. This restriction poses a
+challenge, as many idioms involve non-contiguous lines within a
+function. For instance, Listing 1 showcases an idiom extracted by
+IdioMine that involves non-contiguous lines of code. This particu-
+lar idiom [7] is derived from code that utilizes the com.rabbitmq
+library, where it calculates the execution time of a code fragment
+by determining its start and end times. As the code in lines 1 and 3
+are typically non-contiguous in most projects, current approaches
+are unable to detect such widely-used idioms.
+Listing 1 An idiom with non-contiguous lines of code.
+1 long start = System . cur re nt Ti me Mil li s ();
+2 # code snippet
+3 long end = System . cur re nt Ti me Mil li s ();
+4 long time = end - start ;
+2) Existing studies cannot effectively identify idioms that encom-
+pass intricate data flow and code structures. A significant drawback
+of recent research on idiom mining [ 64] is that it captures only
+one-way information flow. This limitation may result in the loss of
+important semantic and data flow in code fragments, making it chal-
+lenging to identify complex code idioms that involve intricate data
+and control flows. This difficulty persists irrespective of whether
+these idioms are constructed from contiguous or non-contiguous
+lines of code. As an example, Listing 2 exhibits an idiom, which
+is extracted from the source file named “FileManager.java” [8].
+This idiom is a commonly used pattern for Git-based projects, e.g.,
+JGit. It is used to push modifications to a specific Git repository
+based on its parent directory. Its intricate control and data flow are
+contained within a contiguous code fragment (specifically, Lines
+3-7). This fragment encompasses an if-else statement and an
+inner loop structure featuring an additional if statement. Unfor-
+tunately, existing techniques fail to extract such idioms due to their
+intricate control and data flow as well as non-contiguous code lines.
+Note that the previous study [64] addressed the contiguity of code
+lines within idioms and the complexity of data and control flow as
+distinct issues in their Limitation Section. Hence, we also consider
+this limitation as a separate concern from the first one discussed.
+Listing 2 An idiom with complex code structure.
+1 if (! file . exists () || ! file . isDirectory ()){
+2 # code snippet
+3 } else { for ( Repository r : reps ){
+4 if ( r . getDirectory (). getParentFile (). getName (). equals ( projectName ))
+5 { Git git = new Git ( refreshed );
+6 RevCommit commit = git . commit (). setMessage ( message )
+7 . setAll ( true ). call ();}}}
+3) Existing studies can only produce dataset-specific idioms, rather
+than generic idioms. According to the public definition [2], a code
+idiom is characterized as a code fragment that exhibits frequent re-
+currence across various software projects. This implies that solely
+mining code idioms from specific datasets may overlook certain
+generic idioms that possess wider applicability but occur infre-
+quently within that dataset. However, current techniques heavily
+rely on probability distributions of code fragments in the dataset
+to identify idioms. They only consider frequently used code frag-
+ments in the dataset as idioms, but some less common fragments in
+that dataset may still represent well-established and easy-to-reuse
+design/code patterns in other projects. This limitation may prevent
+existing techniques from recognizing certain real idioms. Listing 3
+illustrates the use of an idiom [9] that encapsulates transactional
+behavior for structuring the project named Stuctutr [10]. This id-
+iom incorporates the well-known “Command Design Pattern” [11].
+Although the design pattern appears only twice in the dataset, it
+can be easily reused elsewhere because of its primary functionality,
+which involves encapsulating the information required to perform
+an action or trigger an event at a later time.
+Listing 3 A design pattern with few occurrences in datasets.
+1 Services . command ( securityContext ,
+2 T r an s a ct i o nC o mm a n d . class ). execute ( new S t r uc t rT r a ns a c ti o n (){
+3 @ Override public Object execute () {
+4 if (( lockType == LockType . READ ) &
+5 ( graphDb instanceof A b s t r a c t G r a p h D a t a b a s e )){
+6 (( A b s t r a c t G r a p h D a t a b a s e ) node . getGraph Database ())
+7 . getLockManager (). getReadLock ( node ); }
+8 return null ; } };
+To overcome the aforementioned constraints, our paper puts
+forth a novel approach, IdioMine, that can automatically recognize
+high-quality code idioms in an unsupervised manner. IdioMine
+comprises three distinct phases, i.e., idiom representation construc-
+tion, frequent sub-idiom mining, and semantic idiom identification.
+Specifically, IdioMine analyzes Java functions to create concise
+program dependency graphs (PDGs), which seamlessly integrates
+dataflow and control information for a better understanding of the
+code’s semantics. It then establishes a chain structure called Data-
+driven Control Chain (DCC) to extract code lines with contiguous
+semantic meanings as sub-idioms from PDGs. In phase two, we
+employ GraphCodeBERT to generate code embeddings for these
+sub-idioms and a density-based clustering technique to identify
+frequent sub-idioms. In phase three, we identify related sub-idioms
+among frequent ones by applying predefined rules. Afterward, with
+the aid of ChatGPT’s capabilities, IdioMine synthesizes related
+sub-idioms as potential idioms and identifies real ones from them.
+We evaluate IdioMine’s effectiveness through extensive experi-
+ments on project-level and library-level datasets, and perform a user
+Streamlining Java Programming: Uncovering Well-Formed Idioms with IdioMine ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+study to explore the practical value of extracted idioms. In addition,
+we perform a quantitative and qualitative analysis of IdioMine’s
+extracted idioms, thereby discovering novel insights. After com-
+paring the results of IdioMine with baselines, we observe that
+IdioMine outperforms them in many evaluation metrics. Specif-
+ically, IdioMine exhibits exceptional performance in identifying
+idioms, surpassing Haggis and ChatGPT by 22.8% and 35.5%, re-
+spectively, in terms of Idiom Set Precision (ISP). Additionally, our
+approach excels in Idiom Coverage (IC), outperforming baselines by
+9.7% and 22.9% when extracting idioms from libraries. IdioMine’s
+performance is impressive: the size of the extracted idioms is nearly
+twice that of the baselines, indicating the ability of our approach
+to identify both specific and generic idioms in a more complete
+manner. Moreover, IdioMine’s extracted idioms outperform the
+baselines in terms of code completeness and semantic clarity, with
+an average improvement of 0.22 and 0.19, respectively. In conclu-
+sion, our study makes the following primary contributions:
+(1) We introduce a novel approach, called IdioMine, for automati-
+cally extracting both dataset-specific and generic idioms from
+Java code. The replication package is available at [12].
+(2) We devise DCC, a chain structure, that enables us to extract
+sub-idioms with contiguous semantic meanings from PDGs.
+(3) We conduct well-designed experiments to evaluate the effec-
+tiveness of IdioMine and design a user study to validate that
+IdioMine’s extracted idioms exhibit superior quality in com-
+parison to the baselines.
+(4) Notably, we examine the primary functionalities of idioms ex-
+tracted from every Java project and library using IdioMine
+through both quantitative and qualitative analysis.
+2 PROBLEM DEFINITION
+Definition of Code Idioms. A code idiom is a code fragment that
+demonstrates two key characteristics. Firstly, it exhibits recurring
+patterns across multiple software projects [2]. Secondly, it serves a
+singular semantic purpose [36]. Code idioms thus can encompass
+non-contiguous lines of code, exemplified by Listing 1, and involve
+intricate data and control flow, as demonstrated in Listing 2. Consid-
+ering the formalization of code idioms in the prior study [36], which
+primarily emphasizes their syntactic structures while overlooking
+the completeness of semantic aspects, we propose an extension
+to enhance the original version. Specifically, we define idioms as
+sets of interconnected nodes, I = {𝑉 , 𝐸}, by data or control flow,
+𝐸 = {𝐸𝑑, 𝐸𝑐 }, in PDGs, representing the completed semantic and
+syntactic structure of idioms.
+What Idioms are Not. 1) Simple APIs or method invocations
+are not code idioms. The previous study [ 36] illustrated the
+difference between code idiom mining and API mining and
+clearly stated that simple APIs or method invocations (e.g.,
+parcel.writeDouble($Var);) are not code idioms due to limited
+syntactic structure. However, their tool, Haggis, identified some
+common API usages and method invocation patterns with
+richer syntactic structures in the dataset as code idioms, such
+as “Location.distanceBetween($(Location).getLatitude(),
+$...);” and “ Toast.makeText(this, $stringLit,
+Toast.LENGTH_SHORT).show();”. Actually, certain API-based
+usages can be regarded as code idioms. Because when developers
+2
+1
+34 7
+5
+6
+8
+PDG
+2
+1
+3
+4
+5
+6
+CFG
+7
+8
+1
+3
+4 78
+56
+AST
+2
+Phase 1: Idiom Representation Construction
+Java Functions
+a) PDG Construction
+Data-driven Control Chains
+b)DCC generation
+Sub-idiomatic Code Patterns
+c) Code Transformation
+Phase 2: Frequent Sub-idiom Mining
+1237Var 1 8
+Var 234
+Var 3
+5
+456… …
+d) Embedding
+e) Clustering
+Phase 3: Semantic Idiom Identification
+Sub-idioms
+ChatGPT
+Code Synthesis 
+Prompts
+Potential Idioms 
+Semantic Idioms
+Prompt-based
+Training
+h) Idiom 
+Identification
+g) Prompt 
+Answering
+f) Sub
+-idiom Synthesis
+Code Synthesis
+Figure 1: The overall framework of IdioMine.
+consistently employ a particular API in a specific manner to
+achieve a desired functionality or implement a common design
+pattern, it can be recognized as an API-based code idiom. Hence,
+our study abides by this rule to not regard single APIs or method
+invocations as idioms.
+2) While one-line statements can be classified as code idioms, sim-
+ple return statements and certain types of assignment statements
+with limited semantic significance are excluded from this catego-
+rization. The previous study [ 36] acknowledged one-line state-
+ments as code idioms, exemplified by the top idiom “ Elements
+$name=$(Element).select($StringLit);” identified by Haggis.
+However, to enhance the mining of more meaningful idioms,
+our study chooses not to classify simple return statements (i.e.,
+return $var; ) and two specific types of assignment statements
+(i.e., this.$Var = Var; and super.$Var = Var; ) as code idioms.
+3 IDIOMINE
+In this section, we introduce the technical framework of our pro-
+posed approach, IdioMine. Specifically, we provide an overview of
+the framework and then explain each phase.
+3.1 Overall Framework
+Our approach, IdioMine, endeavors to extract code idioms within
+software projects. The framework ofIdioMine, shown in Fig. 1, has
+three phases: 1) idiom representation construction, 2) frequent sub-
+idiom mining, and 3) semantic idiom identification. In phase one, we
+conduct program analysis to construct a PDG for each Java function,
+which comprehensively integrates the data flow and control flow
+of Java functions. Additionally, we develop a chain structure, DCC,
+which extracts code fragments possessing contiguous semantic
+meanings from PDGs as sub-idioms. In phase two, we encode sub-
+idioms using GraphCodeBERT and utilize density-based clustering
+to identify frequently occurring sub-idioms. Finally, we identify
+interrelated sub-idioms based on specific rules and employ ChatGPT
+to synthesize them as potential code idioms. Using ChatGPT’s
+powerful capability [37], we can accurately identify real idioms from
+the pool of candidates. In the following sections, we will present a
+step-by-step explanation to facilitate readers’ understanding.
+3.2 Phase 1: Idiom Representation Construction
+Existing methods cannot handle complex idioms made up of❶ non-
+contiguous lines of code and ❷ intricate data and control flow. This
+is because they place a strong emphasis on code syntax during pro-
+gram analysis, disregarding the semantic connections and data flow
+between lines of code. To overcome these limitations, we employ

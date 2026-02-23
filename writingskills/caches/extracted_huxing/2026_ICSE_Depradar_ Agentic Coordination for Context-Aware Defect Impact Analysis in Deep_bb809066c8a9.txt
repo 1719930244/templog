@@ -1,0 +1,315 @@
+DepRadar: Agentic Coordination for Context-Aware Defect
+Impact Analysis in Deep Learning Libraries
+Yi Gao
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+gaoyi01@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Tongtong Xu
+Huawei
+Hangzhou, China
+xutongtong9@huawei.com
+Jiali Zhao
+Huawei
+Hangzhou, China
+zhaojiali3@huawei.com
+Xiaohu Yang
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+yangxh@zju.edu.cn
+Xin Xia
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+Abstract
+Deep learning (DL) libraries like Transformers and Megatron are
+now widely adopted in modern AI programs. However, when these
+libraries introduce defects—ranging from silent computation errors
+to subtle performance regressions—it is often challenging for down-
+stream users to assess whether their own programs are affected.
+Such impact analysis requires not only understanding the defect
+semantics but also checking whether the client code satisfies com-
+plex triggering conditions involving configuration flags, runtime
+environments, and indirect API usage. We presentDepRadar, an
+agent coordination framework for fine-grained defect and impact
+analysis in DL library updates.DepRadarcoordinates four spe-
+cialized agents across three steps: (1) thePR MinerandCode Diff
+Analyzerextract structured defect semantics from commits or pull
+requests, (2) theOrchestrator Agentsynthesizes these signals into a
+unified defect pattern with trigger conditions, and (3) theImpact
+Analyzerchecks downstream programs to determine whether the
+defect can be triggered. To improve accuracy and explainability,
+DepRadarintegrates static analysis with DL-specific domain rules
+for defect reasoning and client-side tracing. We evaluateDepRadar
+on 157 PRs and 70 commits across two representative DL libraries.
+It achieves 90% precision in defect identification and generates high-
+quality structured fields (average field score 1.6/2). On 122 client
+programs,DepRadaridentifies affected cases with 90% recall and
+80% precision, substantially outperforming other baselines.
+CCS Concepts
+•Software and its engineering → Software libraries and repos-
+itories.
+∗Corresponding Author
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+ICSE ’26, Rio de Janeiro, Brazil
+©2026 Copyright held by the owner/author(s).
+ACM ISBN 979-8-4007-2025-3/2026/04
+https://doi.org/10.1145/3744916.3787763
+Keywords
+Multi-Agent Framework, Pull Request, Defect Impact Analysis
+ACM Reference Format:
+Yi Gao, Xing Hu, Tongtong Xu, Jiali Zhao, Xiaohu Yang, and Xin Xia. 2026.
+DepRadar: Agentic Coordination for Context-Aware Defect Impact Analysis
+in Deep Learning Libraries. In2026 IEEE/ACM 48th International Conference
+on Software Engineering (ICSE ’26), April 12–18, 2026, Rio de Janeiro, Brazil.
+ACM, New York, NY, USA, 13 pages. https://doi.org/10.1145/3744916.3787763
+1 Introduction
+Modern deep learning (DL) programs increasingly depend on li-
+braries such as Transformers [18] and Megatron [5], which stream-
+line model development, training, and deployment [21, 23, 36, 38,
+39, 45, 50, 52, 54, 57, 60]. These libraries encapsulate critical func-
+tionalities such as tokenization, optimizer scheduling, distributed
+communication, and memory management, enabling developers to
+build large-scale models efficiently.
+However, as these libraries grow in complexity and scale, they
+unavoidably introduce software defects. Bugs in DL libraries may
+not always manifest as program crashes; instead, they often de-
+grade performance silently, introduce numerical inconsistencies,
+or corrupt training dynamics under certain conditions [ 23, 59].
+For example, a subtle error in tensor parallelism coordination or
+configuration parsing may lead to incorrect gradient updates or
+inefficient resource usage, ultimately impairing model convergence.
+In practice, such defects are often discussed in GitHub pull requests
+(PRs) [16] or commits [4], where developers propose fixes based on
+user feedback or internal audits [33, 58]. Thus, we can analyze PRs
+and commits to assess whether a defect impacts downstream client
+programs. However, this is highly non-trivial in practice: PRs may
+reference internal APIs, abstract trigger conditions, or rely on com-
+plex runtime configurations. Meanwhile, downstream users may
+not closely monitor upstream libraries and are frequently unaware
+of whether such defects could impact their own programs.
+Although keeping dependencies up-to-date is a common practice
+for maintaining software reliability, frequent dependency upgrades
+are impractical in DL environments, as each update may trigger
+arXiv:2601.09440v1  [cs.SE]  14 Jan 2026
+ICSE ’26, April 12–18, 2026, Rio de Janeiro, Brazil Yi Gao, Xing Hu, Tongtong Xu, Jiali Zhao, Xiaohu Yang, and Xin Xia
+costly retraining and break compatibility [24, 37, 41, 48]. Moreover,
+many defects remain silent across releases or are fixed with min-
+imal documentation. Release notes are typically coarse (e.g., fix
+stability) and omit critical details such as affected modules, configu-
+rations, or triggering conditions. For instance, commit 1674ce3 [7]
+inMegatronsilently skewed multi-user training for months before
+detection, illustrating how such fixes can propagate unnoticed.
+Recent efforts have leveraged large language models (LLMs) to
+assist with code summarization and PR triage [44]. However, these
+approaches typically treat commits or patches in isolation, with-
+out modeling the downstream impact on external client programs.
+Determining whether a DL library defect affects a specific client
+program involves several unique challenges:
+Challenge 1: Noisy and informal defect representations. Defect-
+related PRs or commits often contain unstructured descriptions,
+partial fixes, or discussion noise. The root cause and triggering
+conditions are rarely formalized, making the automated extraction
+of defect patterns difficult.
+Challenge 2: Deep semantic gap between library changes and
+user-visible behavior. Many patches fix low-level internal logic
+(e.g., CUDA graphs, communication buffers), while user programs
+interact only with high-level APIs. Mapping these low-level changes
+to user-facing risk factors (e.g., configuration parameters, method
+calls) requires semantic reasoning.
+Challenge 3: Semantic alignment between defect conditions
+and client usage. Determining whether a client program satisfies
+the defect’s triggering conditions requires understanding not only
+the patched library logic, but also the usage context in the user
+code—including configurations and function calls.
+To address these challenges, we proposeDepRadar, an agent
+coordination framework for automated defect and impact analysis
+in deep learning libraries.DepRadarassists developers in determin-
+ing whether a defect in an upstream DL library (e.g., Transformers)
+has concrete effects on their downstream programs. Unlike prior
+approaches that rely on static dependency resolution or flat sum-
+marization,DepRadarleverages a modular agent architecture to
+reason across both the library side and the client side, enabling
+context-aware, condition-sensitive impact assessment. By integrat-
+ing domain-specific coordination rules, agent self-adaptation, and
+AST-based structural validation,DepRadarturns generic multi-
+agent reasoning into a practical and verifiable workflow for DL de-
+fect analysis.DepRadarconsists of four agents: (1)Miner Agent
+identifies whether a commit or pull request addresses a real de-
+fect and extracts structured defect metadata, including bug back-
+ground, trigger conditions, and affected components. (2)Code Diff
+Agentanalyzes the patch semantics, locating modified methods
+and summarizing the underlying fix logic. (3)Orchestrator Agent
+synthesizes the results from upstream agents into a defect pattern,
+capturing risk-relevant method calls and parameter combinations
+from the perspective of external users. (4)Impact Analyzer Agent
+performs contextual analysis on the client program code to deter-
+mine whether it satisfies the triggering conditions, guided by static
+analysis and domain-specific validation rules.
+To mitigate the long-context limitations of LLMs,DepRadar
+incorporates a progressive context augmentation mechanism that
+dynamically expands or compresses the input prompt to ensure
+model = Qwen2_5_VLForConditionalGeneration.from_pretrained("/root/OpenEMMA/models/Qwen2.5-VL-3B-Instruct",torch_dtype=torch.bfloat16,attn_implementation="flash_attention_2",device_map="auto")
+from transformers importAutoProcessor, Qwen2_5_VLForConditionalGeneration, AutoTokenizertransformers
+v.4.51.3OpenEMMA
+OpenEMMACode Snippet
+Memory Efficiency Issue
+TrainingNumericalInstability
+IsAffected？
+Fix low-level functions that are typically not directly calledby users.
+Correlating natural language descriptions with client code constructs.
+Figure 1: Motivation Example.
+information completeness without exceeding token limits. Further-
+more, to mitigate hallucinations in LLM-generated outputs, we
+design a post-processing validation module that uses AST-based
+static analysis to verify the existence of referenced parameters and
+methods within the actual client program.
+We evaluateDepRadaron 157 PRs and 70 commits collected
+from two widely used DL libraries: Transformers and Megatron.
+Our study focuses on two core tasks: (1) whetherDepRadarcan ac-
+curately generate structureddefect patterns, and (2) whether it can
+determine if a downstream client program is semantically affected
+by a given defect. On the PR dataset,DepRadarachieves a defect
+classification F1-score of 95%, and over 70% of extracted defect pat-
+tern fields—such as bug background and trigger conditions—are
+rated fully accurate by domain experts. In downstream impact anal-
+ysis across 122 real-world client programs,DepRadarachieves an
+F1-score of 85%, substantially outperforming three strong baselines.
+We further evaluateDepRadaron internal commits of Megatron,
+where it successfully identifies 12 real-world client programs af-
+fected by silent defects, as confirmed by developers.
+In summary, the main contributions of this paper include:
+• We presentDepRadar, a novel agent coordination framework for
+fine-grained defect and impact analysis in deep learning libraries.
+• We implement a practical system that integrates LLM-based
+agents with static analysis and domain-specific inference rules.
+The replication package is available at [20].
+• We conduct an extensive evaluation of 227 library updates (157
+PRs and 70 commits) from Transformers and Megatron. Results
+show thatDepRadaroutperforms three strong baselines in both
+defect modeling (F1 = 95%) and client impact analysis (F1 = 85%),
+and identifies real affected clients.
+2 Motivation Example
+Given the high cost of silent correctness or performance regressions
+during model training, automatically identifying library defects and
+DepRadar: Agentic Coordination for Context-Aware Defect Impact Analysis in Deep Learning Libraries ICSE ’26, April 12–18, 2026, Rio de Janeiro, Brazil
+Commit/PRsCode Diff
+Comments
+Diff Context
+Diff Location
+Title
+Body Issue Link
+ MetadataSemantics
+Commit/PRMiner
+Code DiffSemantics
+Code DiffAnalyzer
+Defect Attributes
+Diff Context
+Trigger Example
+DefectAttributes AggregationRisk Factors Reasoning
+Minimal Trigger Code Generation
+Orchestrator
+ModuleFunctionPR DescDiff Desc
+Patch-to-Usage Rules
+Client Code
+Contextual Extraction
+Impact Analyzer
+Model LoadingData Input PointConfiguration
+Defect ReportAST
+Code Parsing
+Condition MatchingClient File Searching
+…
+Client Repository Step3. Defect Impact Analysis
+Step1. Defect Semantics ExtractionStep2. Defect Pattern Generation
+TitleBody Commit/PRMetadata
+Defect Pattern
+filter
+Self-augmenting
+Version-Aware File Matching
+Explicit Version PinningImplicit Version Resolution
+Static Verification
+Self-augmenting
+Self-augmenting
+Risk Factors
+Figure 2: Overview of our approach.
+assessing their potential impact on downstream client programs
+has become an urgent and practical need. Real-world deep learning
+libraries like Transformers frequently fix silent defects—bugs that
+do not crash programs but silently degrade numerical accuracy or
+runtime efficiency under specific conditions. However, client devel-
+opers often lack the visibility and expertise to determine whether
+such internal fixes are relevant to their own configurations.
+Figure 1 shows this challenge through two representative PRs
+from Transformers, both affecting Flash Attention on Ascend NPUs:
+PR #37575fixes a subtle mistake in the default value of thesoftmax
+_scale parameter. If a user enables Flash Attention v2 (attn_imp
+lementation="flash_attention_2") without explicitly setting
+softmax_scale, the resulting attention output may become nu-
+merically unstable, harming model quality.PR #37698resolves a
+memory inefficiency where the attention mask is first initialized
+on the CPU and then moved to the NPU. This silent performance
+defect causes unnecessary CPU memory allocation and long-term
+accumulation in certain deployment settings.
+The middle part of Figure 1 shows a simplified snippet from a
+downstream client project (OpenEMMA, an open-source autonomous
+driving framework) that uses Transformers with Flash Attention
+v2 and NPU hardware—satisfying the trigger conditions of both
+PRs. However, neither bug manifests through obvious exceptions
+or logs, and the developers were unaware of their presence before
+manual inspection. Such usage patterns, which involve using pre-
+trained configurations and enabling hardware-optimized features,
+are commonly seen in downstream DL programs and can make
+silent defects difficult to detect.
+This example highlights a fundamental gap in current DL library
+usage: developers cannot feasibly monitor every upstream change
+or PR, nor can they easily determine if a specific patch is relevant to
+their setup. Furthermore, existing tools either focus on syntax-level
+patch analysis or general-purpose summarization, lacking the se-
+mantic reasoning and domain knowledge needed to bridge the gap
+between internal bug fixes and client-side manifestations. These
+observations motivate our work. We propose a novel approach
+namedDepRadar, analyzes library-level bug-fix PRs and automati-
+cally traces their potential runtime impact on client programs. By
+combining defect pattern modeling, trigger condition extraction,
+and client-side reasoning, our framework aims to assist users in
+identifying whether they are silently affected.
+3 Approach
+We proposeDepRadar, an agent coordination framework for auto-
+mated defect impact analysis in DL libraries. As shown in Figure 2,
+DepRadarconsists of three steps: (1) extracting structured defect
+semantics from PRs/commits via dual agents, (2) synthesizing com-
+plete defect patterns, and (3) verifying whether clients satisfy the
+triggering conditions. The framework is built on AutoGen [1] to
+enable coordinated, multi-turn reasoning across agents.
+3.1 Defect Semantics Extraction
+This step involves two specialized agents that collaboratively ex-
+tract defect semantics from different perspectives: theCommit/PR
+Miner Agentprocesses natural language descriptions (e.g., com-
+mit messages, PR discussions), while theCode Diff Analyzer Agent
+focuses on structural code changes. To enable multi-agent coordi-
+nation, we introduce anOrchestrator Agentthat validates interme-
+diate outputs and synthesizes final defect patterns by combining
+upstream results. In this step, theOrchestrator Agentmonitors
+the completeness of extracted semantics.
+3.1.1 Commit/PR Miner Agent.The Miner Agent is designed to
+extract structured defect representations from noisy and loosely
+formatted PR or commit metadata. Given a PR,DepRadarpro-
+cesses the title, body, associated issue references, and developer
+comments to generate a structured defect semantic representa-
+tion containing three fields: bug_background, impact_scope, and
+trigger_conditions.
+Considering the substantial number of PRs—most of which in-
+volve routine updates or feature additions rather than defect fixes,
+comprehensive analysis of all PRs proves inefficient. To address this,
+we implement a two-step filtering mechanism. The Miner Agent

@@ -1,0 +1,335 @@
+Reasoning Runtime Behavior of a Program with
+LLM: How Far Are We?
+Junkai Chen ∗
+School of Software Technology,
+Zhejiang University
+Ningbo, China
+junkaichen@zju.edu.cn
+Zhenhao Li
+York University
+Toronto, Canada
+zhenhao.li@ieee.org
+Zhiyuan Pan ∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+zy pan@zju.edu.cn
+Ge Li
+Peking University
+Beijing, China
+lige@pku.edu.cn
+Xing Hu †
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Xin Xia
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+Abstract—Large language models for code (i.e., code LLMs)
+have shown strong code understanding and generation capabili-
+ties. To evaluate the capabilities of code LLMs in various aspects,
+many benchmarks have been proposed (e.g., HumanEval and
+ClassEval). Code reasoning is one of the most essential abilities
+of code LLMs (i.e., predicting code execution behaviors such as
+program output and execution path), but existing benchmarks
+for code reasoning are not sufficient. Typically, they focus
+on predicting the input and output of a program, ignoring
+the evaluation of the intermediate behavior during program
+execution, as well as the logical consistency (e.g., the model
+should not give the correct output if the prediction of execution
+path is wrong) when performing the reasoning. To address
+these problems, in this paper, we propose a framework, namely
+REval, for evaluating code reasoning abilities and consistency
+of code LLMs with program execution. We utilize existing
+code benchmarks and adapt them to new benchmarks within
+our framework. A large-scale empirical study is conducted and
+most LLMs show unsatisfactory performance on both Runtime
+Behavior Reasoning (i.e., an average accuracy of 44.4%) and
+Incremental Consistency Evaluation (i.e., an average IC score
+of 10.3). Evaluation results of current code LLMs reflect the
+urgent need for the community to strengthen the code reasoning
+capability of code LLMs. Our code, data and REval leaderboard
+are available at https://r-eval.github.io.
+Index Terms —Code Reasoning, Large Language Model,
+Benchmark
+I. I NTRODUCTION
+Large language models (LLMs) attract great attention for
+their exceptional performance on diverse tasks [1] including
+sentiment analysis [2], logical reasoning [3], and question
+answering [4]. Recently, large language models for code (i.e.,
+code LLMs) have become a popular research area because
+of the promising prospect of empowering humans in software
+development and maintenance [5]. Hence, both academia and
+industry have proposed a lot of code LLMs (e.g., CodeLlama
+∗ Equal contribution.† Corresponding author.
+family [6] and Magicoder series [7]), which are widely applied
+to different tasks like code generation [8], [9].
+To provide a fair and comprehensive measure of the capa-
+bilities of code LLMs, many code-related benchmarks (e.g.,
+HumanEval [8] and CodeXGLUE [10]) are proposed to eval-
+uate the effectiveness of code LLMs in different tasks such as
+code generation and vulnerability detection [11]. Given that
+“executable” is a distinct feature of code compared to natural
+language, and code execution provides additional information
+(e.g., program output) to assist with code tasks [12], [13],
+benchmarking code reasoning abilities of code models with
+execution raises researchers’ interests [14], [15]. Here, code
+reasoning is referred to as predicting code execution behaviors
+(e.g., program outputs, execution paths and possible variable
+values) without executing the code directly. For example, Gu
+et al. [14] proposed CRUXEval to evaluate code LLMs by
+predicting output from input and vice versa. Typically, these
+works measure the model’s ability to predict and analyze the
+relationship between the input and output of an executable pro-
+gram. However, the intermediate information (e.g., execution
+path) during code execution is ignored, posing challenges to
+developers in comprehending the program’s runtime behavior.
+Fig. 1 shows common concerns about the runtime behavior
+during program execution. Intuitively, how a program behaves
+under certain input can help developers better understand the
+code and perform debugging activities. For example, if we
+have concerns about the correctness of a certain statement
+while debugging a snippet of code, we typically first determine
+whether this statement is executed given the input (i.e., ❶ in
+Fig. 1); If it is executed, observing the changes in variables
+before and after execution is a natural choice ❷; Sometimes
+this line of code may seem fine, so the statement immediately
+following it will be examined ❸; Additionally, the program
+output can be used to verify whether the results match the
+expectations ❹. Therefore, we argue that these kinds of
+runtime behaviors (e.g., program state and execution path) are
+arXiv:2403.16437v3  [cs.SE]  21 Sep 2024
+Output
+InputCodedef f(var):
+if var.isdigit():
+return "int"
+elif var.replace('.', '', 1).isdigit():
+return "float"
+elif var.count(' ') == len(var) - 1:
+return "str"
+elif len(var) == 1:
+return "char"
+else:
+return "tuple"
+What is the next line 
+to be executed?
+What is type and value of var?Is the statement executed? What is the input?
+" 99 777"
+'tuple'
+×❶ √
+❷
+❸
+What is the output?
+CRUXEval ❹❺REval ❶❷❸❹ + IC
+❹
+❺
+Fig. 1. The demonstration of code reasoning tasks in CRUXEval [14] and
+REval. “IC”: Incremental Consistency.
+essential for program understanding and reasoning for humans.
+Meanwhile, they are also proven to be effective for an in-depth
+understanding of code semantics for language models [16]. As
+previous benchmarks like CRUXEval (i.e., with ❹ and ❺) fail
+to evaluate whether LLMs can reason about these dynamic
+characteristics of a program, it is necessary to measure the
+code reasoning ability of LLMs with runtime behavior of
+execution. In this paper, we propose our framework, REval,
+to comp rehensively ( re)-evaluate the code reasoning ability
+of LLMs, which consists of two evaluation components: (i)
+Runtime Behavior Reasoning and (ii) Incremental Consistency
+Evaluation.
+Evaluation Component 1: Runtime Behavior Reasoning .
+To mitigate this limitation in previous research, we make the
+first attempt to systematically evaluate the code LLM’s ability
+to reason about the runtime behavior of program execution.
+Specifically, we propose four evaluation tasks to achieve this
+goal: ❶ Code Coverage Prediction (CCP), i.e., whether a
+statement is executed or not; ❷ Program State Prediction
+(PSP), i.e., what is the value and the type of a variable;
+❸ Execution Path Prediction (EPP), i.e., which is the next
+statement to be executed; and ❹ Output Prediction (OP), i.e.,
+what is the output. These four tasks cover various aspects
+of program execution, including control flow, data flow, and
+type dependency, which are widely applied to prior research
+in software engineering such as type inference [17] and code
+translation [18]. Therefore, this evaluation provides a more
+comprehensive measure of code model’s ability to reason
+about executable programs in comparison with previous work.
+Nevertheless, it is noticed that sometimes the reasoning re-
+sults of a model could conflict with human logic on sequential
+tasks in Runtime Behavior Reasoning. For instance, the code
+model may correctly predict the next statement to be executed
+(i.e., EPP) when it fails to tell the value of a variable after
+the statement’s execution (i.e., PSP), which is not expected
+because the control flow of the execution relies on the program
+state. As this kind of inconsistency in sequentially related
+tasks is unlikely to occur in humans, the trustworthiness of
+AI systems built on these models (e.g., GitHub Copilot [19])
+can easily suffer from these unreliable behaviors. Although
+some previous works have discussed consistency for code
+LLMs [20], [21], they are limited to semantic consistency like
+back translation between NL and code and ignore the logical
+consistency mentioned here. Hence, it is necessary to measure
+the consistency of code LLMs on sequentially related tasks.
+Evaluation Component 2: Incremental Consistency Eval-
+uation. To fill the gap in evaluation, we propose a novel
+metric named Incremental Consistency (IC) to measure the
+extent to which the model can maintain its logical consistency
+on sequentially related tasks of incremental difficulty. We
+observe that the four tasks in Runtime Behavior Reasoning
+are progressive and consistent with the context of IC, i.e., the
+knowledge required to finish the current task is the preliminary
+of the next task. Hence, we can judge how much a model is
+incrementally consistent by utilizing the results of reasoning
+runtime behavior (See Section III for details). Incremental
+Consistency provides new sights for evaluating LLMs and the
+consistency measure of AI systems beyond traditional metrics.
+To construct our framework, we leverage existing executable
+datasets (e.g., HumanEval [8] and ClassEval [22]) as our base
+benchmarks and adapt them into an adapted benchmark within
+our framework by extracting runtime behavior, constructing,
+and filtering the problems. We conduct a large-scale empirical
+study on various models, including general and code LLMs in
+our frameworks. Evaluation results show that our framework
+presents a degree of difficulty and most LLMs show poor
+performance on both Runtime Behavior Reasoning and IC
+Evaluation (e.g., an IC score below 20 for all open-source
+LLMs we evaluate). Our research highlights the importance
+of utilizing runtime behavior and incremental consistency
+evaluation to measure the reasoning ability of code LLMs, and
+we call for targeted efforts in subsequent research to enhance
+these weaknesses.
+In summary, the contributions of our paper are as follows:
+• We propose a new framework, REval, to comprehensively
+evaluate code LLMs’ abilities of code reasoning. To the best
+of our knowledge, we are the first work to evaluate code
+models to systematically reason about runtime behavior
+during program execution.
+• We propose a novel metric named Incremental Consistency
+(IC) to measure to what extent a code LLM can maintain its
+consistency across sequentially related tasks of incremental
+difficulty.
+• We conduct a large-scale empirical study on diverse LLMs
+within our evaluation framework. Our results reveal the
+limitations of reasoning runtime behavior and IC of code
+models.
+• We construct an adapted benchmark based on Hu-
+manEval [8] and ClassEval [22] and develop an evaluation
+harness for our framework. To facilitate further research of
+code reasoning, our code, data, and REval leaderboard are
+publicly available at https://r-eval.github.io.
+II. B ACKGROUND AND RELATED WORK
+In this section, we discuss the background information of
+our research and the corresponding related work.
+A. Code Execution and Reasoning
+1) Code Execution Behavior: We refer to code execution
+behavior as the additional information offered by program exe-
+cution compared to static analysis. According to the execution
+order, we classify them into pre/post-execution information
+and runtime information:
+• Pre/Post-Execution Information is the content we can
+obtain before or after the actual execution process of
+program. For example, the input, output, and NL require-
+ments belong to this category.
+• Runtime Information is the intermediate state during code
+execution. For instance, we are able to collect contents
+like program state and execution path only when the code
+is still running.
+Previous research has leveraged code execution behavior to
+improve the performance of various downstream tasks, e.g.,
+program understanding [23], code generation [12], [13], [24],
+software testing [25], [26] and vulnerability detection [16]. Ni
+et al. [12] improved code generation performance with an extra
+verifier, which learns the results of code execution and helps
+rerank generated code candidates. Chen et al. [13] utilized
+different kinds of feedback including output to help LLMs
+“self-debug” the generated code. They designed a series of
+prompting strategies to guide the model to refine the program
+automatically. In these works, pre-/post-execution information,
+such as program output, is applied to code generation. Fur-
+thermore, some works found the worth of dynamic features
+during execution and exploit them to train various language
+models. Liu et al. [24] pre-trained a language model to
+learn the execution process of the program. Specifically, they
+represented the program state as a sequence that neural models
+can learn from and expect the model to predict the trace.
+Compared to Liu et al., Ding et al. [16] proposed a pre-training
+technique combining both static and dynamic characteristics
+of the program. In summary, the aforementioned works reflect
+the close relationship between the behavior of code execution
+and the program semantics, and emphasize the importance of
+evaluating models for code reasoning with execution.
+2) Code Reasoning with Large Language Models: As in-
+troduced in Section I, in the task of code reasoning, an LLM
+needs to predict the program behavior without execution.
+Recently, some works have proposed different evaluation
+approaches for the code reasoning abilities of code LLMs. For
+example, Gu et al. [14] proposed CRUXEval, which requires
+LLMs to reason about pre/post-execution information such as
+input and output. Following this study, similar to the idea
+of CRUXEval, Liu et al. [15] extended the evaluation tasks
+(i.e., predicting input and output) to the natural language
+specification. However, their evaluation approaches are still
+limited to pre/post-execution information and ignore inter-
+mediate runtime behavior. In contrast, our work goes a step
+further to measure how the model learns the runtime behavior
+during execution, which shows promising potential in helping
+program comprehension, as mentioned above. We notice that
+a recent work [27] aimed to simulate the code execution
+process with code LLMs. They used the analogy of a large
+language model to a CPU to explore the process of a program
+executing code, paying more attention to algorithm complexity
+and structure. Different from the aforementioned studies, our
+framework is not only limited to algorithm problems (e.g.,
+competition-level ones), but also suitable for general program-
+ming scenarios (e.g., more real-world projects). In addition, we
+also explore detailed runtime behavior like code coverage and
+execution path, containing more runtime information.
+B. Consistency for Large Language Models
+Semantic Consistency. Semantic consistency refers to the
+same decisions on semantically equivalent texts of LLMs [28].
+For example, the model should provide similar and even
+the same answers in the face of two meaning-perserving
+questions. In the realm of software engineering, this feature
+is generally utilized for the unsupervised evaluation of code
+LLMs [20], [21]: Min et al. [21] evaluated the self-consistency
+of code LLMs by comparing the functional correctness of
+two code snippets: one code is generated using a human-
+written description, and the other is generated iteratively with
+the summary of the previously generated. Chen et al. [29]
+studied the robustness of code LLMs to the variations in
+natural language descriptions for code generation. Allamanis
+et al. [20] introduced round-trip correctness which aligns code
+and NL to perform unsupervised evaluation for code LLMs.
+The aformentioned works leveraged the back translation be-
+tween NL and PL iteratively generated by the model and
+conduct the semantic or functional comparison. However, they
+are restricted to the context of semantic consistency in the
+context of NL and PL.
+Logical Consistency. If an LLM is able to make predictions
+without logical contradiction, it shows the feature of logi-
+cal consistency [28]. For example, if one model assumes a
+proposition to be true, it should consider the negation of that
+proposition to be false as well. There are lots of previous
+research about how to evaluate and utilize logical consistency
+for LLMs in natural language processing [28], [30]–[32],
+but few works pay attention to logical consistency on code
+LLMs. As the reasoning ability is highly related to its logical
+consistency [33], a comprehensive code reasoning evaluation
+should contains the measure of logical consistency in scope
+of programming languages (PLs). Therefore, it motivates us
+to propose a novel consistency metric idea named IC to fill
+this gap.
+C. Code LLMs and Benchmarks
+1) Code LLMs: Large language models for code are LLMs
+specialized for the generation and understanding of PLs. For
+example, CodeLlama family models [6] inherit the architecture
+of Llama2 [34] and are further pre-trained on extra code cor-
+pora. Its three variant models (i.e., base, instruct, and Python-
+specialized) are designed for different programming scenarios.
+StarCoder2 [35] is a series of code LLMs developed by
+the BigCode Project, which achieves competitive performance
+with other similar-sized models. These models are trained

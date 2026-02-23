@@ -1,0 +1,361 @@
+Learning in the Wild: Towards Leveraging Unlabeled Data for
+Effectively Tuning Pre-trained Code Models
+Shuzheng Gao
+The Chinese University of Hong Kong
+Hong Kong, China
+szgao23@cse.cuhk.edu.hk
+Wenxin Mao
+Harbin Institute of Technology
+Shenzhen, China
+maowx5519@mails.jlu.edu.cn
+Cuiyun Gao∗
+Harbin Institute of Technology
+Shenzhen, China
+gaocuiyun@hit.edu.cn
+Li Li
+Beihang university
+Beijing, China
+lilicoding@ieee.org
+Xing Hu, Xin Xia
+Zhejiang university
+Zhejiang, China
+xinghu@zju.edu.cn,xin.xia@acm.org
+Michael R. Lyu
+The Chinese University of Hong Kong
+Hong Kong, China
+lyu@cse.cuhk.edu.hk
+ABSTRACT
+Pre-trained code models have recently achieved substantial im-
+provements in many code intelligence tasks. These models are first
+pre-trained on large-scale unlabeled datasets in atask-agnostic man-
+ner using self-supervised learning, and then fine-tuned on labeled
+datasets in downstream tasks. However, the labeled datasets are
+usually limited in size (i.e., human intensive efforts), which may hin-
+der the performance of pre-trained code models in specific tasks. To
+mitigate this, one possible solution is to leverage the large-scale un-
+labeled data in the tuning stage by pseudo-labeling, i.e., generating
+pseudo labels for unlabeled data and further training the pre-trained
+code models with the pseudo-labeled data. However, directly em-
+ploying the pseudo-labeled data can bring a large amount of noise,
+i.e., incorrect labels, leading to suboptimal performance. How to
+effectively leverage the noisy pseudo-labeled data is a challenging
+yet under-explored problem.
+In this paper, we propose a novel approach named HINT to im-
+prove pre-trained code models with large-scale unlabeled datasets
+by better utilizing the pseudo-labeled data. HINT includes two main
+modules: HybrId pseudo-labeled data selection and Noise-tolerant
+Training. In the hybrid pseudo-data selection module, considering
+the robustness issue, apart from directly measuring the quality of
+pseudo labels through training loss, we propose to further employ
+a retrieval-based method to filter low-quality pseudo-labeled data.
+The noise-tolerant training module aims to further mitigate the
+influence of errors in pseudo labels by training the model with a
+noise-tolerant loss function and by regularizing the consistency of
+model predictions. We evaluate the effectiveness of HINT on three
+popular code intelligence tasks, including code summarization, de-
+fect detection, and assertion generation. We build our method on
+top of three popular open-source pre-trained code models. The
+∗Corresponding author. The author is also affiliated with Peng Cheng Laboratory and
+Guangdong Provincial Key Laboratory of Novel Security Intelligence Technologies.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than ACM
+must be honored. Abstracting with credit is permitted. To copy otherwise, or republish,
+to post on servers or to redistribute to lists, requires prior specific permission and/or a
+fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Singapore, Singapore
+© 2023 Association for Computing Machinery.
+ACM ISBN 978-x-xxxx-xxxx-x/YY/MM. . . $15.00
+https://doi.org/10.1145/nnnnnnn.nnnnnnn
+experimental results show that HINT can better leverage those
+unlabeled data in a task-specific way and provide complementary
+benefits for pre-trained models, e.g., improving the best baseline
+model by 15.33%, 16.50%, and 8.98% on code summarization, defect
+detection, and assertion generation, respectively.
+CCS CONCEPTS
+•Software and its engineering → Software development tech-
+niques;
+ACM Reference Format:
+Shuzheng Gao, Wenxin Mao, Cuiyun Gao, Li Li, Xing Hu, Xin Xia, and Michael
+R. Lyu. 2023. Learning in the Wild: Towards Leveraging Unlabeled Data
+for Effectively Tuning Pre-trained Code Models. In Proceedings of the 46th
+International Conference on Software Engineering (ICSE ’24), April 14–20,
+2024, Lisbon, Portugal. ACM, New York, NY, USA, 13 pages. https://doi.org/
+10.1145/nnnnnnn.nnnnnnn
+1 INTRODUCTION
+Recently, code intelligence has become a popular research field in
+software engineering. It aims at improving developers’ productiv-
+ity by providing real-time coding assistance and suggestions for
+them [9, 28]. The advent of deep learning techniques, especially pre-
+training techniques [12, 54], has significantly advanced progress in
+this area. Different from previous supervised learning methods that
+train the model from scratch [1, 72], these pre-trained code models
+are first pre-trained on large-scale unlabeled datasets using self-
+supervised learning tasks and then fine-tuned on labeled datasets in
+downstream tasks. For example, Masked Language Modeling (MLM)
+is one of the most popular self-supervised pre-training tasks and is
+used in many pre-trained code models such as CodeBERT [14] and
+GraphCodeBERT [21]. It works by training the models to predict the
+masked tokens based on the context of surrounding words. Since
+this process does not require human annotation, it can be applied
+on large-scale unlabeled datasets, enabling the models to acquire a
+vast amount of general programming knowledge. Equipped with
+this ability, these pre-trained code models achieve state-of-the-art
+performance on a variety of code intelligence tasks, such as code
+summarization and defect detection [14, 17, 20, 21].
+Despite the promising results, deep learning models are known to
+be data-hungry and the size of labeled datasets in downstream tasks
+is important for the performance of pre-trained models [ 23, 66].
+However, the sizes of labeled datasets in downstream tasks are
+arXiv:2401.01060v1  [cs.SE]  2 Jan 2024
+usually limited due to two main reasons. On one hand, the datasets
+crawled from open-source websites like Github or Stackoverflow
+are small in size and of low quality. For example, as mentioned in
+the literature [31], only 6.8% JavaScript code snippets from popu-
+lar GitHub repositories contain corresponding comments, making
+only a few of them usable for tasks like code summarization. Fur-
+thermore, recent studies have revealed that the quality of existing
+crawled datasets is also quite poor [ 11, 57, 58]. For example, as
+indicated in a recent work [57], over 40% of data in the widely-used
+code summarization datasets contain various types of noise. On the
+other hand, due to the requirement of domain expert knowledge,
+the annotation cost of code intelligence tasks is higher than other
+tasks in natural language processing or computer vision, such as
+sentiment analysis and image classification [60]. With insufficient
+annotated data in downstream tasks, the performance of pre-trained
+code models is limited.
+One possible solution to this problem is to leverage the large-
+scale unlabeled data in the tuning stage by pseudo-labeling. Pseudo-
+labeling first trains a base model on the limited labeled dataset,
+which subsequently serves as a teacher model to annotate the unla-
+beled dataset [34, 40, 48]. The pseudo-labeled dataset is then merged
+with the original labeled dataset to help improve the training of
+a new student model. By replacing the teacher model with the
+stronger student model, the above process can be iterated multiple
+times, aiming at improving the models themselves. This technique
+leverages the unlabeled data in a task-specific way and has shown
+promising results in tasks such as image classification [ 40] and
+dialog systems [48]. Although pseudo-labeling can enrich the la-
+beled dataset, directly employing the pseudo-labeled data can bring
+a large amount of noise [ 48]. For example, as shown in Figure 1
+(a), the pseudo-labeled summary of the top code snippet is not a
+meaningful sentence and contains redundant tokens. Training with
+such noisy pseudo labels may amplify the incorrect knowledge
+in the teacher model and ultimately degrades the model’s perfor-
+mance. However, identifying and removing noisy pseudo labels is
+non-trivial due to the complex semantic of source code. Besides,
+it is difficult and impractical to ensure that the filtered dataset is
+noise-free [64, 74]. Therefore, how to effectively leverage the noisy
+pseudo-labeled data and enable the model to be noise-tolerant for
+code intelligence tasks is of vital importance, yet under-explored.
+In this paper, we propose HINT with two main components, i.e.,
+the HybrId pseudo-labeled data selection module and the Noise-
+tolerant Training module. First, in the hybrid pseudo-labeled data
+selection module, we propose to combine the training loss of the
+teacher model and a retrieval-based method for removing the low-
+quality data. Specifically, we filter out pseudo-labeled samples that
+present high training loss or low label similarity with the retrieved
+similar training sample. To further mitigate the influence of data
+noise on model performance, we propose a noise-tolerant training
+objective that includes a noise-tolerant symmetric loss function and
+a consistency regularization of model predictions. To evaluate the
+performance of HINT, we conduct experiments on three popular
+code intelligence tasks including code summarization, defect detec-
+tion, and assertion generation. Following previous work [18, 51, 63],
+we build our method on top of three popular open-source pre-
+trained models: CodeBERT [14], CodeT5 [65], and UniXcoder [20].
+#Sample from the unlabeled dataset
+#Code
+def validate_float(s) 
+    try:
+        return float(s) 
+    except ValueError: 
+        raise ValueError('Could not convert %s to float' % s)
+#Pseudo-labeled Summary
+#Retrieved sample from the training dataset
+#Code
+def validate_int(s) 
+    try:
+        return int(s) 
+    except ValueError: 
+        raise ValueError('Could not convert %s to int' % s)
+#Summary
+#converts a string to s s.
+#convert s to int or raise.
+Low
+similarity
+Low Training 
+Loss
+× Low quality
+(a) A Python example of low-quality pseudo-labeled data (top).
+//Sample from the unlabeled dataset
+//Code
+static boolean areEqual(Object a, Object b){ 
+   return (a==null?b==null:a.equals(b));
+}
+//Pseudo-labeled Summary
+//check if two possibly null objects are equal.
+//Retrieved sample from the training dataset
+//Code
+public static boolean equal(Object a, Object b){
+   return a==b||(a!=null&&a.equals(b));
+}   
+//Summary
+//returns true if two possibly null objects are equal.
+High 
+similarity
+High Training 
+Loss
+√ HIgh quality
+(b) A Java example of high-quality pseudo-labeled data (top).
+Figure 1: Examples in the code summarization task for il-
+lustrating the motivation of the hybrid pseudo-labeled data
+selection method, which indicates the loss-based data selec-
+tion strategy alone may incorrectly measure the quality of
+pseudo labels.
+Extensive experiments demonstrate that HINT can consistently im-
+prove the performance of pre-trained code models on these code in-
+telligence tasks. For example, HINT improves UniXcoder by 15.33%,
+16.50%, and 8.98% in terms of BLEU-4, F1, and EM on code summa-
+rization, defect detection, and assertion generation, respectively,
+indicating that our proposed HINT method can provide comple-
+mentary benefits for the pre-trained code models.
+In summary, the main contributions of this work are as follows:
+(1) To the best of our knowledge, we are the first to leverage
+the large-scale unlabeled data in a task-specific way in the
+turning phase for code intelligence tasks.
+(2) We propose HINT, a novel framework to leverage large-scale
+unlabeled data for effectively tuning pre-trained code models.
+It first selects high-quality pseudo-labeled data in a hybrid
+way and then improves the model’s tolerance to noisy data
+in the training process.
+(3) Extensive experiments on three tasks demonstrate that our
+method can be built on top of a range of existing strong pre-
+trained models and consistently improve their performance
+on many downstream tasks.
+2
+Labeled data D
+Unlabeled data U
+Teacher model
+① Pseudo Label Generation
+Pseudo-labeled data P 
+Initialization 
+Training
+Student model
+③ Noise-tolerant Training
+Code
+Transformed Code
+Prediction
+g(.)
+Model Substitution
+public long read(  
+ByteBuffer buffer ) { long 
+public long read(  
+<MASK> buffer ) { long 
+Code: public int read(final 
+String path, final Buffer ... 
+Summary: reads the int 
+value of id from the ...
+KL loss
+SCE loss
+SCE loss
+② Hybrid Pseudo-labeled Data Selection
+Pseudo labeled code
+Retrieved code
+Selected pseudo-
+labeled data  S
+Code: public long read(  
+ByteBuffer buffer ) { long ...
+Summary: reads the int 
+value of id from the ...
+ 
+Code: public int read(final 
+String path, final Buffer ... 
+Summary: reads the int 
+value of id from the ...
+Retrieved code
+Code: public long read(  
+ByteBuffer buffer ) { long ...
+Summary: reads the int 
+value of id from the ...
+ 
+Loss-based 
+selection 
+pass √
+fail ×
+Retrieval-based 
+selection 
+Figure 2: The overview of HINT.
+2 PROPOSED APPROACH
+2.1 Problem Setup and Overview
+In this section, we explicate the detailed design of HINT. Formally,
+in code intelligence tasks such as code summarization, we have
+a set of source codes 𝑋 and summaries 𝑌 . Let 𝐷 = {(𝑥𝑖, 𝑦𝑖 )} 𝑁
+𝑖=1
+denotes the labeled training dataset, where 𝑥𝑖 ∈ 𝑋 , 𝑦𝑖 ∈ 𝑌 and 𝑁
+denotes the size of 𝐷. Let 𝑈 = {𝑥𝑖 }𝑀
+𝑖=1 denote the large unlabeled
+dataset, where 𝑀 denotes the size of 𝑈 and 𝑀 > 𝑁 in general. Our
+goal is to learn a model 𝑓 : 𝑋 ↦→ 𝑌 from both 𝐷 and 𝑈 that can
+well predict the label of input 𝑥𝑖 in the test set.
+The overall framework of HINT is shown in Figure 2. We first
+train a teacher model on the original labeled dataset 𝐷 and 1 use
+the teacher model to generate pseudo labels for the unlabeled
+dataset. Then, 2 a hybrid pseudo-labeled data selection method
+that contains loss-based selection and retrieval-based selection is
+proposed to filter the code with low-quality pseudo labels (in-
+troduced in Section 2.2). For further mitigating the influence of
+noise in pseudo labels during model training, we propose 3 a
+noise-tolerant training strategy that trains the student model with
+noise-tolerant symmetric cross entropy loss and consistency reg-
+ularization (introduced in Section 2.3). The above procedure can
+be iterated multiple times, enabling the models to be self-improved
+(introduced in Section 2.4). The algorithm is shown in Algorithm 1.
+2.2 Hybrid Pseudo-labeled Data Selection
+Once we get a trained teacher modelF𝑡 , we use it to generate pseudo
+labels for unlabeled dataset 𝑈 , producing a pseudo labeled dataset
+𝑃 = {(𝑥𝑖, ˆ𝑦𝑖 )} 𝑀
+𝑖=1. The pseudo-labeled data cannot be employed
+directly, since they may contain substantial noise and impact the
+model performance. Previous studies in machine learning [22, 30]
+mainly employ loss-based selection by filtering the data with high
+training loss based on the insight that neural models can well dis-
+tinguish the quality of each sample (i.e., noisy data are generally
+associated with higher training loss). However, code intelligence
+models are known to suffer from the robustness issue [25], so solely
+relying on the model training loss for noise filtering is ineffective.
+For the example in Figure 1 (a), we can observe that although the
+quality of this generated summary is pretty poor, its loss is low
+in value. Specifically, when comparing the loss of all the pseudo-
+labeled data, it exhibits a lower loss than 83% of the pseudo-labeled
+data. Besides, in Figure 1 (b), the generated pseudo summary can
+well describe the meaning of checking the equivalence of two ob-
+jects in the Java code snippet but its training loss value is relatively
+high, i.e., surpassing 52% of the pseudo-labeled data.
+Considering that code reuse is widespread in software develop-
+ment [35, 37], apart from the loss-based selection, we propose to
+further select high-quality data through a retrieval-based method.
+As shown in Figure 1, by comparing the pseudo-labeled summaries
+and retrieved summaries, we can systematically identify the pseudo-
+labeled data in Figure 1 (b) as a high-quality sample and filter the
+low-quality pseudo-labeled data in Figure 1 (a). Specifically, in the
+retrieval-based selection, for each unlabeled data 𝑥𝑖, we first use
+the widely-used BM-25 method [ 44] to retrieve the most similar
+code 𝑥 𝑗 in the labeled training set. Then we propose to compare
+the similarities of 𝑥𝑖 and 𝑥 𝑗 and their corresponding pseudo label
+ˆ𝑦𝑖 and groud truth label 𝑦 𝑗 through normalized edit distance:
+𝑁 𝐸𝐷 (𝑥, 𝑦) =
+( 𝑒𝑑𝑖𝑡 _𝑑𝑖𝑠𝑡𝑎𝑛𝑐𝑒 (𝑥,𝑦 )
+| |𝑥 | | if 𝑥, 𝑦 ∈ 𝑠𝑒𝑞𝑢𝑒𝑛𝑐𝑒
+I{𝑥 ≠ 𝑦} if 𝑥, 𝑦 ∈ 𝑙𝑎𝑏𝑒𝑙
+(1)
+where || .|| denotes the length of the sequence and I{.} is an indica-
+tor function that returns 1 if the condition is true and 0 otherwise.
+Specifically, if both 𝑁 𝐸𝐷 (𝑥𝑖, 𝑥 𝑗 ) and 𝑁 𝐸𝐷 ( ˆ𝑦𝑖, 𝑦𝑗 ) are not higher
+than the threshold 𝑡, we consider this sample (𝑥𝑖, ˆ𝑦𝑖 ) as a correctly
+predicted sample and add it to the selected dataset 𝑆. On the con-
+trary, if 𝑁 𝐸𝐷 (𝑥𝑖, 𝑥 𝑗 ) is lower than 𝑡 while 𝑁 𝐸𝐷 ( ˆ𝑦𝑖, 𝑦𝑗 ) is above
+1 − 𝑡, we choose to filter it as it has a higher probability of being a
+noisy data (Line 9-11 in Algorithm 1). Here 𝑡 is a hyperparameter
+3

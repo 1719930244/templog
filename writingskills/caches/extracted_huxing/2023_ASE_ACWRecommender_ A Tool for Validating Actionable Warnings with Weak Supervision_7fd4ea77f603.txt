@@ -1,0 +1,302 @@
+ACWR ECOMMENDER : A Tool for Validating
+Actionable Warnings with Weak Supervision
+Zhipeng Xue †, Zhipeng Gao ∗†, Xing Hu †, Shanping Li †
+†Zhejiang University, Hangzhou, China
+{ zhipengxue, zhipeng.gao, xinghu, shan }@zju.edu.cn
+Abstract—Static analysis tools have gained popularity among
+developers for finding potential bugs, but their widespread
+adoption is hindered by the accomnpanying high false alarm
+rates (up to 90%). To address this challenge, previous stud-
+ies proposed the concept of actionable warnings, and apply
+machine-learning methods to distinguish actionable warnings
+from false alarms. Despite these efforts, our preliminary study
+suggests that the current methods used to collect actionable
+warnings are rather shaky and unreliable, resulting in a large
+proportion of invalid actionable warnings. In this work, we
+mined 68,274 reversions from Top-500 Github C repositories
+to create a substantia actionable warning dataset and assigned
+weak labels to each warning’s likelihood of being a real bug.
+To automatically identify actionable warnings and recommend
+those with a high probability of being real bugs (A WHB), we
+propose a two-stage framework called ACWR ECOMMENDER . In
+the first stage, our tool use a pre-trained model, i.e., UniXcoder,
+to identify actionable warnings from a huge number of SA
+tool’s reported warnings. In the second stage, we rerank valid
+actionable warnings to the top by using weakly supervised
+learning. Experimental results showed that our tool outperformed
+several baselines for actionable warning detection (in terms of
+F1-score) and performed better for A WHB recommendation (in
+terms of nDCG and MRR). Additionaly, we also performed an
+in-the-wild evaluation, we manually validated 24 warnings out of
+2,197 reported warnings on 10 randomly selected projects, 22 of
+which were confirmed by developers as real bugs, demonstrating
+the practical usage of our tool.
+Index Terms —Actionable warning recommendation, Static
+analysis, Weak supervision, Data mining
+I. I NTRODUCTION
+The static analysis tool has been widely used by software
+developers and companies to detect potential bugs and report
+warnings in recent years [1]–[3]. For example, Facebook has
+developed infer, a static code analysis tool for checking
+generic bug patterns (e.g, null pointer exceptions, memory
+leaks, race conditions) in their Android and iOS apps (includ-
+ing the main Facebook, Whatsapp, Instagram app and many
+others). Due to the lightweight analysis and low computational
+cost, these static analysis tools have gained popularity among
+developers. However, static analysis tools face two major
+challenges: Firstly, they have a high false alarm rate, with
+warnings often having a false-positive rate of reaching up
+to 90% [4]. Secondly, developers often become overwhelmed
+with information overload while using these tools, which can
+* corresponding author.
+cause them to overlook real bugs and getting lost in irrelevant
+information.
+To fill the gap and help developers to better make use of
+static analysis tools, previous researchers have introduced the
+concept of actionable warning, namely the warnings need to
+be acted on by developers. [5], [6]. Particularly, if a warning
+presents in one revision and disappears in a subsequent revi-
+sion, then this warning is referred as an actionable warning,
+otherwise, it is regarded as a false alarm. Different methods
+have been proposed to identify actionable warnings [7]–[9].
+However, two limitations still exist: (i) Most of these methods
+rely on hand-crafted features, which heavily depend on man-
+ual design and expert domain knowledge. (ii) Prior research
+has focused solely on detecting actionable warnings without
+addressing the crucial concern that not all actionable warnings
+are valid indicators of real bugs.
+In this paper, we aim to automate the task of identifying
+actionable warnings produced by static analysis tool ( infer
+in this study) and further validatin actionable warnings by
+recommending A WHB(Actionable Warning with High prob-
+ability to be real Bug). To achieve this, we build a large
+dataset of actionable warnings and propose a two-stage frame-
+work called ACWR ECOMMENDER which includes a coarse-
+grained detection stage and a fine-grained reranking stage.
+The dataset is collected from the Top 500 popular C projects
+on Github, consisting of 538 actionable warnings and 30,590
+false alarms. Then each actionable warning is assigned a
+weak label using semantic and structural matching rules to
+estimate the likelihood of it being a real bug. In the coarse-
+grained detection stage, we train a detector to predict whether
+a warning is actionable or not using the dataset. In the fine-
+grained reranking stage, we fine-tune the model to prioritize
+AWHB using weakly supervised learning.
+We conducted extensive experiments on two tasks, ac-
+tionable warnings detection and AWHB recommendation, to
+evaluate the effectiveness of our ACWR ECOMMENDER . Our
+proposed model demonstrated superiority over several base-
+lines. Results show that our first-stage detector significantly
+outperforms other baselines by 91.7% in terms of F1-score
+for the actionable warning detection task, and our second-
+stage reranker performs better than its three baselines in terms
+of nDCG and MRR for the AWHB recommendation task.
+An in-the-wild evaluation was also conducted, where our tool
+recommended 24 actionable warnings to Github developers,
+arXiv:2309.09721v1  [cs.SE]  18 Sep 2023
+22 of which were confirmed as real bugs, further justifying
+the practical usage of our approach.
+II. A PPROACH
+We first introduce how to build an actionable warning
+dataset under weak supervision. We then present the details
+of our proposed two-stage model. The Overall framework is
+illustrated in Fig. 1
+A. Actionable Warning Collection and Labeling
+The aim of this stage is to gather all actionable warnings
+and assign a label for each actionable warning to represent its
+likelihood of being a real bug. Regarding the actionable warn-
+ing collection, we followed the process of previous studies [7],
+for each revision a given project, we run static analysis tool
+infer to generate a list of warnings. Then we automatically
+check if the warning disappears in later revisions, if yes then
+the warning is labeled as an actionable warning, otherwise the
+warning is treated as a false alarm. Any warnings that have not
+been resolved for over two years are also deemed false alarms.
+Finally, we have collected 538 actionable warnings and 30,590
+false alarms from top-500 GitHub C projects.
+However, we find that actionable warnings collected by
+the current pipeline are largely invalid and may not
+necessarily represent real bugs , this observation is also
+consistent with the latest empirical findings [10]. The main
+reason is that the current method regards all disappeared
+warnings as actionable warnings, while this assumption is
+rather shaky because the disappearance of such warning(s)
+can be caused by a non-relevant fix. In this study, we aim to
+take one more step further by assigning actionable warnings
+with different probability scores under weak supervision. The
+higher probability scores indicate actionable warning(s) are
+more likely to be real bug(s) (referred to A WHB in this
+study), which should be inspected at the beginning. To gather
+more accurate actionable warnings, we estimate the “matching
+degree” of each actionable warning and its bug-fix commit
+in terms of two perspectives, i.e., semantical matching rule
+(using commit message) and structural matching rule (using
+code change context).
+1) Semantic Matching Rule.: The commit message of a
+bug-fix reversion summarizes the commit and can be used
+to estimate a semantic matching score. As shown in Table I,
+a score of 3 is assigned if the commit message contains
+keywords that exactly match the warning type (column 3),
+indicating a high likelihood of a real bug. A score of 2 is
+assigned if warning context keywords are mentioned in the
+commit message (column 4). A score of 1 is assigned if the
+commit message only contains fix-related common keywords
+(column 5). If the commit message does not match any
+keyword, a score of 0 is assigned, indicating an unlikely
+relation to a real bug.
+2) Structural Matching Rule.: Besides semantic informa-
+tion, we use code change context to assist determination if
+an actionable warning is fixed by the corresponding bug-fix
+reversion. As shown in Table II, a structural matching score
+is assigned based on code change matching rules. A score of
+3 is assigned if the code change matches the fix pattern of the
+warning type (column 2). A score of 1 is assigned if the code
+change falls within expected bug-fix scope (column 3). For
+warnings that do not match any rule, a score of 0 is assigned.
+3) Aggregation of Weal Labels: To obtain a more reliable
+and robust label for each actionable warning, we use majority
+voting to combine the above semantic matching score and
+structural matching score, as demonstrated in Equ. 1.
+Label(x) =
+
+
+
+VTB, CM (x) + CC (x) > 3
+LTB, 2 <= CM (x) + CC (x) <= 3
+UTB, 0 <= CM (x) + CC (x) < 2
+(1)
+Given an actionable warning x, CM (x) refers to the se-
+mantic score for x using the commit message matching rule,
+and CC (x) refers to the structural score for x using the code
+change matching rule. If the sum of CM (x) and CC (x) is
+greater than 3, it means the actionable warning is very likely
+to be a real bug from both semantic and structural aspects and
+we label x as VTB (Very Likely To be Bugs). Similarly, if the
+sum of CM (x) and CC (x) falls between 2 and 3, it means
+the warning x matches the bug-fix reversion from either the
+semantic or structural aspect and is likely to be a real bug,
+we label x as LTB (Likely To be Bugs) . Lastly, if the sum
+of CM (x) and CC (x) is less than 2, it means the actionable
+warning x mismatches the bug-fix reversion and is unlikely to
+be a real bug, we label such instances as UTB (Unlikely To be
+Bugs). We then define the warning x whose Label(x) is VTB
+or LTB as A WHB(Actionable Warning with High probability
+to be real Bug).
+B. Two-stage Model
+In order to identify actionable warnings and recommend
+AWHB, we propose a two-stage modal which includes a
+detector and a reranker. In the coarse-grained detection stage,
+actionable warnings dataset is used to warm-up and let the
+model learn how to distinguish actionable warnings from false
+alarms. In the fine-grained reranking stage, we further fine-
+tune the model to rerank the AWHB to the top by weakly
+supervised learning.
+1) Warn-up the detector model: The goal of this stage is
+to develop a model that can differentiate between actionable
+warnings and false alarms. To achieve this, UniXcoder [11]
+is used to process two types of key information: text-related
+input (such as bug type) and code-related input (such as AST).
+The use of UniXcoder allows for unified multi-modal data
+training, which is ideal for the encoding task. The text-related
+input is obtained by extracting bug type, qualifier, procedure,
+and filename from the warning report generated by infer. The
+code-related input is generated by identifying the bug location
+and associated buggy statement, locating the parent node of the
+statement in the AST, and extracting control flow information
+from the AST as code context. Both types of input are fed
+into UniXcoder, and the resulting embeddings are obtained
+by concatenating the pre-trained model outputs. The model
+Bug type: Source leakQualifier: Resource acquired by call to `socket()`at line 3651 is not released after line 3673.Procedure: evhtp_bind_sockaddrFile: libevhtp/evhtp.cBug trace: {...}Warning Information
+Bug type Qualifier Procedure File
+Text Related  FeatureAbstract Syntax TreeCode Related FeatureFeature ExtractionWeak SupervisionStructural Matching RuleSemantic Matching RuleStage One ACWDetectorStage TwoACWRecommendorWarm Up① 
+Fine-tune② 
+Data Collection
+Github RepositoriesActionable Warnings
+Fig. 1: Overview of Our Tool
+TABLE I: Semantic Matching Rule
+Warning Type Warning Qualifier Template Warning Type Keyword Warning Context Keyword Common Keyword
+Uninitialized Variable The value read from variable
+was never initialized. initial, define, assign, etc. variable
+fix, repair, bug,
+warning, solve,
+problem, etc.
+Null Dereference pointer last assigned on line # could
+be null and is dereferenced at line #
+null dereference,
+null pointer, etc. pointer
+Resource Leak
+Resource acquired to variable
+by call to function at line #
+is not released after line #
+resource, leak, etc. variable, function
+Dead Store The value written to
+variable is never used.
+dead store,
+unused, never, etc. variable
+TABLE II: Structural Matching Rule
+Warning Type Fix Pattern Scope Pattern
+Uninitialized Variable assign value by
+assignment or reference before warning
+Null Dereference add a null-check before warning
+Resource Leak invoke resource-
+free-related function after warning
+Dead Store use the variable,
+remove assignment after warning
+is trained to identify actionable warnings by warming up
+UniXcoder. The actionable warning identification task can be
+viewed as a binary classification problem. That is, for a given
+reported warning x, we use the model f (x; θ) to determine
+whether x is actionable or not. The actionable warning dataset
+without weak supervision is used to warm up f (x; θ) and the
+optimization goal is defined as follows:
+min
+θ
+1
+N
+X
+x∈X
+L (f (x; θ), yx) (2)
+where L denotes a loss function and yx is the actionable
+warning label without weak supervision. Any loss function
+suitable for a classification task can be used in the warm-up
+process, and in this study we use the Binary Cross Entropy
+Loss.
+2) fine-tune the reranker model: Based on the warmed-up
+actionable warning detector model, we fine-tuned a reranking
+model by continuing training with the actionable warning
+dataset under weak supervision. To rank different levels of
+actionable warnings, we transform the ranking problem into
+multiclass classification task. That is, for a given reported
+warning x, we aim to predict x as V/L/U/False Warning
+based on our actionable warnings dataset under weak super-
+vision. The optimization problem is defined as follows:
+min
+θ
+1
+N
+X
+x∈X
+J (g(f (x; θ)), ˜yx) (3)
+The ˜yx is the label aggregated from weak supervision. g(x)
+is the softmax function to compute the probability of each
+class for x, and J is Cross Entropy Loss, which is suitable for
+multiclass classification task. When the optimization is done,
+the final ranking score for each warning x can be inferred as
+follows:
+S(x) =
+(
+class(x) + g˜y(x), y ∈ VTB, LTB, UTB
+class(x) − g˜y(x), y ∈ False Warning (4)
+where class(x) maps each warning x to a base
+class score 0/1/2/3 if the predicted class is False
+Warning/UTB/LTB/VTB, y denotes the predicted class of x
+and g˜y(x) denotes the probability of the predicted class.
+C. Implementation
+We implement our tool by Python 3.9, leveraging the
+PyQt5 [12], which is a popular Python GUI module. To use
+our tool, developers first input a infer report (txt file from
+their local computer) by selecting the local file and clicking
+the open button, then the developers click the Analyze
+button in the bottom of the tool interface to call our pre-
+trained model by feeding the input infer reports. In the
+backend, ACWR ECOMMENDER can read each warning from

@@ -1,0 +1,145 @@
+62
+Assessing and Improving an Evaluation Dataset for
+Detecting Semantic Code Clones via Deep Learning
+HAO YU,School of Software and Microelectronics, Peking University, Beijing, China
+XING HU,School of Software Technology, Zhejiang University, Ningbo, China
+GE LI,Key Laboratory of High Confidence Software Technologies (Peking University), Ministry of
+Education, China
+YING LI,National Research Center of Software Engineering, Peking University, Beijing, China
+QIANXIANG WANG,Huawei Technologies Co., Ltd., China
+TAO XIE,Key Laboratory of High Confidence Software Technologies (Peking University), Ministry of
+Education, China
+Inrecentyears,applyingdeeplearningtodetectsemanticcodecloneshasreceivedsubstantialattentionfrom
+the research community. Accordingly, various evaluation benchmark datasets, with the most popular one as
+BigCloneBench, are constructed and selected as benchmarks to assess and compare different deep learning
+modelsfordetectingsemanticclones.However,thereisnostudytoinvestigatewhetheranevaluationbench-
+mark dataset such as BigCloneBench is properly used to evaluate models for detecting semantic code clones.
+In this article, we present an experimental study to show that BigCloneBench typically includes semantic
+clonepairsthatusethesameidentifiernames,whichhoweverarenotusedinnon-semantic-clonepairs.Sub-
+sequently, we propose an undesirable-by-design Linear-Model that considers only which identifiers appear
+in a code fragment; this model can achieve high effectiveness for detecting semantic clones when evaluated
+on BigCloneBench, even comparable to state-of-the-art deep learning models recently proposed for detect-
+ing semantic clones. To alleviate these issues, we abstract a subset of the identifier names (including type,
+variable, and method names) in BigCloneBench to result in AbsBigCloneBench and use AbsBigCloneBench
+to better assess the effectiveness of deep learning models on the task of detecting semantic clones.
+CCS Concepts: •Software and its engineering→ Maintaining software;
+Additional Key Words and Phrases: Code clone detection, deep learning, dataset collection
+This work was supported by the Key-Area Research and Development Program of Guangdong Province (No.
+2020B010164003) and National Natural Science Foundation of China (Grant No. 62161146003). This work was also sup-
+ported by the Tencent Foundation or XPLORER PRIZE.
+Authors’ addresses: H. Yu, School of Software and Microelectronics, Peking University, No.5 Yiheyuan Road Haidian Dis-
+trict, Beijing, China 10087; email: yh0315@pku.edu.cn; X. Hu, School of Software Technology, Zhejiang University, No.
+1689 Jiangnan Road, Ningbo, Zhejiang, China, 315048; email: xinghu@zju.edu.cn; G. Li (corresponding author) and T. Xie
+(corresponding author), Key Laboratory of High Confidence Software Technologies (Peking University), Ministry of Ed-
+ucation, No. 5 Yiheyuan Road Haidian District, Beijing, China 10087; emails: lige@pku.edu.cn, taoxie@pku.edu.cn; Y. Li
+(corresponding author), National Research Center of Software Engineering, Peking University, No. 5 Yiheyuan Road Haid-
+ian District, Beijing, China 10087; email: li.ying@pku.edu.cn; Q. Wang, Huawei Technologies Co., Ltd., Building 1 and 4,
+No. 18, Muhe Road, Haidian District, Beijing, China, 100094; email: wangqianxiang@huawei.com.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions frompermissions@acm.org.
+© 2022 Association for Computing Machinery.
+1049-331X/2022/07-ART62 $15.00
+https://doi.org/10.1145/3502852
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 62. Pub. date: July 2022.
+62:2 H. Yu et al.
+ACM Reference format:
+Hao Yu, Xing Hu, Ge Li, Ying Li, Qianxiang Wang, and Tao Xie. 2022. Assessing and Improving an Evalua-
+tion Dataset for Detecting Semantic Code Clones via Deep Learning.ACM Trans. Softw. Eng. Methodol.31, 4,
+Article 62 (July 2022), 25 pages.
+https://doi.org/10.1145/3502852
+1 INTRODUCTION
+Codeclones[ 32](inshortasclonesintherestofthisarticle)aresimilarcodesnippetsthatsharethe
+samesemanticsbutmaydiffersyntacticallytovariousdegrees.Thereisacommonagreementthat
+clonesshouldbedetectedandmanaged[ 20,34]forthreemainreasons.First,clonesunnecessarily
+increasesystemsize.Asasystemincreasesinsize,moresoftwaremaintenanceeffortsareneeded.
+Second, changes to a code segment, such as fault fixing, need to be made to its clones as well,
+therebyincreasingmaintenanceefforts.Also,ifchangesareperformedinconsistently,faultscould
+be introduced. Third, duplicating a code snippet that contains faults leads to fault propagation.
+Todetectandmanageclones,researchershaveestablishedacommontaxonomytogroupclones
+into multiple types [2, 32], which encompasssemantic clones, the most difficult-to-detect ones.
+Type I-III clones are clone pairs that differ at token and statement levels. Type-IV clones are code
+snippetswithsimilarfunctionalitiesbutwithdifferentimplementations.Toclarifythedifferences
+between Type-III and Type-IV clones, previous work [39] divides these two types into the fol-
+lowing four categories based on their syntactical similarity (sorted from the easiest to most dif-
+ficult to detect): Very-Strong Type-III, Strong Type-III, Moderately Type-III, and Weak Type-III/
+Type-IV. The two most difficult-to-detect categories of clones, i.e., Moderately Type-III and Weak
+Type-III/Type-IV, are referred to as semantic clones [2, 32]. Semantic clones are difficult to detect
+because they are quite different in implementations, and are not amenable for detection based on
+the lexical and structural information [45,48].
+Sincethe emergence ofclones as a researchfield, varioustraditionalapproaches[15,16,33,36]
+have focused on detecting and analyzing Type-I to Type-III clones but have had limited suc-
+cess with semantic clones (i.e., Moderately Type-III and Weak Type-III/Type-IV clones). With-
+out prior knowledge, these approaches cannot identify semantic clones being dissimilar in
+lexical/syntactical-level implementations (e.g., bubble sort and quick sort) without considering
+functionalbehaviorsofcodesnippets.Forexample,SourcererCC[ 36]treatsthesourcecodeunder
+analysis as tokens and compares subsequences to detect clones. SourcererCC is a typical lexical-
+based approach that considers the similarity only in the lexical level of code snippets and ignores
+thestructuralinformation.Deckard[ 15]usesonlythestructuralinformationwithoutconsidering
+lexical information of code snippets.
+Based on a large labeled dataset such as BigCloneBench [39] (one of the most popular bench-
+marks),deeplearningapproaches[ 45,46,48,49] havebeen proposedtodetectsemantic clonesin
+recentyears.Intherestofthisarticle,wereferadeeplearningarchitecturebeforetrainingasadeep
+learningapproach,andreferadeeplearningmodelaftertrainingasadeeplearningmodel.Existing
+researchhastakengreateffortsonproposingcomplicateddeeplearningapproaches[ 44,45,48,49]
+toimprovedetectioneffectivenesswithrespecttoevaluationmetrics(e.g.,precisionandrecall)on
+BigCloneBench. These approaches usually split the dataset into the training and validation/test
+sets. Their experimental results show that deep learning approaches can effectively detect seman-
+tic clones by learning features from big data without manually extracting features. Deep learning
+approaches perform well on detecting semantic clones because the deep learning approaches can
+learn the semantic information in semantic clones from the training set.
+Despitethequalityofalabeleddatasetbeinghighlycriticalforthesedeeplearningapproaches,
+thereexistsnostudyforinvestigatinglimitationsofBigCloneBenchwhenbeingusedtoassessand
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 62. Pub. date: July 2022.
+Assessing and Improving an Evaluation Dataset for Detecting Semantic Code Clones 62:3
+compare different deep learning approaches for detecting semantic clones, in the face of various
+dataqualityissuesincreasinglyreportedforothersoftwareengineeringtasks[ 1,26].Ifresearchers
+do not pay attention to data quality issues in the dataset, the reported effectiveness of models on
+thedatasetisnotconvincing[ 1,26].Forexample,codeduplicationissuesexist(resultedfromiden-
+tical and similar files) in both the training/validation and test sets used to train and assess deep
+learningapproachesforsourcecode[ 1].Codeduplicationaffectsallevaluationmetricvalues,and
+the effects observed by end-users are often significantly worse than the effects reported by eval-
+uations conducted based on the dataset. Here is another example to illustrate the impact of the
+dataset on a deep learning approach. As the keynote presentation in Frontiers in AI and Robotics
+(FAIR 2020) [37], some deep learning approaches distinguish dogs and wolves based on the sur-
+roundingbackgroundinsteadoftheirdifferentlooks,leadingtothemodel’spooreffectivenesson
+new data.Although many researcheffortshave foundthe limitations ofthe datasetusedby them,
+there is no study to investigate the limitations of BigCloneBench when used as the benchmark to
+assess and compare different deep learning approaches on semantic clone detection.
+To fill this gap of lacking empirical investigation, in this article, we conduct an experimental
+study to find that many semantic clone pairs from BigCloneBench use the same identifier names,
+which, however, are not used in non-clone pairs. Based on this finding, we hypothesize that deep
+learning approaches can achieve high metric values on BigCloneBench by considering only the
+identifiernameinformation.Tovalidatethishypothesis,wedevelopanundesirable-by-designap-
+proach to detect semantic clones by utilizing only the identifier name information. This approach
+isundesirablepurposelybecausecodesegmentsfromasemanticclonepaircanhavequitedifferent
+identifier names by definition and in practice, and detecting whether code segments are semantic
+clones shall be independent of how the identifier names in these code segments are named. We
+find that even this undesirable approach can achieve high effectiveness comparable to the effec-
+tivenessofstate-of-the-artapproachesonBigCloneBench.Notethattheundesirablemodeltrained
+on OJClone [27] fails to effectively detect semantic clones in OJClone, another major evaluation
+dataset popularly used by the research community.
+To alleviate the identified issue in BigCloneBench, we abstract a subset of the identifier names
+in BigCloneBench to better assess the effectiveness of deep learning approaches (we denote the
+resultingnewdatasetasAbsBigCloneBench)thathavelessrelianceontheidentifiernameinforma-
+tion. Our experimental results show that the undesirable approach fails to detect semantic clones
+on AbsBigCloneBench effectively. However, the state-of-the-art approaches used in our experi-
+ments still perform well on AbsBigCloneBench by learning semantic features such as the lexical
+and structural information from code snippets.
+We also empirically assess the cross-effectiveness of deep learning approaches on Big-
+CloneBench and AbsBigCloneBench. We conduct an experiment to explore whether models
+trained with BigCloneBench (or AbsBigCloneBench) are also effective on AbsBigCloneBench (or
+BigCloneBench).TheexperimentalresultsshowthatmodelstrainedwithAbsBigCloneBenchper-
+formwellwhenappliedonBigCloneBench.However,modelstrainedwithBigCloneBenchcannot
+be effectively applied to AbsBigCloneBench for detecting semantic clones. These results indicate
+that models trained with BigCloneBench fail to detect semantic clones if the identifier names are
+changed.
+This article makes the following main contributions:
+•Assessment. We design an undesirable-by-design approach named Linear-Model, which
+can achieve high effectiveness on BigCloneBench by utilizing only the identifier name
+information. Thus, deep learning approaches with high effectiveness evaluated on Big-
+CloneBench may not really be effective in general. Researchers need to pay attention to
+the identifier naming in BigCloneBench when using BigCloneBench to assess and compare
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 62. Pub. date: July 2022.

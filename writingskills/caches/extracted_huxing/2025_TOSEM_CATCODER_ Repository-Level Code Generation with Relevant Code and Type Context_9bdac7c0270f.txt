@@ -1,0 +1,145 @@
+CatCoder: Repository-Level Code Generation with Relevant
+Code and Type Context
+ZHIYUAN PAN,The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XING HU∗,The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XIN XIA,The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XIAOHU YANG,The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+Large language models (LLMs) have demonstrated remarkable capabilities in code generation tasks. However,
+repository-level code generationpresents unique challenges, particularly due to the need to utilize information
+spread across multiple files within a repository. Specifically, successful generation depends on a solid grasp of
+both general, context-agnostic knowledge and specific, context-dependent knowledge. While LLMs are widely
+used for the context-agnostic aspect, existing retrieval-based approaches sometimes fall short as they are
+limited in obtaining a broader and deeper repository context. In this paper, we presentCatCoder, a novel code
+generation framework designed for statically typed programming languages.CatCoderenhances repository-
+level code generation by integrating relevantcode and type context. Specifically, it leverages static analyzers to
+extract type dependencies and merges this information with retrieved code to create comprehensive prompts
+for LLMs. To evaluate the effectiveness ofCatCoder, we adapt and construct benchmarks that include 199
+Java tasks and 90 Rust tasks. The results show thatCatCoderoutperforms the RepoCoder baseline by up to
+14.44% and 17.35%, in terms of compile@𝑘 and pass@𝑘 scores. In addition, the generalizability ofCatCoder
+is assessed using various LLMs, including both code-specialized models and general-purpose models. Our
+findings indicate consistent performance improvements across all models, which underlines the practicality of
+CatCoder. Furthermore, we evaluate the time consumption ofCatCoderin a large open source repository,
+and the results demonstrate the scalability ofCatCoder.
+CCS Concepts:•Software and its engineering→Automatic programming.
+Additional Key Words and Phrases: Large Language Model, Code Generation, Repository Context
+ACM Reference Format:
+Zhiyuan Pan, Xing Hu, Xin Xia, and Xiaohu Yang. 2025.CatCoder: Repository-Level Code Generation with
+Relevant Code and Type Context. 1, 1 (November 2025), 26 pages. https://doi.org/10.1145/nnnnnnn.nnnnnnn
+1 Introduction
+Large language models (LLMs) [ 33, 36, 39, 47] have been widely applied in various software
+engineering-related fields, and they have shown remarkable performance in code generation
+tasks [14, 17]. Recently, repository-level code generation has attracted much attention [32, 40, 48, 53].
+It refers to the generation of a specific function within a repository and is thus more practical than
+∗Corresponding Author
+Authors’ Contact Information: Zhiyuan Pan, The State Key Laboratory of Blockchain and Data Security, Zhejiang University,
+Hangzhou, China, zy_pan@zju.edu.cn; Xing Hu, The State Key Laboratory of Blockchain and Data Security, Zhejiang
+University, Hangzhou, China, xinghu@zju.edu.cn; Xin Xia, The State Key Laboratory of Blockchain and Data Security,
+Zhejiang University, Hangzhou, China, xin.xia@acm.org; Xiaohu Yang, The State Key Laboratory of Blockchain and Data
+Security, Zhejiang University, Hangzhou, China, yangxh@zju.edu.cn.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the
+full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+©2025 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM XXXX-XXXX/2025/11-ART
+https://doi.org/10.1145/nnnnnnn.nnnnnnn
+, Vol. 1, No. 1, Article . Publication date: November 2025.
+arXiv:2406.03283v2  [cs.SE]  21 Nov 2025
+2 Zhiyuan Pan, Xing Hu, Xin Xia, and Xiaohu Yang
+standalone code generation tasks (i.e., generating functions with no dependencies). This practical
+scenario introduces unique challenges, as the target code often depends on definitions and usage
+patterns distributed across multiple files, rather than being confined to a single file. When provided
+with only thein-filecontext for such a task, an LLM may hallucinate and produce code that appears
+plausible but fails to compile or execute correctly within the project (e.g., misusing an API or
+referencing an undefined identifier). Therefore, a key problem in repository-level code generation
+is how to provide the LLM with the necessarycross-filecontext so that it can generate valid and
+consistent code.
+Existing studies have tried to tackle this problem by utilizing repository information with
+retrieval-based approaches. Zan et al. [51] train a dual-encoder model to retrieve API information
+from library documentation. Lu et al. [34] build an external code database to retrieve similar code.
+Shrivastava et al. [40] propose RLPG, in which they train a classifier to predict prompt proposals
+taken from repository files. Zhang et al. [53] propose RepoCoder, which iteratively retrieves similar
+code in a repository. However, these approaches still have limitations. First, methods that depend on
+external resources or require training specialized retrieval models often lack generalizability across
+unseen repositories or programming languages. Second, the retrieved code may fail to capture all
+necessary field accesses and API calls required for correct generation. This issue is particularly
+pronounced in repositories with minimal code duplication [53], or when the desired functionality is
+novel within the codebase. These limitations underscore the need for more comprehensive modeling
+of repository context.
+In this paper, we aim to address the aforementioned limitations by capturing a broader repository
+context for the LLM. We observe that, in addition to code retrieval, the types associated with a
+function can also serve as valuable references for LLMs. Specifically, these related types provide
+a rich set of fields and methods from which the LLM can select when generating code, thereby
+enhancing its understanding of repository-specific details. We refer to this explicit information
+of types astype context. The type context encapsulates localized knowledge embedded in nested
+scopes, serves as a complement to code retrieval, and helps LLMs develop a deeper understanding
+of the repository structure. Our work focuses on constructing type context forstatically typed
+programming languages1, where precise type information can be reliably extracted and leveraged.
+In contrast, dynamically typed languages (e.g., Python and JavaScript) determine variable types at
+runtime, making type information less accessible and more ambiguous. To extract type context, we
+utilize existing static analyzers.
+Building on the concept oftype context, we propose a new repository-level code generation
+framework namedCatCoder. By leveraging the combination of relevant code and type context,
+CatCoderaims to improve the generation of code that is both logically sound and correctly
+integrated within its local environment. The framework operates in three stages. First, it retrieves
+relevant code from the repository. Next, it invokes a static analyzer to obtain dependent types for
+the target function and constructs a textual representation of the type context. Finally, it integrates
+both the retrieved code and the type context into a single prompt and generates the target function
+using an LLM.CatCoderruns on top of a frozen LLM and does not require external databases or
+additional model training.
+To evaluate the effectiveness ofCatCoder, we adapt and construct repository-level code gener-
+ation benchmarks that include 199 Java tasks and 90 Rust tasks in total. We compareCatCoder
+with vanilla LLM, the In-File context (i.e., contents within the same file), and RepoCoder [ 53],
+a state-of-the-art framework for repository-level code generation, in terms of compile@ 𝑘 and
+1Statically typed programming languages require variable types to be declared at compile time, such as C, C++, Java, and
+Rust.
+, Vol. 1, No. 1, Article . Publication date: November 2025.
+CatCoder: Repository-Level Code Generation with Relevant Code and Type Context 3
+pass@𝑘 [17] scores (i.e., compilation rate and test passing rate). To validate the generalizability
+ofCatCoder, we evaluateCatCoderwith various LLMs, including code-specialized models and
+general-purpose models. To assess the scalability ofCatCoder, we conduct extensive evaluations
+on a large open-source repository, measuring the time consumption of sequential code generation
+tasks. The results on the benchmarks indicate thatCatCodersubstantially outperforms the vanilla
+LLM and the In-File context. In addition, it outperforms RepoCoder by up to 14.44% and 17.35%,
+in terms of compile@𝑘 and pass@𝑘. The results of the generalizability study demonstrate that
+CatCoderimproves the performance of all selected LLMs. Furthermore, the results of the scalability
+study underline the efficiency and practicality ofCatCoderin large repositories.
+Contributions.In summary, we make the following contributions:
+(1) We propose a novel framework for statically-typed programming languages,CatCoder,
+to generate repository-level code by highlighting relevant code and type context in code
+repositories.
+(2) To the best of our knowledge, we are the first to construct a repository-level code generation
+benchmark for Rust, to evaluate the effectiveness ofCatCoderon a minor programming
+language.
+(3) We evaluateCatCoderusing Java and Rust benchmarks, and results indicate thatCatCoder
+outperforms the baselines.
+(4) We release the replication package2 ofCatCoder, including the source code ofCatCoder
+and our benchmarks, to facilitate future research.
+Paper Organization.The remainder of the paper is structured as follows. Section 2 introduces
+the motivation ofCatCoderusing an example. Section 3 presents the details ofCatCoder.
+Section 4 describes the experimental setups, including baselines, evaluation metrics, benchmarks,
+and implementation details. Section 5 analyzes the experimental results and provides answers to
+the research questions. Section 6 discusses the failure cases ofCatCoderand threats to validity.
+Section 7 summarizes the related work. Section 8 concludes the paper with possible future work.
+2 Motivating Example
+In this section, we present a realistic development scenario to illustrate the core idea behind
+CatCoder. The motivating example will demonstrate that synthesizing information from both
+relevant code and type context is crucial for successful generation.
+Consider the task of implementing the helper method triu within the CMAESOptimizer class
+from the widely usedApache Commons Mathlibrary, as shown in Fig. 1. As described in its
+docstring, the triu method is intended to extract the upper triangular part of a given matrix.
+Its signature is private static RealMatrix triu(final RealMatrix m, int k) , where 𝑚
+is the input matrix and𝑘specifies the diagonal offset.
+Based on its context-agnostic knowledge of coding, an LLM can infer the general algorithmic
+principle: the implementation should return a new matrix with the same dimensions, where an
+element at position (𝑟, 𝑐) is copied from𝑚 if the column index𝑐 is greater than or equal to𝑟+𝑘 ; oth-
+erwise, the element is set to zero. However, the requirement of context-dependent knowledge poses
+challenges to the LLM. The RealMatrix type is an interface inApache Commons Mathand cannot
+be treated as a nested double array. Proper interaction with a RealMatrix instance requires
+familiarity with repository-specific API conventions, such as using getEntry(row, column)
+to access elements. Furthermore, creating a new RealMatrix instance requires using a specific
+concrete implementation, Array2DRowRealMatrix , and understanding the correct constructor
+usage. An LLM must therefore grasp these repository-specific details to produce valid code.
+2https://github.com/pan2013e/catcoder
+, Vol. 1, No. 1, Article . Publication date: November 2025.

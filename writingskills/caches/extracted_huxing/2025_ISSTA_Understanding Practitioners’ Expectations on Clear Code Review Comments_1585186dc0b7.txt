@@ -1,0 +1,130 @@
+Understanding Practitioners’ Expectations on Clear Code
+Review Comments
+JUNKAI CHEN∗, Zhejiang University, China
+ZHENHAO LI∗, York University, Canada
+QIHENG MAO, Zhejiang University, China
+XING HU† , Zhejiang University, China
+KUI LIU, Zhejiang University, China
+XIN XIA, Zhejiang University, China
+W ARNING: This paper contains potentially offensive and harmful content.
+The code review comment (CRC) is pivotal in the process of modern code review. It provides reviewers with
+the opportunity to identify potential bugs, offer constructive feedback, and suggest improvements. Clear and
+concise code review comments (CRCs) facilitate the communication between developers and are crucial to the
+correct understanding of the identified issues and proposed solutions. Despite the importance of CRCs’ clarity,
+there is still a lack of guidelines on what constitutes a good clarity and how to evaluate it. In this paper, we
+conduct a comprehensive study on understanding and evaluating the clarity of CRCs. We first derive a set of
+attributes related to the clarity of CRCs, namely RIE attributes (i.e., Relevance, Informativeness, and Expression),
+as well as their corresponding evaluation criteria based on our literature review and survey with practitioners.
+We then investigate the clarity of CRCs in open-source projects written in nine programming languages and
+find that a large portion (i.e., 28.8%) of the CRCs lack the clarity in at least one of the attributes. Finally, we
+explore the potential of automatically evaluating the clarity of CRCs by proposing ClearCRC. Experimental
+results show that ClearCRC with pre-trained language models is promising for effective evaluation of the
+clarity of CRCs, achieving a balanced accuracy up to 73.04% and a F-1 score up to 94.61%.
+CCS Concepts: •Software and its engineering → Software creation and management .
+Additional Key Words and Phrases: Clarity, Code Review Comment, Code Review
+ACM Reference Format:
+Junkai Chen, Zhenhao Li, Qiheng Mao, Xing Hu, Kui Liu, and Xin Xia. 2025. Understanding Practitioners’
+Expectations on Clear Code Review Comments. Proc. ACM Softw. Eng. 2, ISSTA, Article ISSTA056 (July 2025),
+23 pages. https://doi.org/10.1145/3728931
+1 Introduction
+Code review is the process of systematic examinations on software source code performed by
+third-party developers [42, 49]. The primary goals of code review include identifying potential
+issues, seeking areas for improvement, and transferring knowledge [9, 30, 51, 63, 65]. It has been
+∗ Equal contribution.
+† Corresponding author.
+Authors’ Contact Information: Junkai Chen, The State Key Laboratory of Blockchain and Data Security, Zhejiang University,
+Hangzhou, China, junkaichen@zju.edu.cn; Zhenhao Li, York University, Toronto, Canada, lzhenhao@yorku.ca; Qiheng
+Mao, Zhejiang University, Hangzhou, China, maoqiheng@zju.edu.cn; Xing Hu, The State Key Laboratory of Blockchain and
+Data Security, Zhejiang University, Hangzhou, China, xinghu@zju.edu.cn; Kui Liu, Zhejiang University, Hangzhou, China,
+brucekuiliu@gmail.com; Xin Xia, Zhejiang University, Hangzhou, China, xin.xia@acm.org.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+© 2025 Copyright held by the owner/author(s).
+ACM 2994-970X/2025/7-ARTISSTA056
+https://doi.org/10.1145/3728931
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA056. Publication date: July 2025.
+
+ISSTA056:2 Junkai Chen, Zhenhao Li, Qiheng Mao, Xing Hu, Kui Liu, Xin Xia
+Example	1
+Example	2
+-@VisibleForTesting-public final LockResolverClientlockResolverClient;+ @VisibleForTestingpublic final LockResolverClient
+- public class NodeJSFeatureConfigextends FeatureConfig{-@Override-public booleanenableGrpcStreaming() {+ public class NodeJSFeatureConfigextends FeatureConfig{}
+“please revert this change.”
+“We can rename `FeatureConfig` to `DefaultFeatureConfig`,so the languages use default values will not need to create an empty subclass.”
+Fig. 1. Examples of code changes and their code review comments (CRCs).
+widely integrated into the software development life cycle in both open-source and industrial
+projects to help the assurance of software quality.
+A code review comment (CRC) is a specific piece of feedback provided by a reviewer during
+the code review process. Clear and concise code review comments (CRCs) are crucial for ensuring
+that the feedback is readable and actionable, and further contributing to the overall quality of the
+software. On the contrary, CRCs that lack of sufficient clarity may lead to confusion, misunder-
+standings, and misinterpretations amongst the collaborating developers. Figure 1 presents two
+examples of code changes and their corresponding code review comments. In Example 1, the re-
+viewer comments “please revert this change”. However, no rationale or reason behind this comment
+is provided. Developers may not understand why this change needs to be reverted. In Example
+2, the reviewer suggests renaming a parent class and also explains the reason of such suggestion.
+Moreover, this comment is written in a more friendly tone (i.e.,“We can ... ”). Although both of these
+two examples provide a suggestion to modify the code, their effectiveness in conveying reviewer’s
+idea may considerably vary.
+Prior studies provide preliminary insights on revealing the quality of CRCs. For example, use-
+fulness [11, 27, 47] focuses on whether the CRCs can trigger subsequent code changes or if the
+reply to CRCs has a positive sentiment (e.g., “LGTM”). Yang et al. [62] proposed four attributes to
+evaluate the quality of CRCs. Such attributes focus more on the purpose of CRCs (e.g., evaluation,
+suggestion, and question). However, these studies either indirectly evaluate the quality of CRCs
+using the information after the completion of the review, or evaluate the CRCs based on whether it
+has elements related to the purpose of this comment. Therefore, a systematic understanding and
+characterizing of how a CRC can clearly and concisely foster the communication among developers
+(i.e., clarity of CRCs) is still in mystery and an on-going challenge.
+In this paper, we conduct a comprehensive study to uncover the clarity of CRCs by following a
+multi-phased investigation: 1) we understand the characteristics and evaluation criteria of CRCs’
+clarity through a systematic literature review, a preliminary review with industrial professionals,
+and an online questionnaire survey with practitioners; 2) we examine the clarity of CRCs in
+open-source projects by conducting a manual investigation on sampled datasets; 3) we seek to
+automatically evaluate the clarity of CRCs by proposing an automated framework.
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA056. Publication date: July 2025.
+
+Understanding Practitioners’ Expectations on Clear Code Review Comments ISSTA056:3
+Particularly, we study the clarity of code review comments by answering three research questions:
+RQ1: What attributes are relevant to the clarity of CRC?Based on the analysis on our literature
+review and 103 survey responses from practitioners, we derive our RIE attributes for the clarity of
+CRCs (i.e., Relevance, Informativeness, and Expression) and their corresponding evaluation criteria.
+More than 75% of the participants consider that these attributes are important to the clarity of
+CRCs.
+RQ2: How is the clarity of code review comments in open-source projects? We manually
+investigate the clarity of code review comments in open-source projects using the datasets sampled
+from the work of Li et al. [33]. We find that 28.8% of the CRCs in our study datasets are insufficient
+in at least one of the three attributes of CRCs’ clarity. Among these attributes,Informativeness has
+the most considerable insufficiency.
+RQ3: Can we automatically evaluate the clarity of code review comments? We propose
+ClearCRC, an automated framework for the evaluation of CRCs’ clarity based on theRIE attributes.
+We compare the results of ClearCRC with three sets of backbone models: 1) training deep learning
+and machine learning models; 2) fine-tuning pre-trained language models; and 3) prompting large
+language models (LLMs). Our results show that ClearCRC is effective in evaluating each of the RIE
+attributes, with an average balanced accuracy of 73.04% using pre-trained language models.
+We summarize the contributions of this paper as follows:
+• We derive RIE attributes and their corresponding evaluation criteria for the clarity of CRCs by
+analyzing the results of our literature review and 103 survey responses from practitioners around
+the world.
+• We find that a large portion of the CRCs in open source projects actually lack of sufficient clarity.
+We also publicly share our manually labelled data in the replication package [1] for future studies.
+• We propose ClearCRC, an automated framework for the evaluation of CRCs’ clarity using various
+backbone models such as machine learning, deep learning, pre-trained language models, and
+large language models. ClearCRC achieves promising results in our evaluation, especially using
+pre-trained language models.
+Overall, the findings of our studies may be used as actionable guidelines for evaluating and
+writing clear CRCs, as well as for curating high-quality data to improve the automated generation
+techniques of CRCs.
+Paper Organization. Section 2 summarizes the related work. Section 3 presents the methodology
+of our study. Section 4 discusses the results of our research questions. Section 5 discusses the
+implications of our study. Section 6 discusses the threats to validity. Section 7 concludes the paper.
+2 Related Work
+In this section, we summarize the related work in two aspects: studying the quality of code review
+comments and automated generation of code review comments.
+2.1 Quality of Code Review Comments.
+Kerzazi et al. [7] found that sentiment conveyed within comments can significantly impact the
+outcome of the review process. Kononenko et al. [29] suggested that the review quality is mainly
+associated with the thoroughness of the feedback, the reviewer’s familiarity with the code, and
+the perceived quality of the code itself. Rahman et al. [ 47] presented a comparative analysis of
+useful versus non-useful review comments, distinguishing them through their textual attributes
+and the reviewers’ expertise. Comments were classified as useful or non-useful depending on their
+capacity to instigate changes. Chouchen et al. [16] synthesized negative examples of code reviews
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA056. Publication date: July 2025.

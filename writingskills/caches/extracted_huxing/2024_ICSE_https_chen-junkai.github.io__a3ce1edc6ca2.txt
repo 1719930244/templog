@@ -1,0 +1,326 @@
+Code Search Is All You Need? Improving Code Suggestions with
+Code Search
+Junkai Chen
+School of Software Technology,
+Zhejiang University
+Ningbo, China
+junkaichen@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Zhenhao Li
+Concordia University
+Montreal, Canada
+l_zhenha@encs.concordia.ca
+Cuiyun Gao
+Harbin Institute of Technology
+Shenzhen, China
+gaocuiyun@hit.edu.cn
+Xin Xia
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+David Lo
+Singapore Management University
+Singapore
+davidlo@smu.edu.sg
+ABSTRACT
+Modern integrated development environments (IDEs) provide vari-
+ous automated code suggestion techniques (e.g., code completion
+and code generation) to help developers improve their efficiency.
+Such techniques may retrieve similar code snippets from the code
+base or leverage deep learning models to provide code suggestions.
+However, how to effectively enhance the code suggestions using
+code retrieval has not been systematically investigated. In this pa-
+per, we study and explore a retrieval-augmented framework for
+code suggestions. Specifically, our framework leverages different
+retrieval approaches and search strategies to search similar code
+snippets. Then the retrieved code is used to further enhance the
+performance of language models on code suggestions. We con-
+duct experiments by integrating different language models into
+our framework and compare the results with their original models.
+We find that our framework noticeably improves the performance
+of both code completion and code generation by up to 53.8% and
+130.8% in terms of BLEU-4, respectively. Our study highlights that
+integrating the retrieval process into code suggestions can improve
+the performance of code suggestions by a large margin.
+CCS CONCEPTS
+•Software and its engineering → Software creation and man-
+agement;
+KEYWORDS
+Code Suggestion, Code Search, Language Model
+∗Corresponding author.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0217-4/24/04. . . $15.00
+https://doi.org/10.1145/3597503.3639085
+STEP❸ : Searching      for similar  code
+def fetch_data_from_database(
+conn, idx, field):
+cursor = conn.cursor()
+cursor.execute(f"SELECT 
+{field} FROM ……
+how to get 
+data from 
+database
+STEP❹: Using it to guide programming
+STEP❷ : Constructing the search query
+Guide
+STEP❶: Acquiring the requirements
+?
+get data from database NL
+def get_data_from_database(
+conn, idx, field) Code
+Code context Similar code
+def get_data_from_database(
+conn, idx, field):
+cursor =
+Figure 1: A common programming scenario during software
+development. A developer first constructs the query in NL or
+code, and then uses it to find similar code in the search engine
+or code base, which instructs the developer to program.
+ACM Reference Format:
+Junkai Chen, Xing Hu, Zhenhao Li, Cuiyun Gao, Xin Xia, and David Lo.
+2024. Code Search Is All You Need? Improving Code Suggestions with
+Code Search. In 2024 IEEE/ACM 46th International Conference on Software
+Engineering (ICSE ’24), April 14–20, 2024, Lisbon, Portugal. ACM, New York,
+NY, USA, 13 pages. https://doi.org/10.1145/3597503.3639085
+1 INTRODUCTION
+Code suggestion (e.g., code completion and code generation), which
+aims to suggest code for developers, is an important research topic
+in the software engineering community. Since the naturalness of
+software is introduced [22], many prior studies leverage language
+models (LMs) [19, 58] to improve the quality of code suggestions.
+In recent years, deep learning (DL) techniques have been widely
+used in code suggestions. Such DL techniques generally recommend
+code based on requirements written in natural language (NL). These
+works utilize deep neural networks (DNNs) to learn different types
+of code representations, such as token sequences [ 43, 51, 57, 62],
+abstract syntax trees (ASTs) [31, 36, 56, 60], and graphs (e.g., control
+flow graphs) [8, 16, 45], and then provide code suggestions.
+However, as shown in Figure 1, developers typically search for
+similar code according to the requirements and then write the
+source code by imitating the searched exemplars instead of coding
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal Junkai Chen, Xing Hu, Zhenhao Li, Cuiyun Gao, Xin Xia, and David Lo
+from scratch [17]. They first construct an appropriate search query
+using the functional description in NL or using the key information
+of the desired code snippet (e.g., the header of a method) based on
+their need. They then use the query to search for similar code from
+the code base. Given the helpfulness of exemplars in such process,
+integrating similar code snippets may provide additional informa-
+tion and further improve the performance of code suggestions.
+Prior studies [18, 49] proposed approaches to suggesting code
+based on retrieval and preliminarily investigated the effectiveness
+of code search in improving code suggestions. However, these ap-
+proaches are generally designed for specific models and search
+algorithms. It is difficult to untangle and integrate with other mod-
+els. Moreover, it still remains unclear for how to effectively com-
+bine different code search techniques and code suggestion models.
+In this paper, we propose a retrieval-augmented code suggestion
+framework, which has the following characteristics:
+• Various Combinations. We adopt simple techniques (e.g., con-
+catenation) to combine various types of code search strategies,
+techniques, and language models, which makes our approach
+able to efficiently explore the effectiveness of code retrieval in
+code suggestions under various combinations.
+• Plug-and-play. Our framework is compatible with various re-
+trieval approaches and language models, which saves the effort
+of redesigning them. It can integrate well with existing code
+suggestion systems.
+Our framework consists of three components, including a Re-
+triever, a Formulator, and a Generator:
+• Retriever analyzes information in the source query to retrieve
+similar target code snippets. We study three search strategies:
+Header2Code (i.e., using method header in source and code in
+target), NL2Code (i.e., using NL descriptions in source and code in
+target), and NL2NL (i.e., using NL descriptions in both source and
+target as the key information to search). In addition, we adopt
+both information retrieval-based (IR-based) and deep learning-
+based (DL-based) approaches to support the retrieval.
+• Formulator combines similar code obtained from the retriever
+with the code context. The formulator transforms such informa-
+tion into formulated input that can be processed by the generator.
+• Generator is generally a language model that receives formatted
+input from the formulator and provides code suggestions. In
+this paper, we use both general DL models with relatively small
+parameter sizes (e.g., LSTM) and large language models (LLMs)
+as the generator.
+To evaluate our framework, we combine different kinds of re-
+trieval approaches, search strategies, and language models to eval-
+uate the effectiveness of retrieval in code suggestions. We conduct
+experiments on the tasks of code suggestion at different levels of
+granularity: code completion and code generation. To accommodate
+the capability of LMs in different sizes, we perform code completion
+with general DL models and code generation with LLMs, respec-
+tively. We adopt both Java and Python datasets for the retriever
+and the generator. Results show that our framework noticeably
+improves the performance of both code completion and code gen-
+eration.
+The main contributions of our paper are summarized as follows:
+• We propose a retrieval-augmented code suggestion framework
+that can integrate different search strategies, retrieval techniques,
+and LMs to improve the performance of code suggestions.
+• We perform a comprehensive evaluation of our framework and
+results show that our framework improves Transformer-XL [12]
+by up to 53.8% and ChatGPT [4] by up to 130.8% in terms of BLEU-
+4 for the code completion and generation tasks, respectively.
+• We investigate the effectiveness of different shot numbers and
+prompt templates when using retrieval-augmented ChatGPT.
+We find that a small shot number can sufficiently enhance the
+performance.
+2 BACKGROUND
+In this section, we discuss the background information related to
+our study, including code search and generative language models.
+2.1 Code Search
+Code search is an important practice in software development and
+maintenance. We follow previous works [13, 35, 63] and summa-
+rize the code search techniques into IR-based and DL-based ones
+according to the key methodologies leveraged.
+IR-based Code Search. Typically, an IR-based code search engine
+first builds indexes for specific fields of code snippets in the code
+base and then retrieves similar code that matches the query accord-
+ing to its scoring algorithm. One common similarity measure is
+BM25 score [54], which is applied to the full-text search engine
+Lucene [1]. BM25 is based on bag-of-words and considers the word
+frequency as well as the lengths of both the query and documents.
+Prior studies proposed various IR-based code search techniques.
+Liu et al. [ 35] proposed a code search tool that can understand
+the sequential semantics in important query words. Lv et al. [44]
+proposed a code search technique that expands the query with
+potential APIs. Overall, IR-based code search techniques have been
+widely used in practice and are relatively convenient to deploy and
+use.
+DL-based Code Search. DL-based code search techniques utilize
+DNNs to convert queries and code snippets in the code base into
+feature vectors. After obtaining the vector representations, the
+common practice is to calculate the cosine similarity between the
+query and code snippets. Many prior works utilized deep learning
+techniques to improve the quality of code search. Gu et al. [15] pro-
+posed a neural network to learn the unified representations of both
+source code and natural language queries. Liu et al. [38] proposed a
+graph-based code search approach that learns the mapping of code
+and query by capturing structural and semantic information. In
+addition, pre-trained language models (e.g., CodeBERT [14]) have
+also been applied to code search and achieve promising results.
+2.2 Generative Language Model
+Generative language models aim to perform generation tasks such
+as text generation and code completion. We discuss such models
+by summarizing them into neural language models, pre-trained
+language models, and large language models.
+Neural Language Models. Previous studies use neural networks
+such as RNNs to generate program or natural language contents.
+Code Search Is All You Need? Improving Code Suggestions with Code Search ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+LSTM [23], which introduces the memory cell to vanilla RNN, is
+widely used to model source code. For example, Li et al. [ 32, 33]
+leveraged bi-directional LSTM to provide suggestions for logging
+code. Recently, language models built on the Transformer [ 59]
+architecture such as Transformer-XL [ 12] have become popular.
+These neural language models are widely used in code suggestions.
+Liu et al. [36] utilized both Transformer-XL and LSTM networks
+to perform multi-task learning for code completion. Svyatkovskiy
+et al. [57] proposed a Transformer-based approach that provides
+instant code suggestions in the IDE.
+Pre-trained Language Models. Pre-trained language models are
+usually trained on a large volume of data using Transformer-based
+architectures. Apart from tasks in NL (e.g., cloze test and question
+answering), they are also widely used in code suggestions. Wang et
+al. [61] presented an encoder-decoder pre-trained model leveraging
+code semantics conveyed from identifiers, which performs well in
+code generation. Ahmad et al. [6] performed the task of code gen-
+eration on a language model pre-trained on an extensive collection
+of functions and NL text.
+Large Language Models. LLMs refer to pre-trained models with
+a very large number of parameters (e.g., billions or more). The
+state-of-the-art LLMs include ChatGPT [4] and GPT-3.5 [9] which
+have attracted great attention for their excellent generative abili-
+ties. Codex [11], which has enhanced capability in generating the
+source code, has been integrated into GitHub Copilot [3] to provide
+automated support for developers in code suggestions.
+3 METHODOLOGY
+In this section, we present the methodology of our retrieval-augmented
+code suggestion framework. We first introduce the overview of our
+framework and then discuss the details of each component, respec-
+tively.
+3.1 Overview
+As shown in Fig. 2, our framework consists of three components:
+Retriever, Formulator, and Generator. Given the incomplete code
+snippet that needs suggestions (we refer to such content as source
+context), each of the components performs different roles in the
+code suggestion tasks:
+• Retriever searches for similar code using different search strate-
+gies (e.g., Header2Code, which we will discuss later) and search
+tools (e.g., Lucene based on IR) according to the given information
+(e.g., method header) of the source context.
+• Formulator combines retrieved code with the code context and
+then formulates them as the input to the generator.
+• Generator leverages the formulated input to perform the tasks
+of code suggestions. We use different LMs as our generator.
+3.2 Retriever
+Developers generally search for the desired code snippets according
+to the functional descriptions in natural language or the method
+header (i.e., the method name, list of parameters, and the return
+type) that includes the definition information of the method. There-
+fore, in this paper, we investigate the effectiveness of different
+search strategies and search techniques on code suggestions.
+Table 1: The search strategies and retrieval approaches we
+use.
+Strategy IR-based DL-based
+Header2Code
+Lucene
+ReACC-retriever
+NL2Code CodeBERT
+NL2NL Sentence-BERT
+Before introducing the search strategies of our retriever, we
+discuss two common scenarios related to the process of code search.
+1) One common scenario for code search is using queries in NL to
+find similar code snippets matching the corresponding descriptions
+(we refer to such scenario as NL2Code). Prior studies proposed a
+series of approaches considering this setting [ 15, 35, 46]. In this
+paper, we use the term “comment” uniformly to refer to the first
+sentence of documentation comment in Java or docstring in Python
+which usually summarizes the overall functional logic of the method.
+Given the hypothesis that similar code snippets are likely to have
+similar NL descriptions, finding code sharing similar comments
+(which we callNL2NL) is also indicated effective in prior studies [18,
+30]. 2) The other common scenario for code search is using the
+definition information of the method (e.g., method header) to find
+the corresponding code snippets. Motivated by a prior work [20]
+that considers the method header as the summary of the function,
+we can use it to find the corresponding similar code (which we call
+Header2Code). Therefore, the retriever searches for code snippets
+based on these search strategies above, and the retrieved code
+snippets can then be used to enhance code suggestions.
+Search Strategies. We use different search strategies to retrieve
+similar code snippets based on the information leveraged in the
+source context and code snippets in the code base. Below, we discuss
+each search strategy with the example shown in Figure 2.
+• Header2Code. The retriever takes the method header as the
+query and uses it to find code snippets. For example, Strategy 1
+in Figure 2 that compares the header of the source context with
+the code snippets in the code base belongs to this search strategy.
+• NL2Code. The retriever uses the comment as the query to match
+code in the code base. For example, Strategy 2 in Figure 2 illus-
+trates the process of using the comment“fetch data from database”
+to retrieve the corresponding code snippets.
+• NL2NL. The retriever searches for comments in the code base
+with similar meanings and takes the corresponding code as the
+result of retrieval (i.e., Strategy 3 in Figure 2).
+Retrieval Approaches. We use different retrieval approaches for
+the three search strategies. The search strategies and their corre-
+sponding retrieval approaches are shown in Table 1.
+• Lucene is an IR-based search engine ranking candidates by BM25
+score [54]. It supports all three search strategies.
+• ReACC-retriever [42] is a DL-based retrieval approach that
+leverages RoBERTa [39] model to perform the code search task.
+Here we use the method header to find code that matches the
+functionality of this retriever (i.e., Header2Code search strategy).

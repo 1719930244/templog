@@ -1,0 +1,346 @@
+Practitioners’ Expectations on Automated Code Comment
+Generation
+Xing Hu
+School of Software Technology,
+Zhejiang University
+Ningbo, China
+xinghu@zju.edu.cn
+Xin Xia∗
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+David Lo
+Singapore Management University
+Singapore
+davidlo@smu.edu.sg
+Zhiyuan Wan
+Zhejiang University
+Hangzhou, China
+wanzhiyuan@zju.edu.cn
+Qiuyuan Chen
+Zhejiang University
+Hangzhou, China
+chenqiuyuan@zju.edu.cn
+Thomas Zimmermann
+Microsoft Research
+Seattle, USA
+tzimmer@microsoft.com
+ABSTRACT
+Good comments are invaluable assets to software projects, as they
+help developers understand and maintain projects. However, due
+to some poor commenting practices, comments are often missing
+or inconsistent with the source code. Software engineering practi-
+tioners often spend a significant amount of time and effort reading
+and understanding programs without or with poor comments. To
+counter this, researchers have proposed various techniques to au-
+tomatically generate code comments in recent years, which can
+not only save developers time writing comments but also help
+them better understand existing software projects. However, it is
+unclear whether these techniques can alleviate comment issues
+and whether practitioners appreciate this line of research. To fill
+this gap, we performed an empirical study by interviewing and
+surveying practitioners about their expectations of research in code
+comment generation. We then compared what practitioners need
+and the current state-of-the-art research by performing a literature
+review of papers on code comment generation techniques pub-
+lished in the premier publication venues from 2010 to 2020. From
+this comparison, we highlighted the directions where researchers
+need to put effort to develop comment generation techniques that
+matter to practitioners.
+KEYWORDS
+Code Comment Generation, Empirical Study, Practitioners’ Expec-
+tations
+ACM Reference Format:
+Xing Hu, Xin Xia, David Lo, Zhiyuan Wan, Qiuyuan Chen, and Thomas Zim-
+mermann. 2022. Practitioners’ Expectations on Automated Code Comment
+Generation. In The 44th International Conference on Software Engineering,
+∗Corresponding Author.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than ACM
+must be honored. Abstracting with credit is permitted. To copy otherwise, or republish,
+to post on servers or to redistribute to lists, requires prior specific permission and/or a
+fee. Request permissions from permissions@acm.org.
+ICSE 2022, May 21–29, 2022, Pittsburgh, PA, USA
+© 2022 Association for Computing Machinery.
+ACM ISBN 978-1-4503-9221-1/22/05. . . $15.00
+https://doi.org/10.1145/3510003.3510152
+May 21–29, 2022, Pittsburgh, PA, USA. ACM, New York, NY, USA, 13 pages.
+https://doi.org/10.1145/3510003.3510152
+1 INTRODUCTION
+Code comments are essential parts of software projects and provide
+descriptive information about the functionality, design rationale,
+and usage of a code snippet [ 4]. They help practitioners use, un-
+derstand, and maintain software projects [ 45]. Well-commented
+source code improves project readability and developer productiv-
+ity. Despite the intrinsic value of code comments during software
+development and evolution activities, the creation and maintenance
+of comments are often neglected. To address these issues, different
+approaches and tools have been proposed to generate comments
+from source code automatically [13, 17, 19, 21, 22, 49, 51, 52].
+These techniques traditionally rely on manually crafted tem-
+plates and information retrieval (IR) techniques to generate com-
+ments. Template-based approaches mainly rely on elaborate heuris-
+tics and templates for different types of programs to generate de-
+scriptive comments [32, 42]. However, defining a template requires
+substantial human effort and extensive domain knowledge. IR-based
+approaches mainly extract terms from source code and then orga-
+nize these terms for generating comments [13, 17]. Besides, some
+studies generate comments by retrieving similar code snippets
+and using their corresponding comments for comment genera-
+tion [51, 52]. In recent years, many researchers have taken advan-
+tage of deep learning techniques to generate comments by learning
+from large, publicly available code repositories [19, 21, 22, 49]. These
+techniques apply neural machine translation models to learn to
+translate source code to comments [16].
+Despite numerous studies on code comment generation, unfor-
+tunately, few studies have investigated the expectations of practi-
+tioners on research in comment generation. It is unclear whether
+practitioners appreciate this line of research. Even if they do, it is
+unclear whether they would adopt code comment generation tools,
+what factors affect their decisions to adopt, and their minimum
+thresholds for adoption. The practitioners’ perspective is important
+to help guide software engineering researchers to create solutions
+that satisfy developers. In addition, some gaps between practition-
+ers’ expectations and research have not yet been investigated.
+To gain insights into practitioners’ expectations on code com-
+ment generation, we first conducted semi-structured interviews
+ICSE 2022, May 21–29, 2022, Pittsburgh, PA, USA Xing Hu, Xin Xia, David Lo, Zhiyuan Wan, Qiuyuan Chen, and Thomas Zimmermann
+with 16 professionals from various companies. Through the inter-
+views, we qualitatively investigated the commenting practices and
+issues that our interviewees experienced in software development,
+and their expectations on code comment generation. Then, we vali-
+dated our findings through a survey answered by 720 professional
+developers or other IT professionals from 26 countries across six
+continents. After the survey, we performed a literature review of the
+state-of-the-art papers. We then compared techniques proposed in
+the papers against the criteria that practitioners have for adoption.
+In particular, we investigated the following four research ques-
+tions:
+RQ1: What is the state of code commenting practices and
+what are the issues?
+This research question studies code commenting practices and
+issues that practitioners experienced during software development.
+82% and 81% of the survey respondents often write comments
+and are often confused when reading code without comments,
+respectively. Meanwhile, 69% and 62% respondents considered lack
+of comments and generic comments as the main issues, respectively.
+RQ2: Are automated code comment generation tools useful
+for practitioners?
+This research question investigates practitioners’ willingness
+to adopt code comment generation techniques. 80% of the survey
+respondents think code comment generation tools are worthwhile
+and essential for them. 78% of them agree that these tools can help
+them understand the source code, especially for existing projects
+with fewer comments and improve code readability.
+RQ3: What are practitioners’ expectations on code comment
+generation tools?
+This research question focuses on investigating what to comment
+and where to comment for different granularity level comments
+that practitioners expect, and what factors can affect their adoption
+of a comment generation technique. Most participants (about 85%)
+expect tools to generate method-level comments. The comments
+should include information about 1) what the method does (i.e.,
+functionality); 2) how to use the method; and 3) why the method
+exists (i.e., design rationale). The most important locations to be
+commented on include complex, tricky, and non self-explanatory
+methods. The optimal length of a generated comment is 2-3 lines.
+Before adopting a code comment generation tool, the generated
+comments should satisfy the amount of additional information
+(i.e., amount of information beyond what can be easily gleaned
+from scanning the source code), content adequacy (the amount of
+content carried over from the input code to the generated comments,
+ignoring fluency of the text), and conciseness.
+RQ4: How close are the current state-of-the-art studies to
+satisfy practitioner needs and demands before adoption?
+This research question investigates the current state-of-the-art
+research and compares the gap between it and practitioners’ expec-
+tations. We identified 25 papers that proposed code comment gener-
+ation techniques and 17 of them generated method-level comments.
+Most papers generated comments to describe methods’ function-
+ality. However, few papers generated comments with “how to use”
+and “why a method exists ” information. In addition, most papers
+focus on measuring the overlapped N-grams between generated
+comments and human-written comments, while it is not preferred
+by a large majority of our respondents. Also, no papers evaluate
+Stage1:Interview Stage2:OnlineSurvey Stage3:Literature
+Review
+Interview
+Guide
+Semi-structured
+Interviews
+Transcriptions
+Statementson
+commentsfrom
+professionals
+OpenCoding
+Questionnaire
+PilotSurvey
+OnlineSurvey
+Analysis
+Paper
+Collection
+analyze the 
+capabilities of 
+the proposed 
+techniques
+RQs RQ2.Tool
+Importance
+RQ3.Practitioners’
+expectations
+RQ4.discrepancies 
+between the research 
+and practitioners’needs
+RQ1.Practices
+andIssues
+Figure 1: Research Methodology Overview
+the amount of additional information in the generated comments,
+which most practitioners expect.
+Our research is meant to help researchers to consider the needs of
+practitioners to continue the development of better code comment
+generation techniques that can eventually result in high adoption
+and satisfaction rate.
+This paper makes the following contributions:
+• We interviewed 16 professionals and surveyed 720 practitioners
+from more than 26 countries to shed light on practitioners’ ex-
+pectations, including their views on the importance of comment
+generation and their thresholds and reasons for adopting or not
+adopting such techniques.
+• We performed a literature review of papers published in the pre-
+mier publication venues in software engineering and artificial
+intelligence communities in the last ten years. Then, we com-
+pared the current state-of-research with what practitioners want
+and highlighted what can be done next to meet practitioners’
+needs and demands.
+Paper Structure: Section 2 describes the methodology of our study.
+Section 3 shows the results of our study. We discuss the implications
+of our results in Section 4. Section 5 discusses related work. Section
+6 draws conclusions and outlines avenues for future work.
+2 RESEARCH METHODOLOGY
+The overview of the methodology in our study is shown in Figure 1
+and consists of three stages. Stage 1: Interviews with professionals
+on their practices on commenting, issues they face related to code
+comments, and their expectations on code comment generation
+techniques. Stage 2: An online survey for confirming and extending
+the conclusions about code comments based on the interview.Stage
+3: Perform a literature review to analyze whether and to what extent
+current state-of-the-art research has satisfied practitioners’ needs
+and demands. The interviews and survey were approved by the
+relevant institutional review board (IRB).
+2.1 Stage 1: Interview
+The interview aims to understand commenting practices and issues
+that professionals experience during software development and
+practitioners’ expectations on code comment generation tools. This
+section presents the interview process.
+Practitioners’ Expectations on Automated Code Comment Generation ICSE 2022, May 21–29, 2022, Pittsburgh, PA, USA
+2.1.1 Protocol. The first author conducted a series of face-to-face
+semi-structured, in-depth interviews based on an interview guide
+to enable a detailed exploration of the participants’ views and expe-
+riences. We developed the interview guide through a brainstorming
+process. We invited 16 software practitioners to participate in the
+interviews from 10 IT companies worldwide. Each interview took
+30-40 minutes. In the remainder of the paper, we denoted these 16
+interviewees as I1 to I16.
+Each interview had three parts. In the first part, we asked some
+demographic questions about the interviewee’s background (e.g.,
+job role, length of work experience, and team size). In the second
+part, we asked open-ended questions about what they consider to be
+good/bad code comments. This part aimed to allow the interviewees
+to speak freely about their opinions and experience without the
+interviewer biasing their responses. In the third part, we asked
+the interviewees to discuss the commenting practices and issues
+that they faced related to code comments. We also asked about
+the importance of automated comment generation tools and their
+expectations on these tools.
+At the end of each interview, we thanked interviewees and briefly
+informed them of our next plan.
+2.1.2 Interviewees. We invited professionals from our networks in
+the software industry who were working full time in different roles
+(e.g., developers and architects) to participate in the interviews. We
+sent 20 formal invitations to invite potential interviewees, and 16
+interviewees agreed to participate in the interviews from ten IT
+companies worldwide. These 16 interviewees had an average of 4.2
+years of professional experience in software development (min: 1,
+max: 11, median: 4.2, sd: 2.5).
+2.1.3 Data Analysis. The first author analyzed the interviews by
+transcribing them and then performed open coding to generate
+codes of the interview contents using NVivo qualitative analysis
+software [1]. Then, the second author verified the initial codes
+created by the first author and provided suggestions for improve-
+ment. After incorporating these suggestions, two authors separately
+analyzed the codes and sorted the generated cards into potential
+statements. The overall Cohen’s Kappa value between the two au-
+thors was 0.78, which indicated substantial agreement between the
+them. The two authors discussed their disagreements to reach a
+common decision. To reduce bias from the two authors sorting the
+cards to form initial statements, they both reviewed and agreed
+on the final set of statements. Eventually, based on the results of
+the interviews, we derived 6 commenting practices, 6 commenting
+issues, 5 conclusions for tool importance, 12/17/14 conclusions for
+expectations on class/method/statement comment generation, and
+11 factors that affect the adoption of code comment generation
+tools.
+2.2 Stage 2: Online Survey
+To confirm the statements made by the interviewees (i.e., Stage 1),
+we conducted an anonymous online survey with more participants.
+The survey aimed to validate and quantify the observations from
+our interviews.
+2.2.1 Design. The survey included different types of questions,
+e.g., multiple-choice questions, short answer questions, and rating
+questions (in 5-point Likert scale: Strongly Disagree to Strongly
+Agree). We included the category “I don’t understand” to filter
+respondents who do not understand our brief descriptions.
+The survey consists of six sections:
+• Demographics: The survey first asked for demographic infor-
+mation about the participants, including country/area of resi-
+dence, primary job role, experience in years, and team size.
+• Commenting Practices: This section investigated practition-
+ers’ commenting practices during software development, specif-
+ically, their practices on writing and reading comments, the
+commenting distributions in different projects, as well as the
+commenting review practices in practitioners’ teams.
+• Commenting Issues: This section focused on commenting is-
+sues that practitioners faced during software development, in-
+cluding outdated comments, too long comments, and redundant
+comments in projects.
+• Tool Importance: This section provided respondents with a
+brief description of code comment generation tools and asked
+them how they perceive the importance of such line of tools with
+the following statements: (i) Essential: I will use this tool every
+day to help software development or code comprehension; (ii)
+Worthwhile: I will use this tool to help software development or
+code comprehension; (iii) Unimportant: I will not use this tool;
+(iv) Unwise: This tool will harm my or my team’s productivity.
+Then, we asked practitioners about the importance aspects (e.g.,
+improving development efficiency and code readability).
+• Practitioners’ Expectations:This section investigated practi-
+tioners’ expectations on these tools, including preferred granular-
+ity levels (i.e., generating class-level, method-level, and statement-
+level comments). Then, we asked what information should be
+included in generated comments, the locations to be commented
+and preferred lengths for different level comments.
+• Tool Adoption: This section asked respondents factors that
+affect their likelihood to adopt a code comment generation tech-
+nique. Specifically, we asked the minimum Turing Test rate ( the
+percentage of generated comments that are indistinguishable
+from human-written comments by a human evaluator), maxi-
+mum revised rate (the percentage of the content in a generated
+comment that is needed to be revised before adoption), and min-
+imum efficiency (the time of a tool to give a recommendation).
+At the end of the survey, we allowed respondents to provide free-
+text comments, suggestions, and opinions about code commenting
+and our survey. A respondent may or may not provide any final
+comments.
+We piloted the preliminary survey with a small set of practition-
+ers who were different from our interviewees and survey takers.
+We obtained feedback on (1) whether the length of the survey was
+appropriate, and (2) the clarity and understandability of the terms.
+We made minor modifications to the preliminary survey based on
+the received feedback and produced a final version. Note that the
+collected responses from the pilot survey were excluded from the
+presented results in this paper.
+To support respondents from China, we translated our survey
+to Chinese before distributing it to them. We chose to make our
+survey available both in English on Google Forms, and in Chinese
+on a popular survey website in China [3]. We chose to make our

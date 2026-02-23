@@ -1,0 +1,150 @@
+Automated Unit Test Refactoring
+YI GAO, The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XING HU∗, The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XIAOHU YANG, The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+XIN XIA, The State Key Laboratory of Blockchain and Data Security, Zhejiang University, China
+Test smells arise from poor design practices and insufficient domain knowledge, which can lower the quality
+of test code and make it harder to maintain and update. Manually refactoring of test smells is time-consuming
+and error-prone, highlighting the necessity for automated approaches. Current rule-based refactoring methods
+often struggle in scenarios not covered by predefined rules and lack the flexibility needed to handle diverse
+cases effectively. In this paper, we propose a novel approach calledUTRefactor, a context-enhanced, LLM-
+based framework for automatic test refactoring in Java projects. UTRefactor extracts relevant context from
+test code and leverages an external knowledge base that includes test smell definitions, descriptions, and DSL-
+based refactoring rules. By simulating the manual refactoring process through a chain-of-thought approach,
+UTRefactor guides the LLM to eliminate test smells in a step-by-step process, ensuring both accuracy and
+consistency throughout the refactoring. Additionally, we implement a checkpoint mechanism to facilitate
+comprehensive refactoring, particularly when multiple smells are present. We evaluate UTRefactor on 879
+tests from six open-source Java projects, reducing the number of test smells from 2,375 to 265, achieving an 89%
+reduction. UTRefactor outperforms direct LLM-based refactoring methods by 61.82% in smell elimination
+and significantly surpasses the performance of a rule-based test smell refactoring tool. Our results demonstrate
+the effectiveness of UTRefactor in enhancing test code quality while minimizing manual involvement.
+CCS Concepts: •Software and its engineering → Automatic programming; Software maintenance
+tools.
+Additional Key Words and Phrases: Test Smells, Test Refactoring, Large Language Models
+ACM Reference Format:
+Yi Gao, Xing Hu, Xiaohu Yang, and Xin Xia. 2025. Automated Unit Test Refactoring. Proc. ACM Softw. Eng. 2,
+FSE, Article FSE033 (July 2025), 21 pages. https://doi.org/10.1145/3715750
+1 Introduction
+During the software testing process, test code often suffers from test smells, which originates
+from a lack of sufficient domain knowledge by software engineers and the adoption of poor
+design practices when writing test code. Recent studies [21, 33] have shown that developers tend to
+prioritize production code over test code, which further contributes to the decline in test code quality.
+From a software maintenance perspective, test smells in a software system can complicate the test
+∗Corresponding Author
+Authors’ Contact Information: Yi Gao, gaoyi01@zju.edu.cn, The State Key Laboratory of Blockchain and Data Security,
+Zhejiang University, Hangzhou, China; Xing Hu, xinghu@zju.edu.cn, The State Key Laboratory of Blockchain and Data
+Security, Zhejiang University, Hangzhou, China; Xiaohu Yang, yangxh@zju.edu.cn, The State Key Laboratory of Blockchain
+and Data Security, Zhejiang University, Hangzhou, China; Xin Xia, xin.xia@acm.org, The State Key Laboratory of Blockchain
+and Data Security, Zhejiang University, Hangzhou, China.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the
+full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+© 2025 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM 2994-970X/2025/7-ARTFSE033
+https://doi.org/10.1145/3715750
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE033. Publication date: July 2025.
+arXiv:2409.16739v2  [cs.SE]  11 Feb 2025
+FSE033:2 Yi Gao, Xing Hu, Xiaohu Yang, and Xin Xia
+code, making it harder to read, understand, and update. This complexity can ultimately lead to a
+decline in software product quality and reduced developer productivity. Test smells can be removed
+through test refactoring—a process of improving the internal structure of the code without altering
+the software’s external behavior [23, 33, 36]. Numerous empirical studies [21, 26, 29, 32, 33, 36, 37]
+have highlighted the importance of test refactoring, and developers widely accept the refactored
+tests, and both developers and testers are increasingly recognizing the negative impact of test
+smells. They widely agree that test quality improves significantly once test smells are eliminated.
+Additionally, many studies [18, 19, 22, 25, 30, 31, 34, 38–40] have proposed test smell detection
+tools across programming languages such as Java, Scala, and Python, while also evaluating the
+impact of test smells on the software development process.
+However, manual refactoring of test code remains time-consuming, inefficient, and is prone
+to errors, underscoring the need for automated tools to address a broader range of test smells.
+Although there is a clear demand for such tools, only a few open-source options exist for automatic
+test refactoring [23]. Those tools primarily handle basic and limited types of test smells, leaving
+many types unaddressed. At present, no tool is capable of efficiently and automatically eliminating
+all types of test smells.
+Given the remarkable capabilities of large language models (LLMs) in understanding, generating,
+and reviewing code, they might have the potential to play a key role in test refactoring tasks.
+In this paper, we explore the potential of open-source LLMs to automate unit test refactoring
+and propose an approach for automatically eliminating test smells in software projects. However,
+several challenges must be addressed to achieve this goal:
+Challenge 1: How to guide the LLM to eliminate test smells in an expected way? Refactor-
+ing aims to optimize code structure without altering the original functionality and logic. However,
+LLMs may generate hallucinations during the refactoring process, producing random code segments
+that introduce syntax or semantic errors. Thus, the first challenge is how to direct the LLM to
+follow predefined steps for refactoring, ensuring it remains consistent and produces the intended
+results.
+Challenge 2: How to eliminate multiple test smells simultaneously? Since there are many
+types of test smells, and multiple smells may exist within a single test method, different removal
+orders can lead to different refactoring outcomes. The challenge lies in ensuring that all identified
+test smells are accurately and comprehensively eliminated.
+In this paper, we propose a context-enhanced, LLM-based automatic test refactoring approach
+for Java projects. Our proposed approach, named UTRefactor, first extracts the project’s test code
+and related context information, such as the methods and classes under test. We then build an
+external knowledge base that supports test smell elimination, which includes test smell definitions
+and descriptions, DSL-based refactoring rules, and other relevant contextual information. Next, we
+simulate the manual refactoring process typically followed by developers or testers. Using a chain-
+of-thought approach, we guide the LLM through understanding the test’s intent, identifying the
+test smells, and following the DSL-defined refactoring steps to refactor the test code. Additionally,
+we design a checkpoint mechanism to ensure more thorough smell elimination, particularly when
+multiple test smells are present in a single test.
+We evaluate UTRefactor on six popular Java open-source projects collected from GitHub. In
+our experiments, we detect 879 tests with smells out of 9,149 tests and apply smell elimination
+refactoring to them. The results show thatUTRefactor reduces the number of test smells from 2,375
+to 265, achieving a reduction rate of 89%. This represents a 61.82% improvement in performance
+compared to directly using an LLM for test refactoring. The main contributions of this paper are as
+follows:
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE033. Publication date: July 2025.
+Automated Unit Test Refactoring FSE033:3
+@TestpublicvoidtestAddingAndRemovingObjectProperties() {JsonObjectjsonObj= newJsonObject();String propertyName= “property”;(jsonObj.(.            )).isFalse();(jsonObj.(             )).isNull();JsonPrimitivevalue = newJsonPrimitive(“blah”);jsonObj.d(propertyName, value);(jsonObj.(     .       )).isEqualTo(value);JsonElementremovedElement= jsonObj.(propertyName);(removedElement).isEqualTo(value);(jsonObj.(             )).isFalse();(jsonObj.(             )).isNull();(jsonObj.(             )).isNull();}
+@TestpublicvoidtestJsonObjectHasPropertyInitiallyFalse() {JsonObjectjsonObj= newJsonObject();String propertyName= "property";assertThat(jsonObj.has(propertyName)).as("Property should not exist initially").isFalse();assertThat(jsonObj.get(propertyName)).as("Property value should be null initially").isNull();}
+@TestpublicvoidtestJsonObjectAddProperty() {JsonObjectjsonObj= newJsonObject();String propertyName= "property";JsonPrimitivevalue = newJsonPrimitive("blah");jsonObj.add(propertyName, value);assertThat(jsonObj.get(propertyName)).isEqualTo(value);}
+@Testpublic void testJsonObjectRemoveProperty() {JsonObjectjsonObj= newJsonObject();String propertyName= "property";JsonPrimitivevalue = newJsonPrimitive("blah");jsonObj.add(propertyName, value);JsonElementremovedElement= jsonObj.remove(propertyName);assertThat(removedElement).as("Removed element should match added value").isEqualTo(value);assertThat(jsonObj.has(propertyName)).as("Property should not exist after removal").isFalse();assertThat(jsonObj.get(propertyName)).as("Property value should be null after removal").isNull();assertThat(jsonObj.remove(propertyName)).as("Removing non-existent property should return null").isNull();}
+EagerTest
+Duplicate Assert
+Assertion Roulette
+The test invokes several methods of the production object. This smell results in difficulties in test comprehension and maintenance.
+The test has multiple non-documented assertions. 
+The test contains more than one assertion statement with the same parameters.(jsonObj.get(propertyName)occurs three times.)
+add
+Original Test Refactored Test1
+Refactored Test2
+Refactored Test3
+assertThat
+propertyName
+gethasassertThatpropertyNamepropertyName
+assertThat
+assertThat
+getpropertyName
+assertThatassertThatpropertyNamegethas
+assertThatremovepropertyName
+remove
+Fig. 1. An example of test refactoring within the Gson.
+• We propose a novel approach that leverages code context information and integrates refactoring
+DSL rules to enhance the test refactoring capabilities of LLMs, enabling the automatic elimination
+of test smells and improving the quality of unit tests.
+• We develop UTRefactor, a tool that assists developers and testers in automatically refactoring
+test code in Java projects. It supports various levels of granularity, including single tests, test
+files, and entire projects.
+• We evaluate UTRefactor on 879 tests across six open-source projects, reducing the number of
+test smells from 2,375 to 265, outperforming baselines in effectiveness.
+2 Motivation
+Developers often prioritize maintaining production code while neglecting the maintenance of test
+code, which can lead to increased maintenance costs, such as those associated with regression
+testing. [33]. To illustrate the quality issues in test code, we analyze the Gson project [8], a popular
+Java library developed by Google, which has over 23.2k stars on GitHub and continues to be
+actively maintained, including its test code. Figure 1 presents an intuitive example from the Gson’s
+JsonObjectTest class. According to the test smell types defined by tsDetect [15], this test has been
+identified with three distinct smells:
+❶ Eager Test: This is a common and challenging type of smell to refactor. It occurs when a test
+method invokes several methods from the production code, making it harder to understand, main-
+tain, and modify the test code effectively, as the test’s purpose becomes less clear. In this example,
+this test suffers from the Eager Test smell because it is testing multiple behaviors—adding( add), re-
+moving(remove), and checking(has and get) properties—within a single test method. This violates
+the principle of Single Responsibility Principle (SRP) [14]. Each test method should focus on testing
+a specific behavior or function. Otherwise, it becomes harder to pinpoint the root cause of failures
+and reduce test clarity. To address this, each of these behaviors should be split into separate test
+methods to ensure that the test remains focused and maintainable.
+❷ Duplicate Assert: In this example, the repeated use of the same parameter propertyName
+across multiple assertions leads to the identification of a Duplicate Assert smell. Eliminating this
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE033. Publication date: July 2025.

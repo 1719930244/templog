@@ -1,0 +1,163 @@
+Less Is More: On the Importance of Data Quality for Unit Test
+Generation
+JUNWEI ZHANG, Zhejiang University, China
+XING HU, Zhejiang University, China
+SHAN GAO, Huawei, China
+XIN XIA, Huawei, China
+DAVID LO,Singapore Management University, Singapore
+SHANPING LI, Zhejiang University, China
+Unit testing is crucial for software development and maintenance. Effective unit testing ensures and improves
+software quality, but writing unit tests is time-consuming and labor-intensive. Recent studies have proposed
+deep learning (DL) techniques or large language models (LLMs) to automate unit test generation. These models
+are usually trained or fine-tuned on large-scale datasets. Despite growing awareness of the importance of
+data quality, there has been limited research on the quality of datasets used for test generation. To bridge this
+gap, we systematically examine the impact of noise on the performance of learning-based test generation
+models. We first apply the open card sorting method to analyze the most popular and largest test generation
+dataset, Methods2Test, to categorize eight distinct types of noise. Further, we conduct detailed interviews
+with 17 domain experts to validate and assess the importance, reasonableness, and correctness of the noise
+taxonomy. Then, we propose CleanTest, an automated noise-cleaning framework designed to improve the
+quality of test generation datasets. CleanTest comprises three filters: a rule-based syntax filter, a rule-based
+relevance filter, and a model-based coverage filter. To evaluate its effectiveness, we apply CleanTest on
+two widely-used test generation datasets, i.e., Methods2Test and Atlas. Our findings indicate that 43.52% and
+29.65% of datasets contain noise, highlighting its prevalence. Finally, we conduct comparative experiments
+using four LLMs (i.e., CodeBERT, AthenaTest, StarCoder, and CodeLlama7B) to assess the impact of noise on
+test generation performance. The results show that filtering noise positively influences the test generation
+ability of the models. Fine-tuning the four LLMs with the filtered Methods2Test dataset, on average, improves
+its performance by 67% in branch coverage, using the Defects4J benchmark. For the Atlas dataset, the four
+LLMs improve branch coverage by 39%. Additionally, filtering noise improves bug detection performance,
+resulting in a 21.42% increase in bugs detected by the generated tests.
+CCS Concepts: •Software and its engineering → Software maintenance tools.
+Additional Key Words and Phrases: Unit Test Generation, Large Language Models, Dataset Quality
+ACM Reference Format:
+Junwei Zhang, Xing Hu, Shan Gao, Xin Xia, David Lo, and Shanping Li. 2025. Less Is More: On the Importance
+of Data Quality for Unit Test Generation. Proc. ACM Softw. Eng. 2, FSE, Article FSE059 (July 2025), 24 pages.
+https://doi.org/10.1145/3715778
+Authors’ Contact Information: Junwei Zhang, Zhejiang University, Hangzhou, China, jw.zhang@zju.edu.cn; Xing Hu,
+Zhejiang University, Hangzhou, China, xinghu@zju.edu.cn; Shan Gao, Huawei, Hangzhou, China, gaoshan17@huawei.com;
+Xin Xia, Huawei, Hangzhou, China, xin.xia@acm.org; David Lo, Singapore Management University, Singapore, Singapore,
+davidlo@smu.edu.sg; Shanping Li, Zhejiang University, Hangzhou, China, shan@zju.edu.cn.
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+© 2025 Copyright held by the owner/author(s).
+ACM 2994-970X/2025/7-ARTFSE059
+https://doi.org/10.1145/3715778
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE059. Publication date: July 2025.
+FSE059:2 Junwei Zhang, Xing Hu, Shan Gao, Xin Xia, David Lo, and Shanping Li
+1 Introduction
+Unit testing is essential in software development to enhance the reliability and robustness of
+software applications [48]. However, manually writing high-quality test code is time-consuming
+and labor-intensive [5, 28, 33]. Various approaches are proposed to generate unit tests automatically,
+such as Randoop [42] and EvoSuite [19], to improve developers’ productivity in writing tests.
+Recently, the exploration of deep learning (DL) techniques, particularly large language models
+(LLMs) for generating unit tests, has demonstrated promising performance [ 1, 53, 61]. These
+methods are referred to as learning-based test generation approaches. They take the focal method
+(i.e., methods under test) as input to generate the unit tests. For instance, Alagarsamy et al. [1] pre-
+trained an LLM with focal methods and assertion statements, then fine-tuned it for test generation.
+Tufano et al. [62] proposed a similar method, pre-training LLMs with English and code corpora,
+followed by fine-tuning on test generation datasets. Despite the growing interest in learning-based
+test generation, little attention has been paid to the quality of datasets used to train these models.
+Noise in these datasets (e.g., irrelevant and erroneous) degrades the performance of test generation
+models. For example, noise may consist of code snippets with syntax errors or low-coverage test
+cases that fail to adequately test the focal methods. Such noise can result in faulty or inefficient
+test case generation, reducing the models’ effectiveness. Previous work has shown that improving
+dataset quality can optimize DL models for various software tasks [55, 58]. For example, Sun et
+al. [58] proposed a data-cleaning framework for neural code search to improve the quality of
+code search datasets. Shi et al. [55] developed a taxonomy of data preprocessing noise for code
+summarization and built a rule-based cleaning tool to detect noise. However, few studies have
+investigated the quality of test generation datasets. Unlike other software tasks, unit test generation
+requires models to generate executable test cases that interact with focal methods. The noise
+patterns in test generation datasets differ from those in code search or summarization tasks because
+unit test generation must guarantee syntactic correctness, logical consistency, and code coverage.
+These requirements present unique challenges that have not been fully addressed in previous
+research. Therefore, it is crucial to conduct a deeper investigation into the quality of test generation
+datasets.
+Origin
+Dataset
+Section 2: Taxonomy 
+of Noise Data
+Ambiguous 
+Data Types
+Empty Exception 
+Handling Statement
+Syntax Errors
+Unnecessary 
+Annotations
+Empty 
+Function
+Non-Literal
+Section 3: Noise Data 
+Cleaning Tool
+Heuristic-Based
+Syntactic Filter
+Heuristic-Based
+Relevance Filter
+Filtered
+Dataset
+Model-Based
+Coverage FilterNo RelevanceLow Coverage
+Noise
+Distribution
+Performanceof 
+Test Generation
+Performanceof 
+Bug Detection 
+Section 4&5:  Effectiveness
+Of Cleaning Tool
+Fig. 1. An Overview of Our Research Methodology
+In this work, we first investigate the noise within test generation datasets and the impact
+on learning-based test generation models. Specifically, we conduct a systematic study on the
+Methods2Test dataset [61], the latest and largest test generation dataset. Our research methodology
+is shown in Fig. 1. Rather than categorizing only noise data, we first label some datasets as noise
+based on specific characteristics. Then, we adopt the open card sorting method [ 52] to identify
+eight types of noise, including ambiguous data types, unnecessary annotations, empty exception-
+handling statements, missing implementation, syntax errors, non-English literal, irrelevant test
+cases, and low code coverage. Next, we conduct detailed interviews with 17 domain experts to
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE059. Publication date: July 2025.
+Less Is More: On the Importance of Data Quality for Unit Test Generation FSE059:3
+validate the noise taxonomy in terms of reasonableness, correctness, and completeness. Based
+on this noise taxonomy, we propose a noise-cleaning framework, CleanTest. It systematically
+filters noise from the dataset using three key components: a rule-based syntactic filter, a rule-based
+relevance filter, and a model-based coverage filter. The rule-based syntactic filter applies a set
+of systematically designed heuristic rules to eliminate data with anomalous syntactic features,
+such as unnecessary annotations, empty exception-handling statements, and empty functions. The
+rule-based relevance filter selects data strongly correlated with the focal method and test cases. In
+addition to matching the function name called in the test code with the focal method’s name [61],
+the number and type of parameters must also match. The model-based coverage filter refines the
+dataset by retaining data with higher branch coverage. The coverage filter relies on a pre-trained
+language model (PLM), fine-tuned with focal methods and test cases containing code coverage
+information from previous work [61]. We use the coverage filter to predict the code coverage of
+each instance and select those with higher branch coverage. We apply CleanTest to detect noise
+data and analyze the noise distribution in the Methods2Test and Atlas datasets. We observe that
+43.52% of the Methods2Test dataset and 29.65% of the Atlas dataset consist of noise, highlighting its
+widespread presence. In Methods2Test, the unnecessary annotations noise constitutes the largest
+noise type of 41.64%, while the non-English literal noise accounts for the smallest of 0.16%. In Atlas,
+the syntax errors noise makes up the largest noise category at 28.74%. Other noise types, such as
+“ambiguous data type” (0.0051%), “unnecessary annotations” (0.0051%), “missing implementation”
+(0.0298%), “non-English literal” (0.0365%), and “No Relevance” (0%), have lower proportions.
+To evaluate our noise-cleaning framework, we use the Defects4J benchmark [21] to compare
+the performance of four LLMs (i.e., CodeBERT [18], AthenaTest [61], StarCoder [38], and CodeL-
+lama7B [51]) fine-tuned with datasets before and after filtering. Experimental results show that
+filtering noise data positively influences the test generation ability of models. In particular, the
+average performance of four LLMs in Methods2Test and Atlas datasets improves by 109.74% and
+9.12% in CodeBLEU, 8.69% and 18.89% in syntactic correctness rate, 283.75% and 19.37% in compila-
+tion passing rate, 18.50% and 22.31% in line coverage, and 67.46% and 39.25% in branch coverage.
+Moreover, since less training data is used after filtering, we save at least 25% and 10% of training
+time with the same computational resources. We further evaluate the impact of noise data on
+the bug detection performance of the test generation model. The experimental results show that
+filtering noise improves the performance of bug detection, increasing the number of detected bugs
+by 21.42%. We also perform an ablation study to verify the effectiveness of each filter component
+and manually review the quality of the generated test cases. In summary, our main contributions
+are as follows:
+• To the best of our knowledge, we are the first to systematically study the patterns and impact of
+noise in test generation datasets.
+• We propose an automated noise-cleaning framework, named CleanTest, to detect and filter
+noise data in test generation datasets.
+• We compare the performance of four LLMs fine-tuned on the original and filtered datasets using
+the Defects4J benchmark. The results demonstrate that filtering out noise yields significant
+performance improvements.
+• For researchers and practitioners interested in our work, we release CleanTest and the filtered
+dataset for further research [44].
+The remainder of this paper is organized as follows. Section 2 introduces the taxonomy of
+noise data in test generation datasets, categorizes eight distinct types of noise, and validates these
+categories through expert interviews. Section 3 presents our proposed noise-cleaning framework,
+CleanTest, which applies rule-based and model-based filters to remove noise data. Section 4
+Proc. ACM Softw. Eng., Vol. 2, No. FSE, Article FSE059. Publication date: July 2025.

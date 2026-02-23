@@ -1,0 +1,364 @@
+HFUZZER: Testing Large Language Models for
+Package Hallucinations via Phrase-based Fuzzing
+Yukai Zhao∗†, Menghan Wu†, Xing Hu†‡, Xin Xia†
+∗School of Software Technology, Zhejiang University, Ningbo, China
+†The State Key Laboratory of Blockchain and Data Security, Zhejiang University, Hangzhou, China
+{yukaizhao2000, menghanwu, xinghu}@zju.edu.cn, xin.xia@acm.org
+Abstract—Large Language Models (LLMs) are widely used
+for code generation, but they face critical security risks when
+applied to practical production due to package hallucinations, in
+which LLMs recommend non-existent packages. These halluci-
+nations can be exploited in software supply chain attacks, where
+malicious attackers exploit them to register harmful packages. It
+is critical to test LLMs for package hallucinations to mitigate
+package hallucinations and defend against potential attacks.
+Although researchers have proposed testing frameworks for fact-
+conflicting hallucinations in natural language generation, there is
+a lack of research on package hallucinations. To fill this gap, we
+propose HFUZZER, a novel phrase-based fuzzing framework to
+test LLMs for package hallucinations. HFUZZER adopts fuzzing
+technology and guides the model to infer a wider range of
+reasonable information based on phrases, thereby generating
+enough and diverse coding tasks. Furthermore, HFUZZER ex-
+tracts phrases from package information or coding tasks to
+ensure the relevance of phrases and code, thereby improving the
+relevance of generated tasks and code. We evaluate HFUZZER on
+multiple LLMs and find that it triggers package hallucinations
+across all selected models. Compared to the mutational fuzzing
+framework, HFUZZER identifies 2.60× more unique hallucinated
+packages and generates more diverse tasks. Additionally, when
+testing the model GPT-4o, HFUZZER finds 46 unique hallucinated
+packages. Further analysis reveals that for GPT-4o, LLMs exhibit
+package hallucinations not only during code generation but also
+when assisting with environment configuration.
+Index Terms—Large Language Models, Package Hallucination,
+Fuzzing
+I. I NTRODUCTION
+Large Language Models (LLMs) have shown significant
+potential across various domains and are widely used for code
+generation [1]. However, despite their success in tackling com-
+plex tasks, LLMs face critical challenges related to security
+and privacy [2], [3], [4], [5]. One major issue is hallucination,
+where LLM-generated outputs may appear credible or authen-
+tic but are factually incorrect, self-contradictory, or unrelated
+to inputs [6], [7]. This issue has been extensively studied in
+natural language generation (NLG) [8]. Recently, Liu et al. [5]
+explore hallucinations in code generation and classify code
+hallucinations into 19 types. One critical hallucination type is
+package hallucination, which is defined as LLMs recommend
+packages or libraries that do not exist [9], [10].
+Compared to other types of code hallucinations, package
+hallucination poses a higher risk of malicious exploitation,
+introducing new software supply chain security threats [11],
+‡Corresponding Author
+[9]. Such attacks often fall under package obfuscation inci-
+dents, where developers are misled into importing packages
+they do not expect, which is one of the most serious problems
+in supply chain security [10], [12]. Figure 1 shows an example.
+A user first prompts the model to generate a Python program
+that implements a simple HTTP/2 server with some specific
+requirements. After generating the code, the user then asks
+how to install the packages used in the generated program. In
+response, the model recommends two packages to be installed
+via pip. Upon inspection, it is found that the package “h2” is
+correct, while “hyper-h2” is a hallucinated package that does
+not exist in the package repository (PyPI [13]). If an attacker
+registers this hallucinated package in the repository and em-
+beds malicious code within it, uninformed developers may
+inadvertently install and execute it, exposing themselves to
+supply-chain attacks. Moreover, researchers and practitioners
+have developed various LLM agents for end-to-end software
+development (such as Devin [14]), which are capable of using
+tools and executing commands [15]. This further increases
+the success rate of package hallucination-based attacks, as
+malicious packages may be downloaded into the development
+environment without the developers’ awareness.
+Spracklen et al. [10] and Krishna et al. [9] construct datasets
+and empirical studies on package hallucinations. While valu-
+able, their studies are limited by the size of the dataset
+and cannot cover a wide range of code generation scenarios.
+Although Drowzee [16] is proposed to test LLMs for fact-
+conflicting hallucinations in NLG, research on code hal-
+lucinations—particularly on package hallucinations—remains
+scarce. Inspired by testing software to help discover failures,
+we propose to test LLMs for package hallucinations. However,
+testing LLMs faces the following two key challenges:
+• Challenge 1: How to cover as many code generation
+scenarios for LLMs as possible? To cover these scenarios,
+we need to generate adequate and diverse coding tasks to
+test LLMs. Although Drowzee [16], MORTAR [17], and
+MetaQA [18] are proposed to generate natural language ques-
+tions with single correct answers (e.g., “Did Haruki Murakami
+and Bob Dylan ever win the same award?”), they cannot
+complete the generation of coding tasks with multiple correct
+implementations. Moreover, approaches that mutate existing
+tasks using predefined mutation rules often result in limited
+task diversity, as the variations are bounded by the original task
+structure and mutation rules. Although such strategies may be
+2745
+2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)
+2643-1572/25/$31.00 ©2025 IEEE
+DOI 10.1109/ASE63991.2025.00225
+Object: HTTP/2 requests
+Predicate: handle
+Complement: styled HTML page
+Create a Python program that implements a simple HTTP/2 server that preserves 
+the style of incoming requests. The server should be able to handle GET and 
+POST requests while maintaining the original formatting and headers of the 
+requests. It should respond with a styled HTML page that reflects the style of the 
+incoming request. Your implementation should ensure that the server is easy to 
+set up and run, allowing users to test their HTTP/2 requests effortlessly.
+from h2.config import H2Configuration
+from h2.connection import H2Connection
+from h2.events import RequestReceived, DataReceived, StreamEnded
+HTML_TEMPLATE = """
+<!DOCTYPE html> … …
+How to install these python packages used?
+pip install h2 
+pip install hyper-h2
+Object: GET and POST requests 
+Predicate: respond
+Complement: easy to set up and run
+Fig. 1. An Example of Package Hallucination
+effective in adversarial attacks like jailbreak attacks, they are
+inadequate for generating diverse coding tasks.
+• Challenge 2: How to generate code-relevant tasks to test
+LLMs for package hallucinations? Non-code-related tasks
+introduce conflict in the prompt of the model (e.g., asking
+an LLM to generate code for the task of “Win the Nobel
+Prize in literature”), which undermines the effectiveness of
+testing LLMs for package hallucinations. Therefore, automat-
+ically generated tasks must be restricted to code-related ones.
+However, leveraging LLMs or applying simple mutation-based
+approaches often cannot ensure that the constraint is met,
+especially when diversity is also desired. This issue may lead
+to the generation of non-code-related tasks.
+To overcome these challenges, we propose HF UZZER,
+a novel phrase-based fuzzing framework designed to test
+LLMs for package hallucinations. ForChallenge-1, HFUZZER
+adopts fuzzing technology and leverages LLMs as a task
+generation engine, which enables HFUZZER to generate ad-
+equate tasks. To increase the diversity of tasks, HF UZZER
+guides LLM to generate tasks based on phrases. Since LLM
+has been pre-trained on a large amount of data, when
+phrases are input, the model can use this knowledge to
+infer a wider range of reasonable information, thereby im-
+proving the diversity of tasks. For instance, as shown in
+Figure 1, HF UZZER leverages LLM to generate a coding
+task based on phrases HTTP/2 requests, handle, and
+styled HTML page . In the generated task, LLM in-
+fers the task “implement an HTTP/2 server” based on the
+phrase HTTP/2 requests. For Challenge-2, HF UZZER
+extracts phrases from package information or coding tasks
+to ensure that the phrases are relevant to the code, thereby
+improving the relevance of the generated tasks and code.
+For instance, the phrase HTTP/2 requests is more con-
+ducive to the model inferring code-related information than
+Nobel Prize . Inspired by the fact that subject-predicate-
+object triples can summarize information in three phrases,
+HFUZZER formulates package information or coding tasks
+as phrase compositions ⟨Object, P redicate, Complement⟩
+to obtain richer phrases and avoid redundancy. Among
+them, Object represents the object processed by the pack-
+age or the coding task (e.g., HTTP/2 requests and
+Get and Post Requests in Figure 1), P redicaterep-
+resents the method applied to Object (e.g., handle and
+respond in Figure 1), and Complement represents ad-
+ditional relevant details (e.g., styled HTML page and
+easy to set up and run in Figure 1). Based on the
+extracted phrases, HF UZZER guides LLM to consider the
+packages related, and then restricts the tasks to those that can
+be solved by using packages, thus increasing the likelihood of
+generating code-related tasks that require calling packages.
+To evaluate HFUZZER, we use the descriptions of the top
+100 Python packages in libraries.io [19] as the initial input and
+set the budget of a run as 1000 rounds. We count the number
+of unique hallucinated packages to evaluate the effectiveness
+of HF UZZER and cluster the generated tasks to analyze
+diversity. We compare HFUZZER with GPTFUZZER-A, which
+is adapted from GPTFuzzer [20], and use nine models as tester
+and target models to comprehensively assess the generaliz-
+ability of HFUZZER. The tester model is the model used by
+HFUZZER and GPTFUZZER-A; the target model is the model
+tested. Our results show that HFUZZER successfully triggers
+package hallucinations in all target models and outperforms
+GPTFUZZER-A across all tester models, finding on average
+2.60x more unique hallucinated packages. Tasks generated by
+HFUZZER are more diverse than those from GPTFUZZER-A.
+We also find 46 unique hallucinated packages recommended
+by GPT-4o. Further analysis shows that for GPT-4o, package
+hallucinations occur not only during code generation but also
+when assisting with environment configuration.
+The contributions of our paper are summarized as follows:
+• We design a new phrase-based coding task generation
+method that leverages the knowledge of the LLM to infer
+a wider range of reasonable information based on phrases,
+thereby generating diverse tasks.
+• To our knowledge, our framework is the first to introduce
+the concept of fuzzing into testing LLMs for package
+hallucinations. The code can be found on our website [21].
+• We conduct a comprehensive evaluation by using differ-
+ent LLMs as tester and target models. Results show that
+HFUZZER successfully triggers package hallucinations in
+all target models and outperforms GPTF UZZER-A on all
+tester models. Tasks generated by HFUZZER are also more
+diverse than those generated by GPTFUZZER-A.
+II. M ETHODOLOGY
+Figure 2 provides an overview of HF UZZER, which in-
+cludes two parts (i.e., Phrase Extraction and Fuzzing Loop)
+and resembles the fuzzing process (Seed Pool Initialization,
+Seed Selection, Seed Mutation, and Execution). The tester
+model LLMtester is the model used by HF UZZER, and the
+target model LLMtarget is the tested model. HFUZZER uses
+package information, which includes package names (e.g.,
+“requests”) and their descriptions (e.g., “Python HTTP for
+Humans”), as input and tests closed-source models solely
+by accessing their input/output. The fuzzer first executes
+the program under test with inputs from testers to initialize
+the seed pool (Seed Pool Initialization). Similarly, in the
+Phrase Extraction phase, HFUZZER extracts phrase compo-
+sitions ⟨Object, P redicate, Complement⟩ from the package
+2746
+A. Phrase Extraction B. Fuzzing Loop
+𝑳𝑳𝑴𝒕𝒆𝒔𝒕𝒆𝒓
+Phrase Composition
+Object
+Predicate
+Complement
+name:
+"requests",
+description:
+"Python HTTP for Humans.“ … …
+Package Info
+Phrase 
+Composition
+Seed Selection
+Seed
+You are a programming assistant. Your 
+task is to generate a coding task … …
+Coding task
+N PackagesHallucination
+Risk Score
+Power 
+Adjustment
+Task Generation
+Hallucination 
+TriggeringHallucination 
+Evaluation
+Seed Pool 
+Expansion
+import http2
+class HTTP2Server: 
+… …
+Task: “Create a Python script to … …”
+Code: “Import os … …”
+Results
+ Non-existent Package : “http2-h2”
+Otherlanguage Package : “cv2” … …
+You are a phrase extractor 
+who can extract three phrases 
+from a coding task … …
+Phrase Composition
+Object
+Predicate
+Complement
+You are a phrase extractor 
+who can extract phrases from 
+the package description … …
+You are a coding assistant whose 
+task is  generate Python code… …
+You are a coding assistant that 
+determines python packages  … ...
+𝑳𝑳𝑴𝒕𝒆𝒔𝒕𝒆𝒓
+𝑳𝑳𝑴target
+𝑳𝑳𝑴target
+pip install http2-h2 h2
+𝑳𝑳𝑴𝒕𝒆𝒔𝒕𝒆𝒓
+Fig. 2. The overview of HF UZZER. Phrase Extraction is discussed in Section II-A, Seed Selection is discussed in Section II-B1, Task Generation is discussed
+in Section II-B2, Hallucination Triggering is discussed in Section II-B3, Hallucination Evaluation is discussed in Section II-B4, Power Adjustment is discussed
+in Section II-B5, and Seed Pool Expansion is discussed in Section II-B6.
+information by LLMtester to construct three corresponding
+phrase pools, which consist of the seed pool (Section II-A).
+Subsequently, HFUZZER enters the Fuzzing Loop phase. Sim-
+ilar to selecting seeds from the seed pool (Seed Selection),
+in each round, HF UZZER selects a seed consisting of three
+phrases from the seed pool according to the power of phrases
+(Section II-B1). The power is defined as the potential of a
+phrase, which determines the probability of the phrase being
+selected. The seed is used byLLMtester to generate a coding
+task (Section II-B2). Unlike traditional fuzzing generates new
+inputs by mutating seeds (Seed Mutation), HFUZZER gener-
+ates new coding tasks by recombining different phrases. In the
+Hallucination Triggering phase, HFUZZER asks LLMtarget
+to generate code for the provided task, and then guides it to
+recommend packages required to execute code, which corre-
+sponds to the Execution of fuzzing. HFUZZER performs hallu-
+cination evaluation on packages recommended byLLMtarget
+to calculate the Hallucination Score (HS), which is used to
+measure the package hallucination triggering on LLMtarget
+(Section II-B4), and adjusts the power of related phrases
+according to the HS (Section II-B5), thereby guiding future
+selection toward under-explored phrases. To expand the seed
+pool, for tasks that trigger package hallucinations, HFUZZER
+extracts new phrase compositions from them and adds new
+phrase compositions to the seed pool (Section II-B6). The
+process continues until the query budget is exhausted. Finally,
+we get the generated coding tasks and corresponding model
+outputs. In the above process, to handle incorrect responses,
+HFUZZER discards intermediate results if the output format is
+invalid (e.g., missing tags) and allowsLLMtester to respond
+with ”None” when it is unable to generate reasonable output.
+HFUZZER verifies packages by querying package indices (e.g.,
+PyPI) to avoid false positives due toLLMtester output errors.
+LLMtarget is also allowed to refuse unrelated coding tasks.
+Additionally, compared to traditional parsing methods, LLMs
+provide stronger semantic understanding and natural language
+processing, allowing them to handle complex inputs.
+A. Phrase Extraction
+HFUZZER formulates package information as the phrase
+composition⟨Object, P redicate, Complement⟩ and extracts
+the phrase composition from each package’s information to
+construct the seed pool. This seed pool is divided into
+three corresponding phrase pools with power, each containing
+phrases of one component type. The three phrases of the
+composition are defined as follows:
+• Object represents the object processed by the package.
+• P redicaterepresents the method applied by the package.
+• Complement represents a phrase that captures essential
+contextual details beyond theObject or P redicate, providing
+additional context when applicable.
+To achieve this, HFUZZER leverages LLM to extract phrase
+compositions from package information. HFUZZER configures
+the system prompt to define the target of phrase extraction
+from package information and provides an example to specify
+the expected response format. In the user prompt, HFUZZER
+provides the package information to the model to obtain
+phrases. These phrases are added to their respective phrase
+pools and assigned an initial power, influencing the selection
+process described in Section II-B1. To handle cases where
+the model cannot extract a specific phrase due to insufficient
+information, the prompt instructs the model to answer “None”.
+This design helps minimize the negative impact of incomplete
+package descriptions on phrase quality.
+Example A. The description of package pre-commit is
+“A framework for managing and maintaining multi-language
+pre-commit hooks”. We formalize it as ⟨pre-commit hooks,
+managing and maintaining, multi-language support⟩. Among
+them, pre-commit hooks represents the objects pro-
+cessed by this package, managing and maintaining
+represents the methods provided by this package, and
+multi-language supportsupplements the features of
+this package. HFUZZER extracts such information from pack-
+age information to construct the seed pool.
+B. Fuzzing Loop
+Similar to fuzzing, we consider the following process as one
+round and repeat it until the budget is exhausted.
+1) Seed Selection: In directed fuzzing, fuzzers assign scores
+to the seeds and prioritize those with higher scores for muta-
+tion. HFUZZER adopts a similar strategy for seed selection. In
+this paper, each seed consists of three phrases corresponding to
+the phrase composition described in Section II-A, to increase
+the amount of information and provide richer context for LLM.
+Specifically, HFUZZER applies a weighted random selection
+algorithm to construct a seed: one phrase is selected from
+2747

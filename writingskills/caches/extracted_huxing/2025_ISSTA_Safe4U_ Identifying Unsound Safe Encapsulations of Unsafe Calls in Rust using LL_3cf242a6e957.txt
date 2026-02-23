@@ -1,0 +1,154 @@
+Safe4U: Identifying Unsound Safe Encapsulations of Unsafe
+Calls in Rust using LLMs
+HUAN LI, Zhejiang University, China
+BEI WANG∗, Zhejiang University, China
+XING HU∗, Zhejiang University, China
+XIN XIA, Zhejiang University, China
+Rust is an emerging programming language that ensures safety through strict compile-time checks. A Rust
+function marked as unsafe indicates it has additional safety requirements (e.g., initialized, not null), known as
+contracts in the community. These unsafe functions can only be called within explicit unsafe blocks and the
+contracts must be guaranteed by the caller. To reuse and reduce unsafe code, the community recommends
+using safe encapsulation of unsafe calls (EUC) in practice. However, an EUC is unsound if any contract is not
+guaranteed and could lead to undefined behaviors in safe Rust, thus breaking Rust’s safety promise. It is
+challenging to identify unsound EUCs with conventional techniques due to the limitation in cross-lingual
+comprehension of code and natural language. Large language models (LLMs) have demonstrated impressive
+capabilities, but their performance is unsatisfactory owing to the complexity of contracts and the lack of
+domain knowledge. To this end, we propose a novel framework, Safe4U, which incorporates LLMs, static
+analysis tools, and domain knowledge to identify unsound EUCs. Safe4U first utilizes static analysis tools to
+retrieve relevant context. Then, it decomposes the primitive contract description into several fine-grained
+classified contracts. Ultimately, Safe4U introduces domain knowledge and invokes the reasoning capability
+of LLMs to verify every fine-grained contract. The evaluation results show that Safe4U brings a general
+performance improvement and the fine-grained results are constructive for locating specific unsound sources.
+In real-world scenarios, Safe4U can identify 9 out of 11 unsound EUCs from CVE. Furthermore, Safe4U detected
+22 new unsound EUCs in the most downloaded crates, 16 of which have been confirmed.
+CCS Concepts: •Software and its engineering → Software defect analysis.
+Additional Key Words and Phrases: Rust, Unsafe Call, Unsound Encapsulation, Large Language Model
+ACM Reference Format:
+Huan Li, Bei Wang, Xing Hu, and Xin Xia. 2025. Safe4U: Identifying Unsound Safe Encapsulations of Unsafe
+Calls in Rust using LLMs. Proc. ACM Softw. Eng. 2, ISSTA, Article ISSTA021 (July 2025), 24 pages. https:
+//doi.org/10.1145/3728890
+1 Introduction
+Rust is a promising programming language acclaimed for its efficiency and security [76]. Through
+strict compile-time checks, it provides a safety promise that programs written in safe Rust are
+guaranteed to be memory-safe [73, 77]. To satisfy flexibility and extreme performance, Rust provides
+the keyword unsafe to bypass safety checks and allow unsafe low-level operations within explicit
+unsafe blocks [27]. A function (API) can be explicitly marked as unsafe, meaning it has additional
+∗Corresponding Authors
+Authors’ Contact Information: Huan Li, Zhejiang University, Hangzhou, China, huanlee@zju.edu.cn; Bei Wang, Zhejiang
+University, Hangzhou, China, bwang9410@gmail.com; Xing Hu, Zhejiang University, Hangzhou, China, xinghu@zju.edu.cn;
+Xin Xia, Zhejiang University, Hangzhou, China, xin.xia@acm.org.
+This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
+© 2025 Copyright held by the owner/author(s).
+ACM 2994-970X/2025/7-ARTISSTA021
+https://doi.org/10.1145/3728890
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA021. Publication date: July 2025.
+
+ISSTA021:2 Huan Li, Bei Wang, Xing Hu, and Xin Xia
+/// Get the element without boundary checking
+///
+/// # Safety
+/// The index `i` must be non-negative 
+/// and less than `self.len` 
+pub unsafe fn get_unchecked(&self, i: isize)->&T{...}
+pub fn get(&self, t: isize) -> Option<&T> {
+  if t >= 0 && t < self.len {
+    // Safety: `t` is checked as in-bound 
+    Some( unsafe { self.arr.get_unchecked(t) } ) }
+  else { None} } 
+unsafe 
+API
+sound 
+EUC
+sound
+pub fn get_partially_checked(&self, t: isize) -> .. { 
+  if t >= 0 { Some( unsafe {self.arr.get_unchecked(t)})}
+  else { None }} 
+unsound 
+EUC
+ unsound
+contracts
+t < self.len
+Fig. 1. An unsafe API get_unchecked and two simple safe encapsulations of unsafe calls (EUCs) get and
+get_partially_checked that are sound and unsound, respectively.
+safety requirements for its caller, referred to ascontracts in the community [54, 63]. Typically, these
+contracts are written in unstructured natural language in the Safety section of the documents [49].
+Calling unsafe APIs introduces extra unsafe blocks and remarkably increases the burden on
+developers, thereby weakening the benefit brought by Rust’s safety promise. Therefore, the Rust
+community recommends encapsulating unsafe calls behind safe functions to hide and reuse the
+unsafe implementation [7, 54, 63]. According to the specification, the safe encapsulation of unsafe
+calls (EUC) must guarantee all contracts when calling unsafe APIs. As shown in Figure 1, the EUCget
+guarantees the contracts of unsafe API get_unchecked, “The index i must be non-negative and less
+than self.len”, with corresponding boundary checks. Since unsafe blocks bypass compiler checks,
+it is the developers’ responsibility to ensure that all contracts are guaranteed [54]. Occasionally,
+developers fail to guarantee all contracts of interior unsafe calls for various reasons (e.g., lack
+of expertise or sudden negligence), which leads to unsoundness. An encapsulation is unsound
+means it can be called in safe code but causes undefined behavior, which breaks the safety
+promise of Rust [66]. Taking the unsound EUCget_partially_checked in Figure 1 as an example,
+this EUC calls get_unchecked without guaranteeing “t < self.len”. Therefore, developers can use
+get_partially_checked in safe code, but access to uninitialized elements or illegal memory with
+specific input. Furthermore, the unsoundness of EUC could propagate widely through function
+calls and data flows, leading to sophisticated bugs or even hidden vulnerabilities [23]. In general, it
+is crucial to eliminate unsoundness to maintain the safety promise of Rust.
+To identify the soundness of an EUC, we need to check whether it guarantees all contracts
+described in the Safety section, which is written in unstructured and flexible natural language.
+Accordingly, conventional techniques for unsoundness detection, including formal verification [30,
+43] and static analysis[5, 40, 53], can hardly be adopted due to their limitation in cross-lingual
+comprehension of natural language and code. Deep learning models demonstrate the capability
+to understand both code and natural language [ 6, 12, 75], which requires task-specific data for
+fine-tuning. Nevertheless, there is no existing dataset for identifying unsound EUCs, and it is
+challenging to create a new dataset with sufficient samples. The emergence of Large Language
+Models (LLMs) and their excellent achievement in multi-lingual tasks indicate their potential to
+identify unsound EUCs [11, 31, 34, 41, 59, 69]. However, as discussed in Section 5.1, it turns out
+that the LLMs underperform in this task for various reasons. Firstly, the Safety sections of unsafe
+APIs are commonly redundant and intricate, illustrating the intrinsic challenge of checking EUC
+with the original Safety sections. In addition, since LLMs lack the relevant context of the EUC,
+they often generate unfaithful responses with notable hallucinations [29]. Furthermore, due to the
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA021. Publication date: July 2025.
+
+Safe4U: Identifying Unsound Safe Encapsulations of Unsafe Calls in Rust using LLMs ISSTA021:3
+deficiency of domain knowledge, LLMs tend to check contracts based on their limited or even wrong
+understanding (e.g., requiring all contracts to be explicitly validated), leading to low accuracy [70].
+To obtain insight into how contracts are guaranteed in real-world EUCs, we first conducted
+a preliminary study on the Rust standard library [ 65] and the top 500 most downloaded crates
+(i.e., packages in Rust) [ 16]. After manually studying their documents and code, we ultimately
+summarized 16 contract types, covering various requirements:Memory & Pointer, Value, Concurrency,
+Lifetime, Ownership, Dataflow, and Environment. We also distilled 34 guarantee patterns (GPs) for
+these contract types, meaning a contract can be guaranteed in any corresponding GP associated
+with its type. For instance, the contract “i must be less than self.len” can be guaranteed either by
+explicit validation or by the context that i is the remainder of self.len.
+Based on the preliminary study, we propose a novel framework, Safe4U, to identify unsound
+safe encapsulations of unsafe calls in Rust. Given an EUC, Safe4U identifies its soundness with
+three modules, Context Retrieval, Decomposition & Classification, and Pattern-Oriented Checks.
+Firstly, the Context Retrieval module deploys static analysis tools that collaborate with the compiler
+to retrieve the context of the target EUC. The context involves additional information crucial for
+identification (including the Safety section). Secondly, the Decomposition & Classification module
+applies the LLM to decompose the verboseSafety section into several fine-grained contracts. During
+decomposition, the LLM also classifies every decomposed contract into predefined contract types.
+Through decomposition, the fine-grained contracts can be checked independently, significantly
+decreasing the difficulty of unsoundness identification. Through classification, Safe4U can dy-
+namically select examples containing specific domain knowledge to promote subsequent checks.
+In particular, the Pattern-Oriented Checks module adds examples to the prompt and checks the
+contract utilizing LLMs’ in-context learning and reasoning capabilities. Ultimately, the results for
+all fine-grained contracts are aggregated. If one contract is identified as Unguaranteed, this contract
+is deemed as the fine-grained unsoundness that requires a fix, and this EUC is considered Unsound.
+To evaluate the performance of Safe4U, we extract samples (EUCs) from the most downloaded
+crates. Since there is no dataset for unsound EUCs, we propose to simulate unsound samples from
+unsafe encapsulations. The evaluation results show that Safe4U outperforms the baseline for all
+LLMs, reflecting its effectiveness and generalizability. Additionally, we find that Safe4U can locate
+the fine-grained unguaranteed contract which requires a fix. We also evaluate Safe4U in real-world
+scenarios. Firstly, it reveals its effectiveness by identifying 9 of 11 unsound EUCs from CVE [19, 20].
+Then, we deployed Safe4U for a practical scan on the most downloaded crates, involving 2,849
+EUCs and 1,409 different unsafe APIs. It ultimately detected 22 unsound EUCs, 16 of which have
+been confirmed and fixed. The replication package is publicly available [3].
+The main contributions of our paper are as follows:
+• We conduct a preliminary study of both the documents and the usage of unsafe APIs in the
+standard library and the most commonly used crates. We summarize 16 contract types and 34
+corresponding guarantee patterns.
+• To the best of our knowledge, we propose the automated framework, Safe4U, that is the first to
+introduce LLMs to identify unsound EUCs in Rust.
+• Safe4U not only decomposes the identification into sub-tasks but also effectively integrates static
+analysis and domain knowledge into the advanced capabilities of LLM. The evaluation results
+indicate that Safe4U brings generalizable performance improvements for all LLMs.
+• Safe4U can identify 9 out of 11 existing unsound EUCs from CVE and found 22 new unsound
+EUCs from real-world Rust crates.
+Proc. ACM Softw. Eng., Vol. 2, No. ISSTA, Article ISSTA021. Publication date: July 2025.

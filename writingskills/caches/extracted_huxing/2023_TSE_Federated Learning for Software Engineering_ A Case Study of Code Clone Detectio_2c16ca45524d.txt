@@ -1,0 +1,329 @@
+296 IEEE TRANSACTIONS ON SOFTW ARE ENGINEERING, VOL. 50, NO. 2, FEBRUARY 2024
+Federated Learning for Software Engineering:
+A Case Study of Code Clone Detection
+and Defect Prediction
+Yanming Yang ,X i n gH u , Member, IEEE, Zhipeng Gao ,J i n f uC h e n,C h a oN i ,
+Xin Xia , Member, IEEE, and David Lo , Fellow, IEEE
+Abstract—In various research domains, artiﬁcial intelligence
+(AI) has gained signiﬁcant prominence, leading to the develop-
+ment of numerous learning-based models in research laborato-
+ries, which are evaluated using benchmark datasets. While the
+models proposed in previous studies may demonstrate satisfactory
+performance on benchmark data sets, translating academic ﬁnd-
+ings into practical applications for industry practitioners presents
+challenges. This can entail either the direct adoption of trained
+academic models into industrial applications, leading to a per-
+formance decrease, or retraining models with industrial data,
+a task often hindered by insufﬁcient data instances or skewed
+data distributions. Real-world i ndustrial data is typically sig-
+niﬁcantly more intricate than benchmark datasets, frequently
+exhibiting data-skewing issues, such as label distribution skews
+and quantity skews. Furthermore, accessing industrial data, par-
+ticularly source code, can prove challenging for Software En-
+gineering (SE) researchers due to privacy policies. This limita-
+tion hinders SE researchers’ ab ility to gain insights into indus-
+try developers’ concerns and subsequently enhance their pro-
+posed models. To bridge the divide between academic models
+and industrial applications, we introduce a federated learning
+(FL)-based framework called A
+LMITY. Our aim is to simplify
+the process of implementing research ﬁndings into practical use
+for both SE researchers and industry developers. A
+LMITY en-
+hances model performance on sensitive skewed data distributions
+while ensuring data privacy and security. It introduces an inno-
+vative aggregation strategy that takes into account three key at-
+tributes: data scale, data balance, and minority class learnability.
+Manuscript received 6 December 2022; revised 3 October 2023; accepted
+13 December 2023. Date of publicatio n 3 January 2024; date of current
+version 13 February 2024. This work was supported in part by the National
+Natural Science Foundation of China under Grant 62141222, and in part by the
+National Research Foundation, under its Investigatorship Grant NRF-NRFI08-
+2022-0002. Recommended for acceptance by A. Zaidman. (Corresponding
+author: Xing Hu.)
+Yanming Yang is with the Departm ent of Computer Science and Tech-
+nology, Zhejiang University, Ningbo 310058, China (e-mail: yanmingyang@
+zju.edu.cn).
+Xing Hu and Chao Ni are with the School of Software Technology,
+Zhejiang University, Ningbo 315048, China (e-mail: xinghu@zju.edu.cn;
+chaoni@zju.edu.cn).
+Zhipeng Gao is with Shanghai Ins titute for Advanced Study, Zhejiang
+University, Hangzhou 310085, China (e -mail: zhipeng.gao@zju.edu.cn).
+Jinfu Chen is with the School of Computer Science, Wuhan University,
+Wuhan 430072, China (e-mail: jinfuchen@whu.edu.cn).
+Xin Xia is with the Software Engineering Application Technology Lab,
+Huawei, Hangzhou 310007, China (e-mail: xin.xia@acm.org).
+David Lo is with the School of Computing and Information Sys-
+tems, Singapore Management University, Singapore 188065 (e-mail:
+davidlo@smu.edu.sg).
+Digital Object Identiﬁ er 10.1109/TSE.2023.3347898
+This strategy is employed to reﬁne model parameters, thereby
+enhancing model performance on sensitive skewed datasets. In
+our evaluation, we employ two well-established SE tasks, i.e., code
+clone detection and defect prediction, as evaluation tasks. We
+compare the performance of A
+LMITY on both machine learning
+(ML) and deep learning (DL) models against two mainstream
+training methods, speciﬁcally the Centralized Training Method
+(CTM) and Vanilla Federated L earning (VFL), to validate the
+effectiveness and generalizability of A
+LMITY. Our experimental
+results demonstrate that our framework is not only feasible but
+also practical in real-world scenarios. A
+LMITY consistently en-
+hances the performance of learning-based models, outperforming
+baseline training methods across all types of data distributions.
+Index Terms —Federated learning, parameter aggregation
+strategy, skewed data distribution, code clone detection, defect
+prediction.
+I. I NTRODUCTION
+A
+RTIFICIAL Intelligence (AI) has exhibited its formidable
+prowess in a wide range of research domains, including
+computer vision [1], speech recognition [2], natural language
+processing [3], and software engineering [4], [5], [6].H o w -
+ever, learning-based models may encounter challenges when
+it comes to effective deployment and generalization of their
+performance in real-world scenarios [7]. This is often due to
+their conventional training and evaluation solely on speciﬁc
+benchmark datasets, limiting their ability to grasp the nuanced
+complexities, such as skewed data distributions, commonly en-
+countered in industrial applications [7]. While Software En-
+gineering (SE) researchers have extensively employed vari-
+ous AI techniques to augment developers’ productivity, im-
+prove software system qua lity, and enhance decision-making,
+a notable gap continues to exist between the outcomes of SE
+academic research and their practical implementation in real-
+world industrial settings [8]. This disparity manifests in two
+primary facets:
+1) Due to the data-skewing problem, utilizing academic
+learning-based models, including machine learning (ML) and
+deep learning (DL) models, in practice is often ineffective
+for SE industry practitioners [9]. Real-world industrial data
+signiﬁcantly differs from academic benchmarks in terms of
+volume, variety, velocity, and quality [9]. Academic bench-
+mark datasets are typically derived from general open-source
+projects (e.g., Apache) and/or platforms (e.g., GitHub), whereas
+0098-5589 © 2024 IEEE. Personal use is permitted, but repub lication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Zhejiang University. Downloaded on August 26,2025 at 02:58:36 UTC from IEEE Xplore.  Restrictions apply. 
+Y ANG et al.: FL FOR SE: A CASE STUDY OF CCD AND DP 297
+industrial data is org anization-speciﬁc, exhibiting distinct data
+distribution patterns. In various SE ﬁelds, industrial datasets
+often face data-skewing challenges [10]. The two most preva-
+lent data skews for industrial datasets are label distribution
+skew (imbalanced datasets) and quantity skew (datasets with
+varying scales) [11]. Speciﬁcally, consider the scenario of two
+companies: one being a large-scale corporation and the other a
+small-scale enterprise. Both have the shared objective of train-
+ing a learning-based clone detector capable of autonomously
+identifying cloned code within their respective software prod-
+ucts. However, a substantial scale disparity exists between these
+two companies, with the large company possessing a code vol-
+ume approximately 1000 times greater than that of the smaller
+one. This discrepanc y underscores the p resence of a quantity
+skew within their datasets. Furthermore, upon reviewing their
+code, both companies observe a common pattern: while they
+acknowledge the existence of a substantial amount of cloned
+code, these clones only constitute a small fraction, typically
+ranging about 20%, when compared to the total code volume.
+This phenomenon is referred to as label distribution skew.
+Given the disparity in data distribution between academic and
+industrial datasets, adapting well-trained academic models to
+real-world industrial projects becomes challenging. Note that
+based on the aforementioned ﬁndings, our study examines a
+dataset’s data distribution from two perspectives: data scale and
+data balance degree. For instance, researchers [12] have noted
+that state-of-the-art academic models exhibit poor performance
+on industry projects, resulting in a signiﬁcant performance drop
+of over 30%. Besides, industr y practitioners frequently face
+constraints in terms of time and cost, making it challenging
+for them to establish an industrial benchmark dataset on their
+own. This is especially true for small-scale companies and
+low-resource organizations that struggle to create sufﬁciently
+large datasets for model training. However, traditional training
+methods prove inadequate in addressing poor model perfor-
+mance arising from dataset skewness and the data hunger prob-
+lem. While federated learning (FL), a state-of-the-art training
+method, can aggregate multiple sm all-scale datasets to train
+a learning-based model, it is unable to address the issue of
+low performance caused by skewed datasets. This limitation
+arises from its aggregation algorithm, which solely considers
+one attribute: data scale. Therefore, it is imperative to devise a
+novel training method capable of enhancing model performance
+on skewed datasets by integrating more informative attributes.
+2) SE academic researchers face formidable challenges, if
+not outright impossibility, in obtaining access t o real-world
+industrial data due to stringent privacy policies. Data is com-
+monly recognized as the utmost valuable asset for a software
+company [13]. Nevertheless, researchers frequently encounter
+restricted avenues to access industrial data owing to compa-
+nies’ apprehensions regarding data privacy policies. Devoid of
+exposure to and utilization of r eal-world indus trial data, SE
+researchers encounter di fﬁculties in effectiv ely applying their
+well-trained academic models to new datasets, given that the
+distribution of these datasets may diverge from the benchmarks
+employed during training. Moreover, this gap is exacerbated
+by researchers’ frequent focus on improving the performance
+of state-of-the-art models on benchmark datasets, rather than
+exploring ways to leverage industrial data for model training
+while avoiding data leakage. Therefore, devising a method
+that overcomes data-skewing and data accessibility challenges
+can prove advantageous and valuable, enabling well-trained
+academic models to leverage industrial data while mitigating
+concerns related to stringent data protection policies.
+To mitigate the aforementionedchallenges, i.e., the impact of
+skewed datasets on the performance of learning-based models
+and strict privacy policies, we propose A
+LMITY, a federated
+learning (FL)-based framework, aimed at narrowing the gap
+between SE academic research work and industry applications.
+This framework enhances the performance of academic mod-
+els on data with skewed distributions while addressing soft-
+ware practitioners’ data secur ity concerns. Speciﬁcally, akin
+to vanilla FL, A
+LMITY operates with a central server and a
+few clients, offering a promising solution for safeguarding or-
+ganizations’ sensitive data. It achieves this by sharing solely
+model updates (e.g., gradient information) and data distribution
+information instead of raw data. Building upon vanilla FL,
+A
+LMITY introduces a novel aggregation strategy that optimizes
+the model parameters through a comprehensive integration of
+the model updates based on three distinct attributes: the degree
+of data bal
+ance, data scale, and minority class learnabili ty.
+By leveraging this strategy, our framework proﬁciently han-
+dles complex and skewed data, effectively mitigating the side-
+effect of such data on model performance during the model
+training phase. In essence, our study offers beneﬁts to both SE
+academic researchers and industry developers seeking to apply
+or adopt academic research work in industrial practice. More
+speciﬁcally, for industry developers, A
+LMITY enables the seam-
+less integration of academic research results into their concrete
+applications. On the other hand, for SE academic researchers,
+ALMITY enhances the robustness of DL models on industrial
+datasets without violating strict data protection regulations.
+We conduct extensive experiments to verify the effectiveness
+of ALMITY. Speciﬁcally, we focus on multiple signiﬁcant and
+extensively studied SE tasks, namely clone detection and defect
+prediction, as our target tasks. To ascertain the universality of
+ALMITY, we utilize two distinct t ypes of models, comprising
+a DL model and a traditional ML model, for evaluating the
+performance of A LMITY and the respective baselines across
+each SE task. As A LMITY represents a novel training frame-
+work stemming from FL, we employ two mainstream training
+methods, namely the Centralized Training Method (CTM) and
+the Vanilla Federated Learning Method (VFL), as baselines for
+comparison. The experimental results demonstrate the effec-
+tiveness of ALMITY in training well-performing ML/DL models
+on academic benchmarks, afﬁrming its feasibility to tackle SE
+tasks on academic datasets. To validate the potential capabilities
+of ALMITY on industrial data, we have not only constructed var-
+ious datasets with diverse data distributions but also simulated
+task-speciﬁc datasets on their corresponding real-world distri-
+butions. In comparison to baseline training methods, A LMITY
+enables trained ML/DL models to achieve superior performance
+on datasets with diverse distributions. Speciﬁcally, the experi-
+mental results clearly demonstrate that ALMITY outperforms the
+Authorized licensed use limited to: Zhejiang University. Downloaded on August 26,2025 at 02:58:36 UTC from IEEE Xplore.  Restrictions apply. 
+298 IEEE TRANSACTIONS ON SOFTW ARE ENGINEERING, VOL. 50, NO. 2, FEBRUARY 2024
+baselines on all types of skewed data distributions and attains
+the highest G-Mean performance in both SE tasks. This un-
+derscores ALMITY’s potential in enhancing model performance
+on task-speciﬁc datasets while concurrently safeguarding data
+privacy and security. Taking into account the three attributes
+employed in our novel aggregation strategy, we have also con-
+ducted comprehensive experiments to scrutinize the inﬂuence of
+each attribute on the performance of A
+LMITY. The experimental
+outcomes reveal that all three attributes yield a favorable effect
+on our strategy, with each attrib ute fulﬁlling a crucial role in
+varying data distribution types. In summary, our study makes
+the following contributions:
+1) We develop A
+LMITY, a novel training framework de-
+signed to enhance the performance of ML/DL models on
+sensitive industrial datasets and skewed data distributions
+while upholding data privacy. To the best of our knowl-
+edge, our study is the ﬁrst work that both employs and
+enhances FL techniques in SE tasks.
+2) In contrast to the parameter aggregation method em-
+ployed in vanilla FL, we introduce two additional es-
+sential attributes, i.e., data balance and minority class
+learnability, to devise a newaggregation method, thereby
+enhancing A
+LMITY’s capability to handle skewed data.
+3) We perform comprehensive experiments on both skewed
+data distributions and real-world task-speciﬁc data dis-
+tributions to validate A LMITY’s effectiveness in training
+well-performing models. A LMITY plays a crucial role
+in bridging the gap between SE academic research and
+industry applications. Through our study, we aspire to
+encourage more industry developers to leverage state-of-
+the-art academic models to enhance their daily devel-
+opment efﬁciency, while also motivating more academic
+researchers to create practical models for industrial appli-
+cations. The replication package of A
+LMITY is publicly
+available at: [14].
+4) We conduct extensive ablation experiments to explore
+the impact of each attribut e utilized in our parameter
+aggregation strategy on ALMITY’s performance.
+The remaining sections of this paper are organized as fol-
+lows: Section II presents the motivating examples of our study.
+Section III brieﬂy introduces federated learning. Section IV
+describes the details of ALMITY. Section V provides the exper-
+imental setup, including evaluation tasks and datasets, baseline
+methods, evaluation metrics , and experimental settings. Sec-
+tion VI illustrates the evaluation process and presents the exper-
+imental results. Section VIII and Section IX discuss the lessons
+learned from this study and the limitations of our approach,
+respectively. Section X reviews the related work. Finally,
+Section XI concludes the paper.
+II. M
+OTIVATING EXAMPLE
+In this section, we illustrate the challenges faced by SE
+researchers and industry developers when applying or adopt-
+ing ML/DL models in practice. Additionally, we provide
+motivating examples of using AI for SE in three realistic
+application scenarios.
+Fig. 1. An illustrating example in code clone detection.
+Scenario one (from industry): Consider Alice, a SE re-
+searcher whose area of interest lies in clone detection, and Bob,
+a senior industry developer tasked with identifying code clones
+to maintain code quality within hi s company. Inspired by the
+promising performance of DL techniques, Alice devises a novel
+model for detecting code clones, which, on the widely-used
+BigCloneBench benchmar k dataset, outper formed traditional
+clone detectors like NiCad [15] and SourcererCC [16]. She is
+delighted with her research results and proceeds to publish her
+work in renowned SE conferences or journals. Upon reading
+Alice’s paper, Bob feels encouraged to adopt this newly released
+model to enhance code clone detection performance in his
+daily work. After implementing the model, Bob is surprised to
+discover that its performance is relatively poor when applied to
+his industrial data. Through meticulous investigation, he real-
+izes that his real-world industrial data differs drastically from
+the benchmark dataset in terms of data distribution, including
+data scale and balance. For instance, the clone ratio in the
+BigCloneBench dataset is considerably higher compared to the
+clone ratio in his industrial data. As illustrated in Fig. 1,t h e
+benchmark dataset for clone detection shows that the number of
+real clone pairs is 23 times higher than that of non-clone pairs.
+In contrast, in industrial datasets, only 10% to 20% of code
+fragments are likely to be cloned code[17], [18]. Consequently,
+using a model trained solely on BigCloneBench data with-
+out accounting for local data attributes becomes challenging.
+Furthermore, in addition to a ttempting to apply Alice’s model
+directly, Bob also attempts to retrain the model on his local
+dataset. However, the performance remains unsatisfactory as
+the model necessitates a large-scale dataset for optimization
+(BigCloneBench contains over 6 m illion clone samples), and
+it is infeasible for Bob to manually label such a vast amount of
+data samples. Hence, Bob outli nes his predi cament and seeks
+assistance and suggestions by emailing Alice.
+Scenario two (from academic): Upon receiving Bob’s
+email, Alice acknowledges the limitations of her proposed clone
+Authorized licensed use limited to: Zhejiang University. Downloaded on August 26,2025 at 02:58:36 UTC from IEEE Xplore.  Restrictions apply.

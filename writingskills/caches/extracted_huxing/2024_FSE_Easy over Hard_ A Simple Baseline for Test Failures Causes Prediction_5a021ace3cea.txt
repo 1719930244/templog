@@ -1,0 +1,337 @@
+Easy over Hard: A Simple Baseline for Test
+Failures Causes Prediction
+Zhipeng Gao
+Zhejiang University
+China
+zhipeng.gao@zju.edu.cn
+Zhipeng Xue
+Zhejiang University
+China
+zhipengxue@zju.edu.cn
+Xing Hu∗
+Zhejiang University
+China
+xinghu@zju.edu.cn
+Weiyi Shang
+University of Waterloo
+Canada
+wshang@uwaterloo.ca
+Xin Xia
+Huawei
+China
+xin.xia@acm.org
+ABSTRACT
+The test failure causes analysis is critical since it determines the
+subsequent way of handling different types of bugs, which is the
+prerequisite to get the bugs properly analyzed and fixed. After a test
+case fails, software testers have to inspect the test execution logs
+line by line to identify its root cause. However, manual root cause
+determination is often tedious and time-consuming, which can cost
+30-40% of the time needed to fix a problem. Therefore, there is a
+need for automatically predicting the test failure causes to lighten
+the burden of software testers. In this paper, we present a simple but
+hard-to-beat approach, named NCChecker (Naive Failure Cause
+Checker), to automatically identify the failure causes for failed test
+logs. Our approach can help developers efficiently identify the test
+failure causes, and flag the most probable log lines of indicating the
+root causes for investigation. Our approach has three main stages:
+log abstraction, lookup table construction, and failure causes pre-
+diction. We first perform log abstraction to parse the unstructured
+log messages into structured log events. NCChecker then auto-
+matically maintains and updates a lookup table via employing our
+heuristic rules, which record the matching score between different
+log events and test failure causes. When it comes to the failure cause
+prediction stage, for a newly generated failed test log, NCChecker
+can easily infer its failed reason by checking out the associated
+log events’ scores from the lookup table. We have developed a pro-
+totype and evaluated our tool on a real-world industrial dataset
+with more than 10K test logs. The extensive experiments show the
+promising performance of our model over a set of benchmarks.
+Moreover, our approach is highly efficient and memory-saving, and
+can successfully handle the data imbalance problem. Considering
+the effectiveness and simplicity of our approach, we recommend
+relevant practitioners to adopt our approach as a baseline to beat
+in the future.
+∗This is the corresponding author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+FSE Companion ’24, July 15–19, 2024, Porto de Galinhas, Brazil
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0658-5/24/07
+https://doi.org/10.1145/3663529.3663850
+CCS CONCEPTS
+•Software and its engineering → Software maintenance tools.
+KEYWORDS
+Log Analysis, Test Failure Causes, Test Logs, Root Causes Analysis
+ACM Reference Format:
+Zhipeng Gao, Zhipeng Xue, Xing Hu, Weiyi Shang, and Xin Xia. 2024.
+Easy over Hard: A Simple Baseline for Test Failures Causes Prediction.
+In Companion Proceedings of the 32nd ACM International Conference on
+the Foundations of Software Engineering (FSE Companion ’24), July 15–19,
+2024, Porto de Galinhas, Brazil. ACM, New York, NY, USA, 12 pages. https:
+//doi.org/10.1145/3663529.3663850
+1 INTRODUCTION
+As modern software has become much larger and more complex,
+software defects and bugs are unavoidable in such systems. These
+software defects can lead to the system failures and its degraded
+quality (e.g., performance, reliability and/or security) [14, 28, 32, 34,
+44]. To minimize the number of delivered errors and mitigate the
+risk of system failures, developers, and/or testers usually resort to
+software testing by running test cases. The risk of software failures
+may be considered low with passing all test cases. By contrast, the
+risk of software failures is significantly high if the test case fails.
+Once a test case fails, it is necessary for developers and/or testers
+to further investigate the reasons for its failure by analyzing the
+test execution results, which are typically stored in log files.
+Developers use logs to record valuable runtime information
+(e.g., important events, program variables values, trace execution,
+runtime statistics, and even human-readable messages). The rich
+and detailed information recorded in log files are considered as
+the most important and useful resources to help developers and/or
+testers understand system failures and identify potential failure
+causes [2, 9, 23, 29, 33, 42]. Moreover, because logs are often the
+only available data that reports the software runtime information,
+logs are referred to as the most common accessible resources for
+diagnosing system failures.
+There are many causes that can lead to test failures (e.g., envi-
+ronmental condition problem, source code problem, and software
+version problem). Different types of failures have their own cor-
+responding action to perform (e.g., submitting bug reports to de-
+velopers, rerunning test scripts, submitting exception messages to
+arXiv:2405.02922v1  [cs.SE]  5 May 2024
+FSE Companion ’24, July 15–19, 2024, Porto de Galinhas, Brazil Zhipeng Gao, Zhipeng Xue, Xing Hu, Weiyi Shang, and Xin Xia
+software maintainers). Therefore, it is essential to identify the fail-
+ure causes in a timely manner such that the corresponding experts
+can be assigned shortly in order to review, analyze and fix the bugs
+without further delay. On the other hand, the modern software
+systems grow rapidly and become more mature. Different software,
+hardware and services are tightly integrated, leading to ever higher
+difficulty in diagnosing test failures. Prior work reports that more
+than 100 billion US dollars has been spent on failure diagnosis pro-
+cess and manual determination of a test failure root causes can
+consume half of the total time for fixing a software issue [43, 44]. In
+practice, it is thus preferable to have toolkits that can automatically
+diagnose the cause of test failures. However, making such a tool is
+difficult due to the following challenges:
+(1) Dealing with information overload. Information overload
+is a common challenge for different software engineering
+tasks [10, 11, 22, 31, 37, 39, 40]. To find out the causes of
+the test failures, software testers have to read and digest
+the test logs carefully. However, these test logs are often
+too large to examine manually. In a large software company,
+thousands of test failures are reported daily resulting into a
+huge amount of logs, with each log containing hundreds of
+test steps and thousands of log lines [2, 17, 38]. For example,
+in our study, we collected more than 10K logs from our
+industrial partner. A test log file consists of 3-4K log lines
+on average and the largest log file contains more than 550K
+log lines. This huge amount of information goes far beyond
+the level that testers can handle, and it is extremely difficult
+and inefficient for testers to manually figure out the failure
+causes [8, 26]. To alleviate such problems, practitioners have
+crafted extensive regular expressions to analyze test failure
+causes. However, the complexity of the runtime behaviors
+during testing makes the definition and maintenance of such
+regular expressions a time-consuming and error-prone task;
+while the performance is still far from satisfactory [16, 47].
+(2) Dealing with imbalanced datasets. As mentioned above,
+the test failures are caused by various number of reasons.
+However, not all failure causes happen equally. For example,
+in our study, the vast majority of failure causes are bug-
+related issues (i.e., 63%) and environmental problems (i.e.,
+23%), the third-party library issue only accounts for a very
+small proportion of all failure cases (i.e., 1.4%). Despite previ-
+ous study [18] has proposed a similarity-based approach to
+predict the multiple failure causes, the performance of the
+similarity-based approaches will decrease dramatically on
+such a highly imbalanced dataset, especially for these mi-
+nority failure classes. It is thus valuable to have an approach
+that focuses on few-shot samples and prevents the majority
+of samples from excessively affecting the learning process.
+(3) Dealing with the rapidly increased latency and mem-
+ory. Considering the large-scale software systems run on
+24x7 basis, the generated logs are typically huge [ 15, 28].
+Analyzing the archived logs in such a huge volume brings
+challenge to the latency and memory usages. For example,
+the approaches proposed by previous studies [ 2] need to
+compare logs against a library of historical referenced logs
+to identify the test failure causes. If the library increases with
+the velocity of the rapidly accumulated logs (e.g., 50 giga-
+bytes per hour in Google system), simply reading these logs
+into memory for comparison purposes and retrieving rele-
+vant logs can cost significant time. Therefore, dealing with
+the rapidly increased logs and ever-increasing computation
+resources is a major challenge.
+To overcome the aforementioned challenges from practice, in this
+work, we propose NCChecker (Naive Failure Cause Checker), a
+heuristic rule-based approach for failure causes analysis that learns
+from the large volumes of test logs. NCChecker is simple and
+contains three stages: log abstraction, lookup table construction
+and failure causes prediction. In the first stage, we perform log
+abstraction to convert each unstructured log into structured log
+events. The structured information contains essential of log lines
+without any noisy details and can then be used as input for the
+downstream tasks. In the second stage, we create the failure reason
+lookup table by using four simple but effective heuristic rules. The
+rows of the lookup table are different log events abstracted from
+the first stage, while the columns of the lookup table are different
+failure causes (i.e., environmental issues, bug related issues, test
+script issues, and third-party library issues). The cell of the lookup
+table contains the relevant scores estimated by NCChecker by
+using our heuristic rules. For a given log event and a failure reason,
+the higher the score, the more relevant the log event is associated
+with the particular failure reason. When it comes to the last stage of
+failure causes prediction, for a newly reported failing test case, we
+parse the test log into a sequence of existing log events. Afterwards,
+for each log event, we check out the scores from the above lookup
+table for different failure reasons. For a given failure reason, we
+sum up the checked out scores from all the possible log events for
+this specific failure reason. A failure reason with the maximum
+value will be selected as the final prediction failure cause.
+To evaluateNCChecker, we collect more than 10K test logs from
+our industrial partner, which is a leading information and commu-
+nication technology company. The experimental results show that
+NCChecker outperforms several state-of-the-art approaches by a
+large margin. Moreover, NCChecker performs well with respect
+to the imbalanced dataset and can successfully identify the failure
+causes in minority. In addition, NCChecker is efficient and con-
+sumes low memory for log analysis. In summary, this study makes
+the following contributions:
+(1) We propose a simple but hard-to-beat approach to address
+the challenges of test failure analysis.NCChecker can assist
+developers and/or testers to correctly and efficiently diag-
+nose test failures.
+(2) We construct a dataset with more than 10K test logs to eval-
+uate and verify the effectiveness of our model. The dateset
+involves more than 7K failed logs and 3K passed logs in total.
+The failure causes of these test logs are manually verified by
+testers.
+(3) We conduct comprehensive experiments to investigate the
+effectiveness of our approach. The experimental results show
+that our approach is effective and efficient.
+(4) Considering the effectiveness and simplicity of our approach,
+we recommend developers to apply our approach in practice
+Easy over Hard: A Simple Baseline for Test Failures Causes Prediction FSE Companion ’24, July 15–19, 2024, Porto de Galinhas, Brazil
+Table 1: An Overview of the Collected Log Datasets
+Log Type Measurement Value
+Failed Logs
+# Logs 7,159
+Avg. Log Lines 3,905
+Max. Log Lines 550,732
+Total File size 3.2G
+Passed Logs
+# Logs 3,286
+Avg. Log Lines 4,564
+Max. Log Lines 270,108
+Total File size 1.7G
+and researchers to adopt our approach as a baseline to beat
+in the future.
+The rest of the paper is organized as follows. Section 2 presents
+the dataset overview and key insights. Section 3 presents the de-
+tails of our approach. Section 4 presents the baseline methods, the
+evaluation metrics, and the evaluation results. Section 5 presents
+the related work. Section 6 presents the threats to validity. Section 7
+concludes the paper with possible future work.
+2 PRELIMINARY
+In this section, we first present an overview of our log datasets.
+Afterward, we introduce four key insights that guide the design of
+the heuristic rules of our approach.
+2.1 Data Overview
+In this study, we collected 10,445 test logs (including 7,159 failed
+test logs and 3,286 passed test logs) from our industry partner. We
+counted the log lines and file size of each test log, and the overall
+data statistics of the dataset are summarized in Table 1. In our work,
+each failed test log is manually labeled with a specific test failure
+cause. There are four types of failure causes with respect to our
+collected test logs. Different types of failure causes are expected
+to be handled by different kinds of solutions. We now describe the
+details of different failure causes as follows:
+• Bug related issues (C1): The bug related issues are con-
+cerned with general software system bugs due to coding
+mistakes, compatibility problems, and security vulnerabili-
+ties etc,. When the bug related issues occur, it is necessary
+to notify the software developers to identify, reproduce and
+fix the corresponding bugs.
+• Environmental issues (C2): The environmental issues are
+related to the problems of the network, CPU, memory, op-
+erating system, etc. When the environmental issues occur,
+software testers are responsible to diagnose the system envi-
+ronment.
+• Test script issues (C3): The test script issues related to the
+defects within the test scripts (e.g., expressions, arguments,
+statements). When test script issues occur, software testers
+are responsible to diagnose and debug the test scripts.
+• Third party library issues (C4): The third-party library
+issues are associated with defects or incompatible problems
+in the third-party libraries, e.g., there are problems regarding
+Table 2: Different Types of Failure Causes
+ID Failure Causes Count Percentage
+C1 bug related issues 4, 559 63 .7%
+C2 Environmental issues 1, 664 23 .2%
+C3 Test script issues 835 11 .7%
+C4 Third party library issues 101 1 .4%
+Sum - 7, 159 100 .0%
+return user view with return command[DTB] system-view 
+[~R75]
+[DTB] delete rollback checkpoint
+<R75>
+cmd.pathinfo=/usr/local/cmd/cfg.rb:357
+method=/usr/local/dev/dev.rb:1161
+[DTB] system-view 
+return user view with return command
+The slave board is not in position
+[~240K-5]
+[DTB] delete rollback checkpoint
+<240K-5>
+cmd.pathinfo=/usr/local/cmd/cfg.rb:259
+method=/usr/local/dev/dev.rb:1012
+e0 |   [DTB] system-view 
+e1 |   return user view *
+e2 |The slave board is not in position
+e3 |[~240K-5]
+e4 |   [DTB] delete *
+e5 |   <240K-5>
+e6 |   cmd.pathinfo= *
+e7 |   method = *
+e1  |   return user view with *
+e8  |   [~R75]
+e4  |   [DTB] delete *
+e9  |   <R75>
+e6  |   cmd.pathinfo= *
+e7  |   method = *
+e0  |   [DTB] system-view 
+FailedLog
+Abstraction
+PassedLog
+Abstraction
+Figure 1: Log abstraction of failed/passed logs
+the automatic logging system. When third-party library prob-
+lems appear, it is necessary to ask developers to diagnose
+the third-party library software.
+The distribution of the above four types of test failure causes
+are summarized in Table 2. From the table, we can see that there
+is an unequal distribution of different failure causes among test
+logs. For example, the vast majority of the failure causes are theC1
+(bug related issues ) and C2 (environmental issues), which make up a
+very large proportion (i.e., over 86%) of all the failed test cases. The
+number of failed tests caused byC3 (test script issues) andC4 (third-
+party library issues) only account for a relatively small number of
+the failed test cases. Especially regarding C4, only 101 test failures
+are caused by the third-party library issues, which comprises only
+1.4% among all failed test cases.
+2.2 Key Insights
+Our approach has been inspired by the following four key insights,
+which lead to our solution for this task.
+Key Insight 1: Logs are often too large and too unstructured
+to analyze manually. First of all, the log files are often very large.
+For example, as shown in Table 1, the failed test log contains 3,905
+log lines on average, with the largest log file containing over 550K
+log lines. Testers have to go through the entire log file to identify
+the log lines that correspond to the test failure. The sheer amount
+of log data makes its analysis a time-consuming and challenging
+task. Moreover, the log files are highly complex and unstructured.

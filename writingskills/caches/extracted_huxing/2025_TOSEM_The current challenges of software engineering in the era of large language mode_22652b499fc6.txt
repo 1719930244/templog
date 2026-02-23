@@ -1,0 +1,161 @@
+The Current Challenges of Software Engineering in the Era of
+Large Language Models
+CUIYUN GAO, Harbin Institute of Technolgy, China
+XING HU∗, Zhejiang University, China
+SHAN GAO, Huawei Technologies, China
+XIN XIA, Huawei Technologies, China
+ZHI JIN∗, Peking University, China
+With the advent of large language models (LLMs) in the artificial intelligence (AI) area, the field of software
+engineering (SE) has also witnessed a paradigm shift. These models, by leveraging the power of deep learning
+and massive amounts of data, have demonstrated an unprecedented capacity to understand, generate, and
+operate programming languages. They can assist developers in completing a broad spectrum of software
+development activities, encompassing software design, automated programming, and maintenance, which
+potentially reduces huge human efforts. Integrating LLMs within the SE landscape (LLM4SE) has become a
+burgeoning trend, necessitating exploring this emergent landscape’s challenges and opportunities.
+The paper aims at revisiting the software development life cycle (SDLC) under LLMs, and highlighting
+challenges and opportunities of the new paradigm. The paper first summarizes the overall process of LLM4SE,
+and then elaborates on the current challenges based on a through discussion. The discussion was held among
+more than 20 participants from academia and industry, specializing in fields such as software engineering
+and artificial intelligence. Specifically, we achieve 26 key challenges from seven aspects, including software
+requirement & design, coding assistance, testing code generation, code review, code maintenance, software
+vulnerability management, and data, training, and evaluation. We hope the achieved challenges would benefit
+future research in the LLM4SE field.
+CCS Concepts: •Software and its engineering → Software development techniques.
+Additional Key Words and Phrases: Large Language Models, Challenges, LLM4SE
+ACM Reference Format:
+Cuiyun Gao, Xing Hu, Shan Gao, Xin Xia, and Zhi Jin. 2018. The Current Challenges of Software Engineering
+in the Era of Large Language Models. In Proceedings of Make sure to enter the correct conference title from
+your rights confirmation emai (Conference acronym ’XX). ACM, New York, NY, USA, 31 pages. https://doi.org/
+XXXXXXX.XXXXXXX
+1 Introduction
+In the 1960s, software engineering (SE) was formally established as a discipline in response to
+software’s increasing scale and complexity [126], based on the symposium on SE organized by the
+∗Corresponding Authors: Xing Hu and Zhi Jin.
+Authors’ Contact Information: Cuiyun Gao, gaocuiyun@hit.edu.cn, Harbin Institute of Technolgy, China; Xing Hu, xinghu@
+zju.edu.cn, Zhejiang University, China; Shan Gao, gaoshan17@huawei.com, Huawei Technologies, China; Xin Xia, xin.xia@
+acm.org, Huawei Technologies, China; Zhi Jin, zhijin@pku.edu.cn, Peking University, China.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the
+full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+Conference acronym ’XX, June 03–05, 2018, Woodstock, NY
+© 2018 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 978-1-4503-XXXX-X/18/06
+https://doi.org/XXXXXXX.XXXXXXX
+, Vol. 1, No. 1, Article . Publication date: December 2018.
+arXiv:2412.14554v2  [cs.SE]  27 Dec 2024
+2 Gao et al.
+North Atlantic Treaty Organization (NATO). In the nascent stage of SE, during which artificial
+intelligence (AI) techniques were not widely adopted, the field was more focused on structured
+programming [94], modular design [ 136], and data structure [ 59], which greatly promoted the
+widespread application of programming languages and compiler systems. Along with the explosive
+development of object-oriented programming (OOP) and cloud computing, and continuing maturity
+of the AI techniques, the field of intelligent software engineering (also called AI4SE) [56] has
+gradually emerged. In the field, AI techniques have been introduced into various stages of the
+software development lifecycle (SDLC), including programming, testing, and maintenance, aiming
+at boosting the efficiency and quality of software development. Nowadays, AI4SE is still playing
+an increasingly essential role in a growing number of SE domains, including but not limited to
+intelligent requirements analysis and design [20, 118], automated code generation and repair [70, 90,
+109], as well as intelligent project management [7, 93]. According to Gartner’s report for 2023 [50],
+artificial intelligence-augmented software engineering is listed as one of the top strategic technology
+trends in SE, indicating the general trend of enhancing SE with AI techniques.
+Recently, the rapid advancement of the Artificial Intelligence Generated Content (AIGC) tech-
+nology [22], especially large language models (LLMs) [42, 181], is ushering in new challenges and
+opportunities for the SE field, and displays potential for transforming the software development
+paradigm. LLM-based software engineering (also calledLLM4SE) has attracted widespread attention
+from both academia and industry. The practical application of tools such as GitLab Duo [37] and
+GitHub Copilot X [29] have demonstrated the broad prospects of LLM4SE, inspiring new software
+development mode. Specifically, by breaking through the traditional multi-stage software develop-
+ment process, LLM4SE would make an end-to-end software development possible, i.e., generating
+and testing code directly based on given requirements.
+The prospects of LLM4SE have acted as the “catfish effect”, promoting the exploration of new
+software development modes among academia and industry. However, due to limitations such as the
+essential semantic gap between code and natural languages, constantly updated data and models,
+and instability of generated results, existing LLM4SE techniques are still faced with serious chal-
+lenges regarding the quality, efficiency, reliability, and trustworthiness of developed software. The
+challenges have also sparked a new wave of enthusiasm for SE technologies. To better understand
+the issues in the current SE stage, 24 academia researchers and industry practitioners, specializing
+in different fields such as software engineering and artificial intelligence, were grouped to discuss
+the opportunities and challenges in the era of LLM4SE from 19 Jan 2024 to 21 Jan 2024 at the “9th
+CCF Beautiful Lake Seminars” [1]. Based on the rigorous discussion, the paper summarizes 26 key
+challenges from seven aspects, including software requirement & design, coding assistance, testing
+code generation, code review, software maintenance, software vulnerability management, and data,
+training, and engineering. This paper aims to provide insights for researchers and practitioners to
+effectively harness LLMs’ strengths while mitigating their weaknesses, thereby applying them to
+support continuous and robust software development.
+The major contributions of this paper are summarized as follows:
+(1) We perform a qualitative study to investigate and summarize the current challenges of
+LLM4SE.
+(2) We achieve findings from various aspects in LLM4SE, and provide practical implications for
+researchers and practitioners to inspire future avenues of research.
+The remainder of this paper is structured as follows: Section 2 provides the background of our
+work, including the overall process of LLM4SE and common techniques in each step. Section 3
+describes our methodology for investigating the challenges in LLM4SE. Section 4 and Section 5
+, Vol. 1, No. 1, Article . Publication date: December 2018.
+The Current Challenges of Software Engineering in the Era of Large Language Models 3
+present the summarized challenges and related work, respectively. Section 6 discusses the threats
+to the validity of our work, and Section 7 concludes the paper.
+2 Background
+In this section, we first illustrate the overall process of LLM4SE, and then elaborate on the details
+in each step including the data construction, fine-tuning techniuqes, SE-specific LLMs, prompt
+tuning techniques, and downstream tasks.
+2.1 Overall Process of LLM4SE
+Code ReviewSoftware TestingCoding AssistanceRequirements Understanding and ExplorationIntelligent-Assisted Software ModelingKnowledge Base for Software Design
+Code Completion and Generation
+Code DocumentationGenerationDeveloper Behavior AnalysisCode Pattern Mining
+API RecommendationSource Code RepresentationCode Smell Detection
+Intelligent Reduction of False Positives Study
+Intelligent Warning Notifications
+Excellent Code Exemplar
+Code Retrieval and Recommendation
+Intelligent Q&ACode Refactoring
+Change Log Generation
+Software Knowledge Graph Test Quality Detection
+Mutation Testing
+Test Migration Techniques
+Test-Aided GenerationMetamorphic testingTest coverage Analysis
+Threading Test
+AI-Enhanced Fuzzing
+Design For Testability
+Combinatorial TestArchitectural ConsistencyAnalysis
+Warning Auto-Refactoring
+Warning Interpretability
+Evolutionary MetricsRoot Cause Analysis
+Reverse ArchitecturalAnalysis
+Change History Analysis
+Code MetricsIssue Presentation
+Program Analysis
+Software Vulnerability ManagementVulnerability Awareness and TraceabilityVulnerability Scanning and MiningVulnerability Detection and RepairVulnerability Knowledge BaseSoftware Composition AnalysisBinary AnalysisSupply Chain Analysis
+General LLMs
+SE-Specific LLMsPrompt Tuning Techniques
+•Code Repository•Corpus Knowledge Base•Programming Paradigm•Model RegulationSoftware Requirement & DesignCoding AssistanceTesting Code GenerationCode ReviewSoftware Vulnerability Management……
+Fine-Tuning Techniques
+Software Requirement& Design
+Data Construction
+Software Maintenance
+Root Cause LocalizationAnomaly Detection
+Log GenerationUser Review Analysis
+Log Mining
+Decision Making in Software Design
+Fig. 1. Overall process of LLM4SE.
+Figure 1 presents the overall process of the integration of LLM into software engineering appli-
+cations, including data construction, fine-tuning, prompting techniques, and Software Engineering
+(SE)-specific LLMs. With the support of SE-specific LLMs, multiple SE tasks (e.g., design, coding,
+testing, reviewing, maintenance, and vulnerability management) can be enhanced substantially.
+2.2 Data Construction
+The remarkable performance of the previously mentioned large code models can be attributed
+to the extensive dataset and the meticulously structured data organization employed during the
+model’s pre-training phase.
+2.2.1 Data Collection. Data collection is the basic step for constructing a high-quality corpus of
+source code. A common solution is to collect publicly available source code data from GitHub or
+public archive [98]. For instance, Guo et al. [54] crawl public repositories created before February
+2023 on GitHub with 87 programming languages. The StarCoder2 team collects the source code
+from the Software Heritage (SH) archive [3]. Then the authors start by extracting the most recently
+crawled versions of all GitHub repositories and filtering them to retain only the main branch.
+2.2.2 Data Filtering. Source code data from public repositories may not always be clean or useful,
+and malicious data may harm model performance and leak confidential user data. Therefore, delicate
+data filtering is also crucial for powerful large code models. According to Lozhkov et al. [98], many
+filtering rules are applied for StarCoder2, including 1) Long line filters to eliminate too long code
+lines, 2) Auto-generated filter to remove auto-generated files such as compilation files, 3) Alpha
+, Vol. 1, No. 1, Article . Publication date: December 2018.

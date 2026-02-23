@@ -1,0 +1,127 @@
+111
+CodeEditor: Learning to Edit Source Code with Pre-trained
+Models
+JIA LI ♂, GE LI∗, ZHUO LI, and ZHI JIN∗, Key Lab of High Confidence Software Technology, MoE,
+School of Computer Science, Peking University, China
+XING HU, Zhejiang University, China
+KECHI ZHANG and ZHIYI FU, Key Lab of High Confidence Software Technology, MoE, School of
+Computer Science, Peking University, China
+Developers often perform repetitive code editing activities (up to 70%) for various reasons (e.g., code refactoring)
+during software development. Many deep learning (DL) models have been proposed to automate code editing
+by learning from the code editing history. Among DL-based models, pre-trained code editing models have
+achieved the state-of-the-art (SOTA) results. Pre-trained models are first pre-trained with pre-training tasks
+and fine-tuned with the code editing task. Existing pre-training tasks mainly are code infilling tasks ( e.g.,
+masked language modeling), which are derived from the natural language processing field and are not designed
+for automatic code editing.
+In this paper, we propose a novel pre-training task specialized in code editing and present an effective pre-
+trained code editing model named CodeEditor. Compared to previous code infilling tasks, our pre-training
+task further improves the performance and generalization ability of code editing models. Specifically, we
+collect lots of real-world code snippets as the ground truth and use a powerful generator to rewrite them
+into mutated versions. Then, we pre-train our CodeEditor to edit mutated versions into the corresponding
+ground truth, to learn edit patterns. We conduct experiments on four code editing datasets and evaluate the
+pre-trained CodeEditor in three settings (i.e., fine-tuning, few-shot, and zero-shot). (1) In the fine-tuning
+setting, we train the pre-trained CodeEditor with four datasets and evaluate it on the test data. CodeEditor
+outperforms the SOTA baselines by 15%, 25.5%, and 9.4% and 26.6% on four datasets. (2) In the few-shot
+setting, we train the pre-trained CodeEditor with limited data and evaluate it on the test data. CodeEditor
+substantially performs better than all baselines, even outperforming baselines that are fine-tuned with all
+data. (3) In the zero-shot setting, we evaluate the pre-trained CodeEditor on the test data without training.
+CodeEditor correctly edits 1,113 programs while the SOTA baselines can not work. The results show that
+the superiority of our pre-training task and the pre-trained CodeEditor is more effective in automatic code
+editing.
+CCS Concepts: •Computing methodologies → Neural networks; Natural language processing ; •Software
+and its engineering → Automatic programming.
+Additional Key Words and Phrases: Source Code Editing, Pre-training, Deep Learning
+∗Corresponding author
+Authors’ addresses: Jia Li♂, lijia@stu.pku.edu.cn; Ge Li, lige@pku.edu.cn; Zhuo Li, lizhmq@pku.edu.cn; Zhi Jin, zhijin@
+pku.edu.cn, Key Lab of High Confidence Software Technology, MoE, School of Computer Science, Peking University, No.5
+Yiheyuan Road, Haidian District, Beijing, China; Xing Hu, Zhejiang University, No. 1689 Jiangnan Road, Gaoxin District,
+Ningbo, China, xinghu@zju.edu.cn; Kechi Zhang, zhangkechi@pku.edu.cn; Zhiyi Fu, fuzhiyi1129@gmail.com, Key Lab of
+High Confidence Software Technology, MoE, School of Computer Science, Peking University, No.5 Yiheyuan Road, Haidian
+District, Beijing, China.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+© 2018 Association for Computing Machinery.
+0004-5411/2018/8-ART111 $15.00
+https://doi.org/XXXXXXX.XXXXXXX
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2018.
+111:2 Li et al.
+Fig. 1. Two edits from a real-world software project [9] in GitHub. They both aim to remove redundant throw
+exceptions.
+ACM Reference Format:
+Jia Li ♂, Ge Li, Zhuo Li, Zhi Jin, Xing Hu, Kechi Zhang, and Zhiyi Fu. 2018. CodeEditor: Learning to Edit
+Source Code with Pre-trained Models. J. ACM 37, 4, Article 111 (August 2018), 22 pages. https://doi.org/
+XXXXXXX.XXXXXXX
+1 INTRODUCTION
+To improve software systems’ stability and maintainability, developers spend lots of effort (e.g.,
+more than six hours per week [2]) on editing their source code. For example, developers would
+modify identifier names or update an outdated API. A large-scale study in 2,841 Java projects
+[24] has shown that many edits (up to 70-100%) follow repetitive patterns. Figure 1 shows two
+edits from a real-world software project [9]. They both aim to remove redundant exceptions (i.e.,
+AccessControlException and UnresolvedLinkException ) and share an edit pattern. However,
+manually designing these repetitive patterns can be tedious and error-prone [23, 29]. Thus, code
+editing models would be beneficial to save developers’ effort by automating code changes learned
+from previous edit data.
+Recently, deep learning (DL) techniques have been applied to automatic code editing. Among
+DL-based approaches, pre-trained code editing models [ 35, 38] have achieved state-of-the-art
+(SOTA) results on many benchmarks. Pre-trained models first are pre-trained with self-supervised
+pre-training tasks, and then fine-tuned with the supervised code editing task . Self-supervision means
+the labels of training samples are generated automatically without human annotations. Thus, a
+model can be pre-trained with a large amount of automatically generated data to learn linguistic
+and commonsense knowledge about the source code. Nowadays, existing code editing studies
+[35, 38] mainly use code infilling tasks (e.g., mask language modeling) as the pre-training tasks.
+The code infilling tasks randomly mask some tokens or spans in a program and train a model to
+infill the masked content based on the contexts. Figure 2 (a) shows a code infilling example. The
+masked content (i.e., void, String[]) is replaced with a specific token (i.e., MASK) and highlighted.
+Although promising, code infilling tasks are derived from the natural language processing (NLP)
+field [6, 20] and are not designed for automatic code editing. Thus, there are still rooms to improve
+existing pre-trained code editing models.
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2018.
+CodeEditor: Learning to Edit Source Code with Pre-trained Models 111:3
+publicvoidrun(String[]args){…}
+Randomlymaskingtokens
+publicMASKrun(MASKargs){…}
+Pre-trainedmodels
+voidString[]
+publicvoidrun(String[]args){…}
+Rewritingbyagenerator
+publicbooleanrun(intargs){…}
+Pre-trainedmodels
+publicvoidrun(String[]args){…}
+(a)Codeinfilling (b)Ourpre-trainingtask
+Fig. 2. The comparison of (a) code infilling tasks and (b) our pre-training task. Code infilling tasks randomly
+mask some tokens or spans in a program and train a model to infill the masked content based on the contexts.
+Our pre-training task uses a powerful generator to rewrite the code into a mutated version. Then, a model is
+trained to edit the mutated version into the original version.
+In this paper, we propose to extend the conventional code infilling to a novel pre-training
+task specialized in code editing and present an effective pre-trained code editing model named
+CodeEditor. Specifically, we first collect lots of programs from open-source communities (e.g.,
+GitHub1). These programs have passed code reviews and can be viewed as the ground truth. We
+utilize a powerfulgenerator to rewrite these programs into natural but inferior versions (aka mutated
+versions). Then, we pre-train the CodeEditor to edit the mutated code into the corresponding
+ground truth. Figure 2 (b) shows a training example in our pre-training task. The rewritten content
+is highlighted. In Figure 2 (b), the generator rewrites a program into a mutated version by modifying
+two tokens (void → boolean and String[] → int). Then, the pre-trained model is asked to edit
+the mutated code into the ground truth.
+Compared to previous code infilling tasks, our pre-training task has two advantages: (1)Our pre-
+training task improves the performance of code editing models. The goal of code infilling
+tasks is to infill a given blank in the source code. Our pre-training task is more challenging and
+requires a high-level understanding ability to locate inferior parts and a strong generative ability to
+generate a better alternative. Thus, our pre-training task can provide strong supervision signals and
+further improves the performance of code editing models. (2) Our pre-training task strengthens
+the generalization ability of code editing models. Code infilling tasks are to predict some
+discrete tokens based on a masked program. Our pre-training task aims to transform a previous
+program into a new program by automating code changes and is closer to the real-world code
+editing task. Thus, our pre-training task endows the model with a practical code editing ability and
+strengthens the model’s generalization ability in real-world code editing.
+The key element in implementing our pre-training task is the generator for rewriting programs.
+Inspired by previous studies [5, 40], we utilize a powerful pre-trained language model for source
+code - CodeGPT [21] - as the generator. CodeGPT is trained on a code corpus consisting of 2.7 million
+files and is a SOTA language model for source code. Thus, CodeGPT can derive various informative
+code snippets that benefit our CodeEditor to learn meaningful and diverse edit patterns ( e.g.,
+API updates, type/object changes, and identifier renaming). These edit patterns resemble the code
+changes in real-world code editing and thus strengthen the performance of pre-trained models in
+1https://github.com/
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2018.

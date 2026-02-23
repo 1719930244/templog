@@ -1,0 +1,159 @@
+Towards On-The-Fly Code Performance Profiling
+XING HU, School of Software Technology, Zhejiang University, China
+WEIXIN LIN, College of Computer Science and Technology, Zhejiang University, China
+ZHUANG LIU, School of Software Technology, Zhejiang University, China
+XIN XIA∗, Zhejiang University, China
+MICHAEL LING, Huawei Technologies Canada, Canada
+YUAN W ANG,Huawei Sweden Research Center, Sweden
+DA VID LO,School of Computing and Information Systems, Singapore Management University, Singapore
+Improving the performance of software applications is one of the most important tasks in software evolution and maintenance.
+In the Intel Microarchitecture, CPUs employ pipelining to utilize resources as effectively as possible. Some types of software
+patterns or algorithms can have implications on the underlying CPU pipelines and result in inefficiencies. Therefore, analyzing
+how well the CPU’s pipeline(s) are being utilized while running an application is important in software performance analysis.
+Existing techniques, such as Intel VTune Profiler, usually detect software performance issues from CPU pipeline metrics
+after the software enters production and during the running time. These techniques require developers to manually analyze
+monitoring data and perform additional test runs to obtain relevant information about performance problems. It costs a lot of
+time and human effort for developers to build, deploy, test, execute, and monitor the software.
+To alleviate these problems, we propose a novel approach namedPGProf to predict the CPU pipeline before execution and
+provide the profiling feedback during the development process.PGProf exploits the graph neural networks to learn semantic
+and structural representations for C functions and then predict the fraction of pipeline slots in each category for them during
+the development process. Given a code snippet, we fuse different types of code structures, e.g., Abstract Syntax Tree (AST),
+Data Flow Graph (DFG), and Control Flow Graph (CFG) into one program graph. During offline learning, we first leverage the
+gated graph neural network to capture representations of C functions.PGProf then automatically estimates the final pipeline
+values according to the learned semantic and structural features. For online prediction, we predict pipeline metrics with four
+category values by leveraging the offline trained model. We build our dataset from C projects in GitHub and use Intel VTune
+profiler to get profiling information by running them. Extensive experimental results show the promising performance of our
+model. We achieved absolute result of 49.90% and 79.44% in terms of22@5% and 22@10% with improvements of 8.0%-42.7%
+and 7.8%-20.1% over a set of baselines.
+Additional Key Words and Phrases: Program Graphs, Performance Profiling, CPU utilization, Graph Neural Networks
+∗Corresponding Author: Xin Xia.
+Authors’ addresses: Xing Hu, xinghu@zju.edu.cn, School of Software Technology, Zhejiang University, Ningbo, Zhejiang, China; Weixin
+Lin, martinlwx@zju.edu.cn, College of Computer Science and Technology, Zhejiang University, HangZhou, Zhejiang, China; Zhuang Liu,
+liuzhuang@zju.edu.cn, School of Software Technology, Zhejiang University, Ningbo, Zhejiang, China; Xin Xia, xin.xia@acm.org, Zhejiang
+University, Hangzhou, Zhejiang, China; Michael Ling, michael.ling@huawei.com, Huawei Technologies Canada, Canada; Yuan Wang,
+yuan.wang1@huawei.com, Huawei Sweden Research Center, Sweden; David Lo, davidlo@smu.edu.sg, School of Computing and Information
+Systems, Singapore Management University, Singapore.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.
+Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy
+otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from
+permissions@acm.org.
+© 2025 Copyright held by the owner/author(s).
+ACM 1557-7392/2025/3-ART
+https://doi.org/10.1145/3725212
+ACM Trans. Softw. Eng. Methodol.
+ 
+
+2 • Xing Hu, Weixin Lin, Zhuang Liu, Xin Xia, Michael Ling, Yuan Wang, and David Lo
+1 INTRODUCTION
+During software evolution and maintenance, it is important to improve the performance of software applications.
+Developers spend a lot of time on performance management to identify performance bottlenecks (or hot spots),
+such as hardware issues, threading issues, and I/O traffic. Unfortunately, identifying performance limitations
+from hardware usage like CPU pipeline usage has remained an open problem in the performance engineering
+field [51]. The CPU pipeline is a series of sequential steps from the instructions that attempts to keep every part
+of the processor busy. Understanding how efficiently the code is passing through the core pipeline is critical
+for developers to identify hardware-level performance problems in the software [1]. For example, linked data
+structures are commonly used in the software, but cause idleness in the pipeline while data is retrieved and there
+are no other instructions to execute, thus result in utilization inefficiencies of the CPU pipeline. Generally, the
+available CPU execution pipeline is split into four basic categories:Retiring, Bad Speculation, Front-end Bound
+and Back-end Bound based on hardware operations (`Ops) flow through a pipeline slot [1, 51]. Analyzing metrics
+for these four categories helps developers to focus on the top hotspots of the application.
+Profiling is one of the most popular techniques to collect such performance information [17, 27]. Generally,
+profilers detect software performance behaviors described above after software enters production [10, 11, 20]. For
+example, VTune Profiler1 collects a complete list of events for analyzing a typical client application. It calculates
+a set of predefined ratios used for these four metrics and facilitates identifying hardware-level performance
+problems, such as the Front-End stall and its causes.
+However, developers spend lots of time and effort to identify performance issues by exploiting profiling
+techniques. To analyze the performance of the source code, they should collect the profiling information during
+the runtime. This process is time-consuming, especially for a large system. First, running a large software system
+requires a lot of time on deployment and build. Second, locating the performance metrics for each function is
+time-consuming and labor-consuming. Developers have to construct enough test cases to cover every function,
+thereby ensuring each function can be run. Third, if a function is detected as a bottleneck, developers usually
+need to optimize it. Then, the system has to be re-run and tested to get new performance metrics. Therefore, it is
+thus highly desirable to have a tool that provides automatic performance profiling before the software enters
+production and provides performance feedback during the development process (e.g., shows pipeline metrics in
+IDEs for developers as shown in Figure 1). The on-the-fly performance profiling tool can improve performance
+optimization efficiency significantly.
+In this paper, we refer to the task that performs the performance profiling during development as “On-the-Fly
+Performance Profiling” and propose a novel approach namedPGProf to automate this task. It can predict four
+metric values of the CPU pipeline given a C function in real-time during development. These values are four
+percentages that add up to 100%. PGProf can help developers discover performance issues and optimize the
+source code in real time. We illustrate a usage scenario ofPGProf as follows:
+� Without Our Tool: Consider a developer Alice. Daily, when Alice writes a C program to complete a coding
+task, she wants to know the CPU profiling information of the written functions. To get this, Alice should first
+write test cases for these functions and execute the whole software. Then, she uses a profiler to collect the profiling
+values. Furthermore, if this function has a bottleneck on a specific aspect, Alice has to optimize her code and
+repeat the above process until the code has no bottleneck on the CPU. It costs a lot of time and human efforts
+through the traditional profiling process.
+� With Our Tool: Now consider Alice adopts ourPGProf and she is working on the IDE. Just like Figure 1
+shows, Alice selects the function and chooses to profile it. The IDE will ask our modelPGProf to get the CPU
+profiling values (i.e.,Retiring: 17.8%, Front-End Bound : 2.2%, Back-End Bound : 72.6%, and Bad Speculation: 7.4%)
+1https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html
+ACM Trans. Softw. Eng. Methodol.
+ 
+
+Towards On-The-Fly Code Performance Profiling • 3
+……
+return0;
+}
+voidhci_codec_list_clear(structlist_head*codec_list)
+{
+structcodec_list*c,*n;
+list_for_each_entry_safe(c,n,codec_list,list){
+list_del(&c->list);
+kfree(c);
+}
+}
+……
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+CPUProfiling
+Bad Speculation:
+Back-End Bound:
+Front-End Bound:
+Re tiring: 17.8%
+2.2%
+72.6%
+7.4%
+Fig. 1. The usage scenario of our approach PGProf
+without writing test cases and execution. With the help of our tool, Alice successfully detects the bottleneck (i.e.,
+Back-End Bound: 72.6%) of the function and optimizes her code on the fly.
+According to Cito et al. [11] and Ahmed et al. [ 2], collected information by monitoring tools can be utilized
+to build performance models and identify performance issues. Inspired by these studies, we propose a neural
+network to learn from the collected performance information and use it to predict pipeline metrics. Although
+prior studies [35, 39] proposed to utilize deep learning techniques to deal with software performance issues (e.g.,
+compiler optimization), there is almost no prior work at predicting CPU profiling metrics.
+Intuitively, the performance of the source code is related to the code structures, such as syntax trees, control
+flows, and data flows. Learning from these structures simultaneously is quite challenging. To learn these code
+structures, we propose to represent the source code as a graph. Similar to Allamanis et al [5], we build the program
+graph by adding edges to the ASTs. However, they only add edges according to variables uses and updates and
+they do not use control flow information well. Different from them, we construct program graphs by fusing
+different code structures, e.g., Abstract Syntactic Tree (AST), Control Flow Graph (CFG), and Data Flow Graph
+(DFG). To predict the CPU metrics, the model needs to generate four values that add up to 100%. Existing works
+usually exploit neural networks to solve classification task (e.g., clone detection [29, 46]) or generation tasks (e.g.,
+code completion [31]). The prediction target of our study is different from theirs. Thus, the prediction target of
+neural networks should be adapted to our task. To effectively predict the four metric values, we formulate it as a
+distribution estimation task.
+PGProf consists of three phases: program graph construction, model training, and online application. During
+the program graph construction phase, we build program graphs by fusing AST, CFG, and DFG of the given
+program. Then, we train the graph neural model on these program graphs of C functions extracted from 62 C
+projects mined from the GitHub. We build these projects and run them by executing the generated test cases.
+Next, we leverage the profiling tool named Intel VTune to get the pipeline metrics for these C functions. When it
+comes to online prediction, for a given C function, we fit them into the trainedPGProf model to estimate its
+performance metrics. To verify the suitability of our proposed model, we conduct extensive experiments on the
+dataset. We achieved absolute result of 49.90% and 79.44% in terms of22@5% and 22@10%. By comparing with
+several baselines, the superiority of our proposedPGProf model is demonstrated. In summary, this work makes
+the following main contributions:
+ACM Trans. Softw. Eng. Methodol.

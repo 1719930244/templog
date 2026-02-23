@@ -1,0 +1,442 @@
+C3: Code Clone-based Identification of Duplicated Components
+Yanming Yang
+Zhejiang University, China
+yanmingyang@zju.edu.cn
+Ying Zou
+Queen’s University, Canada
+zouy@queensu.ca
+Xing Hu∗
+Zhejiang University, China
+xinghu@zju.edu.cn
+David Lo
+Singapore Management University,
+Singapore
+davidlo@smu.edu.sg
+Chao Ni
+Zhejiang University, China
+chaoni@zju.edu.cn
+John Grundy
+Monash University, Australia
+john.grundy@monash.edu
+Xin Xia
+Huawei, China
+xin.xia@acm.org
+ABSTRACT
+Reinventing the wheel is a detrimental programming practice in
+software development that frequently results in the introduction of
+duplicated components. This practice not only leads to increased
+maintenance and labor costs but also poses a higher risk of propa-
+gating bugs throughout the system. Despite numerous issues intro-
+duced by duplicated components in software, the identification of
+component-level clones remains a significant challenge that existing
+studies struggle to effectively tackle. Specifically, existing methods
+face two primary limitations that are challenging to overcome: 1)
+Measuring the similarity between different components presents a
+challenge due to the significant size differences among them; 2)
+Identifying functional clones is a complex task as determining the
+primary functionality of components proves to be difficult.
+To overcome the aforementioned challenges, we present a novel
+approach named C3 (Component-level Code Clone detector) to ef-
+fectively identify both textual and functional cloned components. In
+addition, to enhance the efficiency of eliminating cloned components,
+we develop an assessment method based on six component-level
+clone features, which assists developers in prioritizing the cloned
+components based on the refactoring necessity.
+To validate the effectiveness of C3, we employ a large-scale indus-
+trial product developed by Huawei, a prominent global ICT company,
+as our dataset and apply C3 to this dataset to identify the cloned com-
+ponents. Our experimental results demonstrate that C 3 is capable
+of accurately detecting cloned components, achieving impressive
+performance in terms of precision (0.93), recall (0.91), and F1-score
+(0.9). Besides, we conduct a comprehensive user study to further val-
+idate the effectiveness and practicality of our assessment method and
+the proposed clone features in assessing the refactoring necessity of
+*Corresponding author: Xing Hu.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ESEC/FSE ’23, December 3–9, 2023, San Francisco, CA, USA
+© 2023 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0327-0/23/12. . . $15.00
+https://doi.org/10.1145/3611643.3613883
+different cloned components. Our study establishes solid alignment
+between assessment outcomes and participant responses, indicating
+the accurate prioritization of clone components with a high refactor-
+ing necessity through our method. This finding further confirms the
+usefulness of the six “golden features” in our assessment.
+CCS CONCEPTS
+•Software and its engineering → Maintaining software.
+KEYWORDS
+Component-level Clone Detection, Component-level Clone Metric,
+Community Detection Algorithm
+ACM Reference Format:
+Yanming Yang, Ying Zou, Xing Hu ∗, David Lo, Chao Ni, John Grundy,
+and Xin Xia. 2023. C3: Code Clone-based Identification of Duplicated Com-
+ponents. In Proceedings of the 31st ACM Joint European Software Engineer-
+ing Conference and Symposium on the Foundations of Software Engineering
+(ESEC/FSE ’23), December 3–9, 2023, San Francisco, CA, USA.ACM, New
+York, NY , USA, 12 pages. https://doi.org/10.1145/3611643.3613883
+1 INTRODUCTION
+Reinventing the wheel refers to the practice of developing a solu-
+tion or functionality from scratch that already exists and is well-
+established in the software development community [ 11]. While
+reinventing the wheel may be necessary in certain situations to ad-
+dress software licensing incompatibilities or technical limitations in
+third-party modules [11], it often emerges as a poor programming
+practice during development and has become a prevalent issue in
+the industry. This practice often arises due to developers’ limited
+programming skills or lack of awareness, resulting in unnecessary
+duplication of effort despite existing solutions or technologies al-
+ready meeting the requirements or solving the problem at hand [12].
+It demonstrates a disregard for the knowledge and experience ac-
+cumulated by others, leading to inefficiencies, wasted resources,
+and development delays [36]. Even in some cases, developers may
+remain unaware that they have reinvented the wheel even after com-
+pleting the task. Therefore, it is of utmost importance to address
+these issues by detecting the practice of reinventing the wheel and
+identifying instances of duplicated wheels within software systems.
+These duplicated wheels can be found in various aspects of software
+ESEC/FSE ’23, December 3–9, 2023, San Francisco, CA, USA Y anming Y ang, Ying Zou, Xing Hu ∗, David Lo, Chao Ni, John Grundy, and Xin Xia
+development, including algorithms, libraries, and frameworks, rep-
+resenting complete functionalities within the software. Unlike code
+clones discussed in existing studies [ 49], these duplicated wheels
+often manifest as components in software that encompass a wider
+scope of code, spanning multiple source files [ 8]. Consequently,
+identifying duplicated components presents a substantial challenge.
+In recent decades, numerous studies [15, 28, 40, 41, 43, 53, 57,
+61, 62] have proposed various methods to detect duplicated code
+fragments in software. However, these code clone detectors can
+only identify clones at the line, method, and file levels, and they
+have limited capability to identify duplicated software components
+that span multiple source files. This limitation arises due to the two
+primary challenges in identifying duplicated components, which are
+particularly difficult to address:
+1) Existing studies face challenges in measuring the similarity
+between software components due to the significant volume of source
+code involved. Existing methods are limited to calculating the simi-
+larity of code fragments at a granularity no higher than the file level.
+Consequently, when a group number of similar code fragments are
+dispersed across different source files within a pair of components,
+existing methods fail to recognize the similarity between the two
+components, or even the similarity between the source files them-
+selves. Thus, existing methods are difficult in their applicability to
+identify duplicated components.
+2) Existing studies struggle to accurately determine the primary
+functionality of a component, resulting in their inability to detect
+components with similar functionalities. Apart from cloned compo-
+nents that display textual similarities, there exist functionally similar
+components. However, current methods lack the ability to generalize
+the primary functionality of a component, resulting in their inability
+to detect functionally cloned components.
+To address these challenges, we develop a novel approach called
+C3 (Component-level Code Clone detector), which enables the iden-
+tification of both textual and functional cloned components within
+the software. Specifically, we begin by gathering components from
+the software and detecting cloned files among them. Subsequently,
+we devise a method to assess the similarity between components
+based on the count of cloned files within components. We construct
+a graph structure to describe the relationships of similarity among
+components, allowing us to transform the task of identifying textual
+and functional clones into detecting nodes with close relationships
+and similar structures within the graphs. Finally, we employ a graph-
+based clustering algorithm that utilizes the connectivity patterns
+of nodes to identify both textual and functional cloned components
+effectively. Furthermore, to support developers in effectively address-
+ing cloned components and improving code quality, reliability, and
+compatibility, we present an assessment method that incorporates
+six component-level clone features to evaluate the priority of each
+cloned component by assessing its necessity for refactoring.
+To demonstrate the effectiveness of C3, we utilize a large-scale
+industrial product developed by Huawei, a leading ICT company, as
+our dataset. This dataset consists of 2,099 components. We apply
+C3 to detect cloned components within this dataset. The evaluation
+results demonstrate that C3 effectively identifies component clones,
+achieving a precision of 0.93, a recall of 0.91, and an F1-score of
+0.9. Furthermore, we conduct a user study to validate the correct-
+ness of our assessment method and the utility of the proposed six
+component-level clone features. The study result demonstrates that
+our assessment method can accurately determine which cloned com-
+ponents should be given higher priority for refactoring based on six
+valuable component-level clone features. It achieves over 90% in all
+three evaluation metrics on average, highlighting its accuracy and
+reliability. In summary, our study makes the following contributions:
+(1) To the best of our knowledge, we are the first to develop a
+practical tool, C3, to detect both textual and functional cloned
+components within software systems.
+(2) We develop an assessment method that creates six component-
+level clone features to effectively measure the refactoring neces-
+sity of cloned components.
+(3) We utilize a well-established industrial product developed by a
+globally renowned ICT company as our dataset to thoroughly
+evaluate the effectiveness and practicality of C3. The experimen-
+tal results conclusively demonstrate that C3 can accurately detect
+cloned components within the software, attaining exceptional
+performance in terms of precision, recall, and F1-score.
+(4) We conduct a user study to evaluate the effectiveness of our
+assessment method and the practicality of the six clone features.
+The study results demonstrate outstanding performance across
+all metrics, providing compelling evidence for the utility of the
+features and confirming the accuracy of the assessment method.
+2 MOTIV ATION
+In this section, we initially present two common industrial scenarios
+leading to cross-project and within-project cloned components. Next,
+we highlight two real-world cloned component pairs detected by C3
+across different projects, enhancing readers’ comprehension.
+2.1 Industrial Application Scenarios
+2.1.1 Scenario One: Cross-project Cloned Components. Jack
+and Nina are software developers employed in separate departments
+within the same company. In Department A, Jack is tasked with de-
+veloping a commenting module for a music application, while Nina,
+in Department B, is responsible for implementing a similar com-
+menting module for a social application. Since Jack and Nina work
+in different departments, they are unaware of each other’s existence
+despite having similar development assignments. Following the com-
+pany’s coding conventions, they both use the same programming
+language and framework to complete their respective commenting
+modules. As a result, after completing their tasks, both Department
+A and Department B have their own commenting modules integrated
+into their respective applications, and the source code of these two
+components exhibits a high degree of similarity. The presence of
+these two redundant components increases maintenance expenses.
+Solution. They can be refactored into a shared component, allow-
+ing for broader utilization, consolidation, and reuse across various
+departments within the company.
+2.1.2 Scenario T wo: Within-project Cloned Components. Bob,
+a recently hired software developer, is assigned to a coding task at
+his new company. His objective is to add a new feature to an existing
+component, Component C, in the latest version. As Bob delves into
+the development process, he realizes that this component is quite
+large and encompasses intricate dependencies. This implies that
+directly modifying Component C may pose potential risks to the
+C3: Code Clone-based Identification of Duplicated Components ESEC/FSE ’23, December 3–9, 2023, San Francisco, CA, USA
+AJWaveRefresh
+AJWaveRefreshHeader.m MJDIYHeader.m
+linux/arch/arm/include/
+asm/vdso
+linux/arch/arm64/include/
+asm/vdso
+AJWaveRefreshAutoStateFooter.m MJDIYAutoFooter.m
+ShoppingDetails
+vsyscall.h vsyscall.h
+processor.h processor.h
+#import "AJWaveRefreshHeader.h"
+#import "AJWaveRefreshAnimation.h"
+-(void)scrollViewPanStateDidChange:
+(NSDictionary *)change {
+[super scrollViewPanStateDidChange:change];}
+-(void)setState:(MJRefreshState)state {
+MJRefreshCheckState;
+switch(state) {
+case MJRefreshStateIdle:
+[self.logoView stopAnimating];
+self.label.text = @"xxx"; break;
+caseMJRefreshStatePulling:
+[self.logoView stopAnimating];
+self.label.text = @"xxx"; break;
+case MJRefreshStateRefreshing:
+self.label.text = @"xxx";
+[self.logoView startAnimating]; break;
+default: break;   }}...
+#import "MJDIYHeader.h"
+#import "IndicatorView.h"
+-(void)scrollViewPanStateDidChange:
+(NSDictionary*)change {
+[super scrollViewPanStateDidChange:change];}
+-(void)setState:(MJRefreshState)state {
+MJRefreshCheckState;
+self.label.frame = self.bounds;
+switch (state) {
+case MJRefreshStateIdle:
+self.label.text = @"xxx";
+[self.indicator stopAnimating]; break;
+caseMJRefreshStatePulling:
+self.label.text = @"xxx";
+[self.indicator stopAnimating]; break;
+sizeWithAttributes:@{NSFontAttributeName
+:[UIFont boldSystemFontOfSize:16]}];
+self.label.center =  ... break;
+default: break;}} ... 
+#import "MJDIYAutoFooter.h"
+#import "IndicatorView.h"
+@interface MJDIYAutoFooter()
+@property (strong, nonatomic) UILabel *label;
+@property (strong, nonatomic) 
+IndicatorView *indicator;
+@end
+@implementation MJDIYAutoFooter
+...
+-(void)prepare {
+[super prepare];
+self.mj_h = 50; }
+-(void)placeSubviews {
+[super placeSubviews];
+self.label.frame= 
+CGRectMake(0, 0, ScreenWidth, 50);
+} ...
+#import "AJWaveRefreshAutoStateFooter.h"
+#import "AJWaveRefreshAnimation.h"
+@interface AJWaveRefreshAutoStateFooter()
+@property (weak, nonatomic) 
+AJWaveRefreshAnimation *logoView;
+@end
+@implementation AJWaveRefreshAutoStateFooter
+...
+-(void)prepare {
+[super prepare];
+self.mj_h = 60; }
+-(void)placeSubviews {
+[super placeSubviews];…
+self.label.frame= CGRectMake(0, 0, 100, 30);
+} ...
+#ifndef __ASM_VDSO_VSYSCALL_H
+#define __ASM_VDSO_VSYSCALL_H
+#ifndef __ASSEMBLY__
+#include <linux/timekeeper_internal.h>
+#include <vdso/datapage.h>
+#include <asm/cacheflush.h>
+extern struct vdso_data*vdso_data;
+externbool cntvct_ok;
+static__always_inline
+structvdso_data*__arm_get_k_vdso_data(void){
+returnvdso_data;}
+#define __arch_get_k_vdso_data \
+__arm_get_k_vdso_data
+static__always_inline
+void__arm_sync_vdso_data(struct vdso_data 
+*vdata){
+flush_dcache_page(virt_to_page(vdata));}
+#define __arch_sync_vdso_data \
+__arm_sync_vdso_data  
+#include <asm-generic/vdso/vsyscall.h>
+#endif /* !__ASSEMBLY__ */
+#endif /* __ASM_VDSO_VSYSCALL_H */
+#ifndef __ASM_VDSO_VSYSCALL_H
+#define __ASM_VDSO_VSYSCALL_H
+#ifndef __ASSEMBLY__
+#include<linux/timekeeper_internal.h>
+#include <vdso/datapage.h>
+extern structvdso_data *vdso_data;
+static__always_inline
+struct vdso_data*__arm64_get_k_vdso_data(void) {
+returnvdso_data; }
+#define __arch_get_k_vdso_data \
+__arm64_get_k_vdso_data
+static__always_inline
+void__arm64_update_vsyscall(structvdso_data \
+*vdata, structtimekeeper *tk) {
+vdata[CS_HRES_COARSE].mask =
+VDSO_PRECISION_MASK;
+vdata[CS_RAW].mask = 
+VDSO_PRECISION_MASK;}
+#define __arch_update_vsyscall \
+__arm64_update_vsyscall
+#include <asm-generic/vdso/vsyscall.h>
+#endif /* !__ASSEMBLY__ */
+#endif /* __ASM_VDSO_VSYSCALL_H */
+#ifndef __ASM_VDSO_PROCESSOR_H
+#define __ASM_VDSO_PROCESSOR_H
+#ifndef __ASSEMBLY__
+#if __LINUX_ARM_ARCH__ == 6 
+|| defined(CONFIG_ARM_ERRATA_754327) 
+#define cpu_relax()
+do {smp_mb();
+__asm__ __volatile__("nop; nop; nop;");} while (0)
+#else
+#define cpu_relax()barrier()
+#endif
+#endif /* __ASSEMBLY__ */
+#endif /* __ASM_VDSO_PROCESSOR_H */
+#ifndef __ASM_VDSO_PROCESSOR_H
+#define __ASM_VDSO_PROCESSOR_H
+#ifndef __ASSEMBLY__
+static inline voidcpu_relax(void){
+asm volatile("yield" :::"memory");
+}
+#endif /* __ASSEMBLY__ */
+#endif /* __ASM_VDSO_PROCESSOR_H */
+Figure 1: Two pairs of real-world cloned components.
+Software
+Components
+File-level
+clone detection
+File-level 
+clone pairs
+Cross-
+component
+cloned files
+Calculate the 
+similarity 
+of components
+Construct the
+graph network
+detection
+①Component-level Code Clone Detection
+②Assessment for the Refactoring Necessity
+Filter out 
+Unqualified 
+Cloned files 
+Cloned 
+components
+Calculate the
+weights
+of features
+Scored 
+components
+Rank 
+components
+Components
+With high
+refactoring needs 
+Send to
+developers
+Component-level
+features
+Figure 2: The overall framework of our approach.
+proper functioning of certain business logic. Given his limited famil-
+iarity with the business logic associated with both the components
+that depend on Component C and the components that Component
+C relies on, Bob decides to mitigate potential issues by creating a
+new component, Component D. This allows him to narrow down
+the scope of impact and avoid introducing unforeseen complica-
+tions. Bob proceeds by copying and pasting the necessary source
+code from Component C and implementing the new feature within
+Component D. Upon completing his coding task, the system now
+consists of two similar components: Components C and D. How-
+ever, Component D is only invoked when running the new feature,
+and the implementation of such duplicated components consumes a
+significant amount of developers’ time and effort.
+Solution. To eliminate the duplicated component, it is imperative to
+integrate Component D into Component C.
+2.2 Two Pairs of Real-world Cloned Components
+The first pair includes two cloned components, namely AJWaveRe-
+fresh [1] and ShoppingDetails [2], which both have a commonly
+used functionality for implementing transition animations. Each
+component comprises eight source files, and half of the source files
+in both components exhibit significant similarities to each other. In
+Fig. 1, we showcase two sets of similar source files out of a total of
+four pairs of similarities. The two components are a pair of cross-
+project component-level clones, belonging to different systems. The
+second pair of cloned components originate from a renowned open-
+source software system, Linux [3], making it a within-project clone
+pair. They comprise five and six source files, respectively, with four
+of the files in each component demonstrating high similarities to
+each other. Similarly, Fig. 1 showcases two pairs of similar files out
+of the four pairs present in this clone pair.
+Summary. From these two motivating examples, it is evident that
+even components with distinct path information, component names,
+file names, or residing in different systems can exhibit substantial
+similarity in terms of both textual content and functionalities.
+3 APPROACH
+The overall workflow of our approach is illustrated in Fig. 2, consist-
+ing of two primary phases:❶ component-level code clone detection
+(C3) and ❷ assessing the refactoring necessity of cloned compo-
+nents. In this section, we provide a detailed explanation of each
+phase of our approach.
+3.1 Component-level Code Clone Detection
+C3 performs component-level clone detection through three pri-
+mary steps: 1) identifying file-level clones among components; 2)
+calcula

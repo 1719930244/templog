@@ -1,0 +1,335 @@
+Are They All Good? Studying Practitioners’
+Expectations on the Readability of Log Messages
+Zhenhao Li
+Concordia University
+Montreal, Canada
+l zhenha@encs.concordia.ca
+An Ran Chen
+University of Alberta
+Edmonton, Canada
+anran6@ualberta.ca
+Xing Hu ∗
+Zhejiang University
+Ningbo, China
+xinghu@zju.edu.cn
+Xin Xia
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+Tse-Hsun (Peter) Chen
+Concordia University
+Montreal, Canada
+peterc@encs.concordia.ca
+Weiyi Shang
+University of Waterloo
+Waterloo, Canada
+wshang@uwaterloo.ca
+Abstract—Developers write logging statements to generate
+logs that provide run-time information for various tasks. The
+readability of log messages in the logging statements (i.e., the
+descriptive text) is rather crucial to the value of the generated
+logs. Immature log messages may slow down or even obstruct the
+process of log analysis. Despite the importance of log messages,
+there is still a lack of standards on what constitutes good
+readability of log messages and how to write them. In this
+paper, we conduct a series of interviews with 17 industrial
+practitioners to investigate their expectations on the readability
+of log messages. Through the interviews, we derive three aspects
+related to the readability of log messages, including Structure,
+Information, and Wording, along with several specific practices to
+improve each aspect. We validate our findings through a series of
+online questionnaire surveys and receive positive feedback from
+the participants. We then manually investigate the readability of
+log messages in large-scale open source systems and find that
+a large portion (38.1%) of the log messages have inadequate
+readability. Motivated by such observation, we further explore
+the potential of automatically classifying the readability of log
+messages using deep learning and machine learning models.
+We find that both deep learning and machine learning models
+can effectively classify the readability of log messages with a
+balanced accuracy above 80.0% on average. Our study provides
+comprehensive guidelines for composing log messages to further
+improve practitioners’ logging practices.
+Index Terms—software logging, log messages, empirical study
+I. I NTRODUCTION
+Software logs are important source of information in soft-
+ware systems that record system run-time behaviors. Devel-
+opers can leverage the valuable information in logs to assist
+in many tasks, such as program comprehension [1], [2], [3],
+anomaly detection [4], [5], [6], and failure diagnosis [7], [8],
+[9], [10], [11], [12]. Logs are generated from logging state-
+ments inserted by the developers. For example, in a logging
+statement from Elasticsearch [13]: logger.info(”Successfully
+updated remote job [ {}]”, update.getJobId()); the logging
+statement is written in Java using Log4j [14] framework,
+* Corresponding author.
+the verbosity level is Info, the log message is “Successfully
+updated remote job [ {}]”, and the dynamic variable is the
+value of update.getJobId().
+The value of logs highly relies on the quality of log mes-
+sages (i.e., the part of ”Successfully updated remote job [ {}]”
+in the example above). Developers leverage the information
+in log messages as clues for debugging and failure diagnosis,
+unclear log messages may confuse developers and further slow
+down or even obstruct the process of log analysis [15]. For
+example, if the log message is only “ Shutting down. ”, it is
+still difficult to know what is shutting down.
+Prior studies provide some supports on composing logging
+statements, e.g., where to insert logging statements [16], [17],
+[18], [19], [20], how to choose the verbosity level [21], [22],
+[23], and generating logging statements by learning from
+existing data [24], [25]. However, to the best of our knowledge,
+there is still a lack of practical standards or systematical
+investigation on what are “good” log messages that record
+valuable information and are easy to comprehend. Therefore,
+how to compose log messages with good readability that
+can clearly and sufficiently record system run-time behaviors
+is still an on-going challenge. The reliability of automated
+recommendations learned from log messages with inadequate
+readability might also be decreased.
+In this paper, we conduct a comprehensive study to in-
+vestigate practitioners’ expectations on the readability of log
+messages and seek possible improvements: 1) We first conduct
+a series of semi-structured interviews with 17 industrial practi-
+tioners from 11 companies worldwide to gain insights on their
+perspectives of log messages’ readability; 2) We manually
+study the readability of log messages in nine large-scale open
+source software systems; 3) We validate our findings from the
+interviews and manual studies through an online questionnaire
+survey with 56 participants; 4) We further explore the potential
+of automatically classifying the readability of log messages
+using deep learning and machine learning approaches.
+In particular, we study the following three research ques-
+tions:
+RQ1: What are practitioners’ expectations on the readabil-
+ity of log messages and how to improve it? By analyzing the
+interview records, we derive three aspects that are related to the
+readability of log messages, including Structure, Information,
+and Wording. For each aspect, we also derive several specific
+practices that can be used to improve the readability. Our
+survey participants acknowledge the importance of these as-
+pects and the effectiveness of improvement practices. Among
+the three aspects, Information is considered as the most
+important aspect: 87.5% of the participants consider it is “Very
+important” and 12.5% consider it is “Important”.
+RQ2: How is the readability of log messages in large-
+scale open source software systems? We use the data set of
+logging statements provided by a prior study [22] to manually
+investigate the readability of log messages based on the three
+aspects discussed in RQ1. We find that only 61.9% of the
+log messages on average have adequate readability in all three
+aspects, meaning that a large portion of the log messages (i.e.,
+38.1%) in these systems have inadequacy in terms of their
+readability, e.g., 21.7% of the log messages are inadequate in
+the aspect of Information.
+RQ3: Can we automatically classify the readability of
+log messages? We explore the potential of automatically
+classifying whether a log message has readability issue or not
+using several deep learning and machine learning approaches
+(e.g., Bi-LSTM, Random Forest, and Decision Tree). We find
+that both deep learning and machine learning approaches can
+effectively classify the readability of log messages (e.g., Bi-
+LSTM and Random Forest achieve a balanced accuracy of
+82.1% and 86.3% on average, respectively).
+The contributions of this paper are as follows:
+• We are the first study that investigates the readability of
+log messages by conducting interviews with industrial
+practitioners. We derive three aspects that are related to
+the readability of log messages and several corresponding
+practices to improve the readability for each aspect.
+• We find that a large portion of the log messages in
+large-scale open source systems actually have inadequate
+readability. Future works should consider this issue when
+leveraging existing data for automated recommendation
+or generation.
+• We explore the potential of automatically classifying the
+log messages whose readability might need improvement
+and achieve encouraging results.
+Overall, our study provides a systematic comprehension on
+the readability of log messages and sheds light for future
+studies on uncovering empirically-derived standards to guide
+developers’ logging practices.
+Paper Organization. Section II summarizes the related work.
+Section III describes the research methodology of our study.
+Section IV presents the results by answering three research
+questions. Section V discusses the implications of our study.
+Section VI discusses the threats to validity of our study.
+Section VII concludes the paper.
+II. R ELATED WORK
+Empirical Studies on Logging Practices. Yuan et al. [26]
+studied the logging practices in C/C++ applications and found
+that developers often improve log messages as after-thoughts.
+Chen et al. [27] further studied the logging practices in Java
+applications and pointed out the similarities and differences
+of logging practices compared to C/C++ applications. Some
+prior studies also empirically studied the logging practice
+in Android applications [28], Linux kernel [29], and test
+code [30]. Other prior studies focused on assisting develop-
+ers in making logging decisions and improving the logging
+practices [31], [32]. For example, Fu et al. [17] and Li et
+al. [18] investigated where logging statements were placed to
+identify the common categories of logging locations. Zhu et
+al. [16] proposed an automated tool for suggesting logging
+locations. Several prior studies [21], [22], [23] proposed auto-
+mated approaches to help developers select the appropriate
+verbosity level. Li et al. detected the logging code smells
+related to duplicate logging statements [33] and studied their
+relationships with code clones [34]. These studies focus on
+empirically studying logging practices or provide supports for
+deciding the logging locations or verbosity levels. In our study,
+we investigate practitioners’ expectations on the readability of
+log messages, which complement prior studies on improving
+logging practices.
+Studies on Log Messages in Logging Statements. He et
+al. [35] empirically studied the n-gram patterns of log mes-
+sages and proposed an information retrieval based approach
+that generates log messages from similar code snippets. Ding
+et al. [25] formed the process of log message generation as
+neutral machine translations and achieved promising results
+in such generations. Mastropaolo et al. [24] proposed a deep
+learning based approach that can generate complete logging
+statements, including log messages for Java methods. Despite
+the extensive studies on log messages in logging statements,
+the readability of those log messages has not been investi-
+gated thoroughly. In this paper, we systematically study the
+readability of log messages and derive three aspects related
+to the readability. For each aspect, we also derive several
+improvement practices based on our interviews with industrial
+practitioners.
+III. R ESEARCH METHODOLOGY
+As shown in Figure 1, our research methodology consists of
+four stages. Stage 1: Semi-structured interviews [36], [37] with
+practitioners from industry on their experiences in reading log
+messages, their perspective on the readability of log messages
+and how to improve it. Stage 2: Manually study how prevalent
+are log messages that may need improvement based on the
+aspects of readability derived from the interview results. Stage
+3: A questionnaire survey [38], [39] for confirming the aspects
+of log message’s readability with the corresponding improve-
+ment practices that are summarized from the interview, and
+verifying the manual investigation results in the prior stage.
+Stage 4: Exploring the potential of automatically classifying
+the readability of log messages.
+Open Source
+Log Messages
+Survey 
+Results
+Stage 4
+Automatic Classification
+RQ1: Practitioners’ expectations 
+on the readability of log messages 
+and the improvement practices
+Stage 1
+Interview
+Classification
+Results
+RQ2: Readability of log messages 
+in large-scale open source 
+software systems
+RQ3: Automatically classifying 
+the readability of log messages
+Stage 2
+Manual Investigation
+Aspects of Readability
+Manually Labelled 
+Results
+Improvement Practices&
+Stage 3
+Survey
+Fig. 1. Overview of our study.
+A. Stage 1: Interview
+In our interview with industrial practitioners, we investigate
+their perspective on the readability of log messages and their
+expectations on the specific practices that can improve the
+readability.
+Interview Process. We first develop an interview guideline
+by gathering all the authors of this paper and brainstorming a
+set of open-ended questions. All of the authors have industrial
+experience and are proficient in the knowledge of logging.
+The first author of this paper then follows the guideline and
+conducts a series of individual interviews using online video-
+conferencing tools with 17 software practitioners. Before the
+start of each interview, we first send the introduction part of the
+guideline to the interviewees to let them know the background
+information of our study, ensure that they are aware of the
+interview being recorded, and emphasize that we will protect
+the participants’ identities. Each interview takes 30-40 minutes
+and is semi-structured with three parts of questions 1.
+Part 1: We ask some questions about the interviewees’ back-
+ground information (e.g., years of experiences, role of respon-
+sibility, and programming languages used in daily job).
+Part 2: We ask open-ended questions about their experiences
+in reading and analyzing log messages (e.g., “What kind of
+information provided by the log messages is important to
+you?”, “Have you ever seen some log messages that are
+confusing or not helpful?” ).
+Part 3: We ask the interviewees about their expectations on
+log messages with good readability and what practices can
+practitioners do to improve the readability of log messages.
+At the end of each interview, we thank the interviewee
+and verify there is no sensitive information mentioned in the
+process of the interview.
+Interviewees. We invite full-time employees working in soft-
+ware engineering related roles (e.g., software engineer, soft-
+ware architect, and test engineer) from 11 companies world-
+wide that are leading in their domains as our interviewees. The
+domain of those companies includes software development,
+internet services, telecommunications, electronics, investment
+1The interview guideline can be found in our replication package [40].
+TABLE I
+AN OVERVIEW OF THE DATA SET . LOC: LINES OF CODE , NOL: N UMBER
+OF LOGGING STATEMENTS .
+System LOC NOL Sample
+Cassandra 432K 1,316 298
+ElasticSearch 1.50M 2,619 337
+Flink 177K 2,455 333
+HBase 1.26M 5,524 360
+JMeter 143K 1,848 319
+Kafka 267K 1,563 308
+Karaf 133K 706 251
+Wicket 216K 413 201
+Zookeeper 97K 1,245 295
+Total 4.2M 17,689 2,702
+management, and digital currency management. In total, 17
+interviewees accepted our interview invitations. Their years of
+experience in software development and maintenance is 7.5
+on average, ranging from 4 to 18 years. The interviewees are
+denoted as I-1 to I-17 when discussing their answers.
+Data Analysis. After we complete all the interviews, the
+first author transcribes the interview record and performs
+open coding to generate an initial set of codes from the
+transcripts. The second author then verifies the codes and
+provides suggestions for improvement. We generate a total of
+792 coded sentences from the transcripts. We further remove
+the codes that are not directly related to the readability of log
+messages (e.g., some interviewees mention that the timestamp
+of logs should have a consistent time zone setting, which
+is more related to the configuration of logging framework
+compared to the composition of log messages). A total of
+161 coded sentences are removed in this step, with a total
+of 631 codes are preserved for further analysis. We then
+perform open card sorting [41] on the generated codes to
+analyze the thematic similarity. Specifically, the first two
+authors independently analyze the codes and sort the generated
+codes into potential themes that indicate the expected practices
+on the readability of log messages. We use Cohen’s Kappa [42]
+to measure the agreement between the two authors. Overall,
+we have a Cohen’s Kappa value of 0.76, which indicates a
+substantial agreement. The first two authors then discuss the
+disagreements until a consensus is reached. Eventually, we
+derive three aspects that are related to the readability of the
+log message, including Structure, Information, and Wording.
+Each aspect corresponds to several specific improvement prac-
+tices that can be used to improve the readability. Some of the
+improvement practices are corrective practices, which are to
+improve the inadequacy of readability in log messages. Some
+are enhancing practices , developers may decide whether to
+apply them or not based on the situations and needs. We
+discuss each aspect and the corresponding practices in the
+results of RQ1 (Section IV).
+B. Stage 2: Manual Investigation
+In this stage, we manually investigate the readability of
+log messages in real-world open source systems based on the
+aspects derived from the interviews. Specifically, we use the
+data set of logging statements provided by a prior study [22] to
+manually investigate the readability of log messages. Table I

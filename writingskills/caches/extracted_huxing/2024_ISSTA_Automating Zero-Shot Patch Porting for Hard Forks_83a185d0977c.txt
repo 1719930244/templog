@@ -1,0 +1,310 @@
+Automating Zero-Shot Patch Porting for Hard Forks
+Shengyi Pan
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+shengyi.pan@zju.edu.cn
+You Wang
+Zhejiang University
+Hangzhou, China
+3200102524@zju.edu.cn
+Zhongxin Liu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+liu_zx@zju.edu.cn
+Xing Hu
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Ningbo, China
+xinghu@zju.edu.cn
+Xin Xia
+Huawei
+Hangzhou, China
+xin.xia@acm.org
+Shanping Li
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+shan@zju.edu.cn
+ABSTRACT
+Forking is a typical way of code reuse, which provides a simple
+way for developers to create a variant software (denoted as hard
+fork) by copying and modifying an existing codebase. Despite of
+the benefits, forking also leads to duplicate efforts in software main-
+tenance. Developers need to port patches across the hard forks
+to address similar bugs or implement similar features. Due to the
+divergence between the source project and the hard fork, patch
+porting is complicated, which requires an adaption regarding dif-
+ferent implementations of the same functionality. In this work, we
+take the first step to automate patch porting for hard forks under a
+zero-shot setting. We first conduct an empirical study of the patches
+ported from Vim to Neovim over the last ten years to investigate
+the necessities of patch porting and the potential flaws in the cur-
+rent practice. We then propose a large language model (LLM) based
+approach (namely PPatHF) to automatically port patches for hard
+forks on a function-wise basis. Specifically, PPatHFis composed
+of a reduction module and a porting module. Given the pre- and
+post-patch versions of a function from the reference project and
+the corresponding function from the target project, the reduction
+module first slims the input functions by removing code snippets
+less relevant to the patch. Then, the porting module leverages a
+LLM to apply the patch to the function from the target project. To
+better elicit the power of the LLM on patch porting, we design a
+prompt template to enable efficient in-context learning. We further
+propose an instruction-tuning based training task to better guide
+the LLM to port the patch and inject task-specific knowledge. We
+evaluate PPatHF on 310 Neovim patches ported from Vim. The
+experimental results show that PPatHFoutperforms the baselines
+∗Corresponding Author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ISSTA ’24, September 16–20, 2024, Vienna, Austria
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0612-7/24/09
+https://doi.org/10.1145/3650212.3652134
+significantly. Specifically, PPatHF can correctly port 131 (42.3%)
+patches and automate 57% of the manual edits required for the
+developer to port the patch.
+CCS CONCEPTS
+•Software and its engineering → Automatic programming;
+Software maintenance tools.
+KEYWORDS
+Patch Porting, Hard Fork, Large Language Model
+ACM Reference Format:
+Shengyi Pan, You Wang, Zhongxin Liu, Xing Hu, Xin Xia, and Shanping Li.
+2024. Automating Zero-Shot Patch Porting for Hard Forks. In Proceedings
+of the 33rd ACM SIGSOFT International Symposium on Software Testing and
+Analysis (ISSTA ’24), September 16–20, 2024, Vienna, Austria. ACM, New
+York, NY, USA, 13 pages. https://doi.org/10.1145/3650212.3652134
+1 INTRODUCTION
+Forking [30, 64] (a.k.a. clone-and-own) is widely used in both open-
+source [28, 34] and industry [25] development, which provides a
+straightforward and low-cost way for developers to reuse an exist-
+ing project and tailor it to their own requirements. In recent years,
+the rise of social-coding platforms (e.g., GitHub) actively enhances
+and promotes the ability to reuse existing software via fork-based
+development paradigm [20, 21, 66]. Specifically, we follow Zhou et
+al. [64–66] to refer to the traditional notion of reusing an existing
+codebase and splitting off an independent variant for new develop-
+ment directions as hard forks. This stands in contrast to a new form
+of forks (namely social forks) that are for isolated development with
+the intention of contributing back to the mainline [31, 32].
+Despite the perceived benefits, such as the simplicity and flexi-
+bility in creating customized variants of existing softwares, forking
+also inevitably leads to duplicate efforts in software development
+and maintenance [20, 44, 48]. Specifically, since the design logic and
+possibly a large portion of code is reused due to the initial copying,
+similar bug fixes and feature implications need to be performed
+redundantly across a family of hard forks. Moreover, propagating
+changes across the hard forks is usually not straightforward and an
+error or delayed propagation can possibly compromise the software
+arXiv:2404.17964v1  [cs.SE]  27 Apr 2024
+ISSTA ’24, September 16–20, 2024, Vienna, Austria Shengyi Pan, You Wang, Zhongxin Liu, Xing Hu, Xin Xia, and Shanping Li
+quality. Although the source project and the hard forks shares a
+common codebase initially, their implementations typically diverge
+over time as the hard forks are intended to be an independent
+project with a different development direction [21, 66]. Thus, when
+a patch is committed to the source project (or the hard fork), it
+is not directly applicable (i.e., through a copy-and-paste process)
+to the hard fork (or the source project). Instead, porting patches
+across the family of hard forks requires an adaption regarding dif-
+ferent implementations of the same protocol or functionality, which
+typically involves identifying the correct location and adjusting
+the patch according to differences in implementations. Currently,
+patches are ported across hard forks manually by the developer
+on a case-by-case basis, which is time-consuming and often error-
+prone [44, 45]. Several recent empirical works [ 20, 66] point out
+the necessities for developing tools to facilitate coordination of
+changes across hard forks, as the existing tools (e.g., git apply )
+fail to handle the significant divergence of hard forks. Moreover,
+the manual porting process typically faces a long delay [44], which
+can be serious when the patch is related to security. Specifically,
+once a software vulnerability (SV) is patched and publicly disclosed
+for one of the projects among the hard fork family, malicious actors
+can easily spot and turn the SV into zero-day attacks against other
+un-patched projects within the family. Reid et al. [46] recently first
+investigate the security risks caused by the code reuse through di-
+rect file-level duplication. They report that orphan SVs (i.e., known
+SVs that have been fixed, but copies still remain vulnerable) are
+widespread in the OSS ecosystem and often take a long time to
+be fixed. Our preliminary study (see Section 2.2) demonstrates the
+widespread existence of such security risks within hard forks.
+In this work, we aim to fill the gap by automating the patch
+porting for hard forks. In practice, it is non-trivial and usually time-
+consuming to collect a significant number of historically ported
+patches between the source project and the hard fork. The ported
+patches may lack clear documentations in commit messages or
+being buried in a large commit. Thus, to ensure the generalizability
+and practicality of the proposed approach, we focus on a zero-shot
+setting, i.e., without knowing any historically ported patches.
+To understand the necessities of patch porting and the potential
+flaws in the existing practice, we first conduct an empirical study
+on Vim [5] and Neovim [4]. Vim is a widely-used text editor and
+Neovim is one of Vim’s most popular hard forks with 71.5K stars
+on GitHub. We find that ❶ Neovim has been porting patches from
+Vim for nearly 10 years since its creation and the porting rate
+does not decrease over time. Over 45% and 75% of the total and
+security patches committed in Vim have been ported into Neovim,
+respectively. SVs are only disclosed and recorded for Vim in public
+SV databases (e.g., NVD), which forces users of Neovim to actively
+and promptly port the security patches. ❷ In current practice, the
+porting is manually done by developers periodically. Large porting
+delays are common, even for high-severity SVs. For example, over
+50% of the ported patches are delayed for over 180 days. The porting
+delay of SV fixes brings serious security risks to Neovim.
+It is challenging to automate the patch porting in hard forks,
+especially under a zero-shot setting. Specifically, we observe two
+key challenges: ❶ The implementations of hard forks can diverge
+significantly from the source project after a long time evolution
+(see Section 2.1). Without a correct understanding of the patch
+semantics, it is impossible to port the patch with both implementa-
+tion differences considered and the modification logic maintained.
+❷ Under the zero-shot setting, only the information of the patch
+from the source project is available and no extra information, such
+as historically ported patch pairs and relevant test cases, is provided.
+The superiority of recent rising large language models (LLM) in
+understanding the code semantics [22, 61], as well as its strong gen-
+eralizability under the zero-shot setting, makes it an ideal solution
+to tackle the aforementioned two challenges.
+Thus, we propose a LLM-based approach (namely PPatHF) to
+automatically port patches for hard forks. Given a patch in the
+reference project (typically the source project), we port the patch
+to the target project (typically the hard fork) on a function-wise
+basis. PPatHF contains two modules, i.e., the reduction module
+and the porting module. The reduction module first slims the input
+functions by removing contexts that are less relevant to the patch,
+enabling PPatHF to port more patches under the length limit of
+the LLM. Then, the porting module leverages a LLM to adapt the
+patch to the hard fork. The LLM can extract common patch logic
+beyond implementation differences and automate porting at the
+semantic level. To effectively instruct the LLM to port patches,
+we design a prompt template to elicit the power of the LLM on
+the patch porting task by enabling efficient in-context learning
+(ICL) [63]. Moreover, we design an instruction-tuning [57] based
+training task to further guide the LLM to port the patch and inject
+project-specific knowledge. To evaluate our approach, we extract
+310 pairs of ported patches from Vim to Neovim after June, 2022 (i.e.,
+the date when the corpus used to pretrain the LLM is collected).
+We adopt metrics including accuracy and two metrics from the
+relevant work [40] that measures the edits required to manually
+port the patch, i.e., Average Edit Distance (AED) and Relative Edit
+Distance (RED). PPatHFoutperforms the best performing baselines
+by a large margin in all metrics. Specifically, 42.3% patches ported
+by PPatHFare syntactically equivalent to the the developer ported
+one, and PPatHF can reduces 57% edits on average required by
+the developer to manually port the patch. We also conduct a case
+study to investigate the effectiveness of PPatHFin porting security
+patches. Moreover, we evaluate the porting performance ofPPatHF
+on another two hard fork pairs to verify its generalizability.
+• We propose to automate the patch porting in hard forks. We
+conduct an empirical study of patches ported from Vim to Neovim
+over the last ten years, unveiling the necessities and challenges
+in automating the patch porting across hard forks.
+• We propose, for the first time, a LLM based approach (namely
+PPatHF) to automate patch porting across hard forks under the
+zero-shot setting.
+• The experiment results show that PPatHFoutperforms baselines
+significantly, and can largely reduce the manual efforts required
+from the developer to port the patch.
+• We open source our replication package [15] for follow-up works.
+2 MOTIV ATION AND PRELIMINARIES
+In this section, we first provide motivating examples to show the
+usage scenario and challenges of automating patch porting for hard
+forks. Then, we conduct a preliminary study to comprehensively
+investigate the necessities of automating such process.
+Automating Zero-Shot Patch Porting for Hard Forks ISSTA ’24, September 16–20, 2024, Vienna, Austria
+Project: VimCommit Message: patch 8.2.2285: Vim9: cannot set an option to a false. Problem: Vim9: cannot set an option to a false. Solution: For VAR_BOOL use string "0". (closes #7603)Commit Date: Jan 3, 2021evalvars.c, static void set_option_from_tv(char_u*varname, typval_T*varp)
+Project: NeovimCommit Message: vim-patch:8.2.2285: …Commit Date: Jul 25, 2022eval/vars.c, static void set_option_from_tv(const char *varname, typval_T*varp)
+…char_u*strval;char_unbuf[NUMBUFLEN];interror =FALSE;if(varp->v_type==VAR_BOOL){+numval=(long)varp->vval.v_number;elseif(!in_vim9script() ||varp->v_type!=VAR_STRING)-numval=(long)tv_get_number_chk(varp, &error);-strval=tv_get_string_buf_chk(varp, nbuf);-strval=(char_u*)"0";// avoid using "false"+}+else+{+if(!in_vim9script() ||varp->v_type!=VAR_STRING)+ numval=(long)tv_get_number_chk(varp, &error);+strval=tv_get_string_buf_chk(varp, nbuf);+}+if(!error &&strval!=NULL)set_option_value(varname, numval, strval, OPT_LOCAL);…
+…constchar*strval;boolerror =false;charnbuf[NUMBUFLEN];if(varp->v_type==VAR_BOOL) {numval=(long)varp->vval.v_number;strval="0";// avoid using "false"+} else{numval=(long)tv_get_number_chk(varp, &error);strval=tv_get_string_buf_chk(varp, nbuf);+}strval=tv_get_string_buf_chk(varp, nbuf);-if(!error &&strval!=NULL) {set_option_value(varname, numval, strval, OPT_LOCAL);…
+Figure 1: An example of patch porting in Vim-Neovim.
+2.1 Motivating Example
+Figure 1(a) presents a motivating example collected from Vim (i.e.,
+source project) and Neovim (i.e., hard fork) to demonstrate the
+patch porting across hard forks. This patch fixes a bug [ 14] in
+function set_option_from_tv(), which is used to set the option
+varname to the value of varp for the current buffer/window. In the
+pre-patch version, when varp stores the bool value False, numval
+will be set to 0 and strval will be set to "false" after calling the
+function tv_get_string_buf_chk(). However, when numval is 0
+and strval contains non-zero characters, set_option_value()
+will raise an error. Thus, the patch modifies the logic to set strval
+to "0" when varp is a bool type variable. This bug also exists in
+Neovim due to the initial copying of the hard fork. Therefore, it is
+necessary to port this patch to Neovim in time.
+However, porting this patch is complicated and cannot be
+achieved by existing tools like git-apply [3]. Because both the
+changed lines and the context of the Neovim patch are different
+from that of the Vim patch. For example, the function in Neovim
+does not have the additional if restrictions for getting numval
+of non- bool-type variables. In addition, the type of strval is
+const char* in Neovim instead of char_u* in Vim, making the
+explicit type casting, i.e., (char_u *) , in the Vim patch unneces-
+sary. In the current practice, Neovim developers manually port the
+patches on a case-by-case basis, which is time-consuming and error-
+prone, and typically faces a long delay. In this example, this patch
+was first committed in Vim on Jan. 3, 2021 to solve the bug, and was
+not ported to Neovim until Jul. 25, 2022, delaying for 567.8 days.
+Therefore, we argue that it is important and valuable to automate
+the patch porting for hard forks.
+In this work, due to the concern of practicability, we aim to tackle
+this problem under a zero-shot setting. This specific task faces the
+following two key challenges:
+Understand the patch semantics to manage the convergence
+of logic similarities and implementation differences. Though
+hard forks share similar design logic with the source project, the
+detailed implementations diverge over time [ 66]. This means an
+automated solution for this task needs to correctly understand the
+patch semantics, in order to: ❶ Match similar logic between the
+given code snippets from the source project and the hard fork to
+locate the code entities to be changed despite of the implementation
+differences. For the example in Figure 1, to locate the code entities
+to be changed in Neovim, an approach needs to tolerate the differ-
+ences between the if-else if block and the if-else block, and
+successfully match them. ❷ Adapt the patch according to the imple-
+mentation differences in the context while maintaining the patch
+semantics. Apart from the relatively straightforward name-space
+changes (e.g., variable name, variable type, function name), there
+are more complex modifications involving code structure and logic,
+e.g., removing code irrelevant to or adding code specific to the con-
+text of the hard fork. For the example in Figure 1, the explicit type
+cast in the added statement (i.e.,strval = (char_u *)"0" ) should
+be removed when being ported to Neovim. The rational for such
+change should traceback to the declaration of strval, where the
+variable type is const char * instead of char_u * . FixMorph [52],
+the state-of-the-art approach of patch backporting (which is the
+most relevant task to ours), abstracts the patch into transformation
+rules at the syntax level. It matches the patch and the context based
+on the same syntactic structure and only allows certain generaliza-
+tions of the identifier names. It can not handle the patch porting
+for hard forks where the syntactic structure changes greatly.
+Automate the patch porting given only the information of
+the patch from the source project, without additional prereq-
+uisite of knowing any extra information, such as historically
+ported patches, available test cases. As mentioned in the intro-
+duction, the extra information is not always available or expensive
+to collect in practice. This renders most existing approaches in the
+relevant works invalid. For example, automated program transfor-
+mation methods including GetaFix [16] and Phoenix [17] require to
+learn the transformation rules and determine the abstraction level
+from multiple similar existing patches. PatchWeave [53] transforms
+the patch by concolic executions and requires available test cases.
+We observe unique opportunities in leveraging a LLM to solve the
+aforementioned challenges: ❶ Endowed with the ability of captur-
+ing the semantic information of the given code snippet [22, 38, 62],
+the LLM is able to capture the implementation differences and auto-
+mate the patch porting based on similar high-level code semantics.
+❷ The off-the-shelf LLM has already been proven to significantly
+outperform the existing approaches on various code generation
+tasks [22, 29, 61]. The generalizability of the LLM, especially the
+strong performance under a zero-shot setting [37], makes the LLM

@@ -1,0 +1,144 @@
+63
+Correlating Automated and Human Evaluation of Code
+Documentation Generation Quality
+XING HU,School of Software Technology, Zhejiang University, China
+QIUYUAN CHEN and HAOYE WANG,College of Computer Science and Technology,
+Zhejiang University, China
+XIN XIA,Faculty of Information Technology, Monash University, Australia
+DAVID LO,School of Information Systems, Singapore Management University, Singapore
+THOMAS ZIMMERMANN,Microsoft Research, USA
+Automaticcodedocumentationgenerationhasbeenacrucialtaskinthefieldofsoftwareengineering.Itnot
+onlyrelievesdevelopersfromwritingcodedocumentationbutalsohelpsthemtounderstandprogramsbetter.
+Specifically, deep-learning-based techniques that leverage large-scale source code corpora have been widely
+usedincodedocumentationgeneration.Theseworkstendtouseautomaticmetrics(suchasBLEU,METEOR,
+ROUGE, CIDEr, and SPICE) to evaluate different models. These metrics compare generated documentation
+to reference texts by measuring the overlapping words. Unfortunately, there is no evidence demonstrating
+the correlation between these metrics and human judgment. We conduct experiments on two popular code
+documentation generation tasks, code comment generation and commit message generation, to investigate
+thepresenceorabsenceofcorrelationsbetweenthesemetricsandhumanjudgments.Foreachtask,werepli-
+cate three state-of-the-art approaches and the generated documentation is evaluated automatically in terms
+of BLEU, METEOR, ROUGE-L, CIDEr, and SPICE. We also ask 24 participants to rate the generated docu-
+mentationconsideringthreeaspects(i.e.,language,content,andeffectiveness).EachparticipantisgivenJava
+methods or commit diffs along with the target documentation to be rated. The results show that the ranking
+of generated documentation from automatic metrics is different from that evaluated by human annotators.
+Thus, these automatic metrics are not reliable enough to replace human evaluation for code documentation
+generation tasks. In addition, METEOR shows the strongest correlation (with moderate Pearson correlation
+r about 0.7) to human evaluation metrics. However, it is still much lower than the correlation observed be-
+tweendifferentannotators(withahighPearsoncorrelation r about0.8)andcorrelationsthatarereportedin
+theliteratureforothertasks(e.g.,NeuralMachineTranslation[ 39]).Ourstudypointstotheneedtodevelop
+This research was partially supported by the National Science Foundation of China (No. U20A20173) and the National
+Research Foundation, Singapore under itsIndustry Alignment Fund—Pre-positioning (IAF-PP) Funding Initiative.
+Any opinions, findings and conclusions or recommendations expressed in this material are those of the author(s) and do
+not reflect the views of National Research Foundation, Singapore.
+Authors’addresses:X.Hu,SchoolofSoftwareTechnology,ZhejiangUniversity,No.1689JiangnanRoad,Ningbo,Zhejiang,
+315048, China; email: xinghu@zju.edu.cn; Q. Chen and H. Wang, College of Computer Science and Technology, Zhejiang
+University, Road 38 West Lake District, Hangzhou, Zhejiang, 310027, China; emails: {chenqiuyuan, why_}@zju.edu.cn;
+X. Xia (corresponding author), Faculty of Information Technology, Building 6, 29 Ancora Imparo Way, Clayton Campus,
+Monash University VIC 3800; email: xin.xia@acm.org; D. Lo, School of Information Systems, Singapore Management Uni-
+versity,80StamfordRoad,Singapore178902;email:davidlo@smu.edu.sg;T.Zimmermann,MicrosoftResearch,1Microsoft
+Way, Redmond, WA 98052; email: tzimmer@microsoft.com.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions frompermissions@acm.org.
+© 2022 Association for Computing Machinery.
+1049-331X/2022/07-ART63 $15.00
+https://doi.org/10.1145/3502853
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 63. Pub. date: July 2022.
+63:2 X. Hu et al.
+specialized automated evaluation metrics that can correlate more closely to human evaluation metrics for
+code generation tasks.
+CCS Concepts: •Software and its engineering →Software creation and management ; Documenta-
+tion;
+Additional Key Words and Phrases: Code documentation generation, evaluation metrics, empirical study
+ACM Reference format:
+XingHu,QiuyuanChen,HaoyeWang,XinXia,DavidLo,andThomasZimmermann.2022.CorrelatingAuto-
+matedandHumanEvaluationofCodeDocumentationGenerationQuality. ACMTrans.Softw.Eng.Methodol.
+31, 4, Article 63 (July 2022), 28 pages.
+https://doi.org/10.1145/3502853
+1 INTRODUCTION
+During software maintenance and development, program comprehension is the main activity for
+developers [51]. High-quality documentation such as code comments, commit messages, and re-
+lease notes can help developers better understand programs [13]. Unfortunately, due to tight
+project schedules and other reasons, documentation is often missing, or incomplete. Therefore,
+many techniques are proposed to generate the documentation automatically. These techniques
+relieve developers from writing documentation and help them understand existing software.
+Earlier works usually exploit manually-crafted templates [36] and Information Retrieval tech-
+niques [16, 17] to assemble key terms into the documentation. These techniques usually rely on
+heuristicsandstereotypestoselecttheinformationthatshouldbeincludedinthedocumentation.
+Then, they evaluate the generated documentation through human evaluation in terms of expres-
+siveness (readable and understandable), content adequacy (important information about the class
+reflectedin the documentation),and conciseness(extraneousinformation in documentation) [36].
+However, the scale of these evaluations tends to be small—usually no more than a few hundred
+sentencesexaminedbyasmallnumberofraters.Thus,itcanbedifficulttodrawfirmconclusions
+about the overall quality of the generated documentation.
+Inrecentyears,thereisanemerginginterestinbuildingdeeplearningmodelstogeneratecode
+documentation.Thesetechniquestakeadvantageofneuralnetworksandthelargeavailableopen
+sourcecoderepositories[ 20,50]tocapturelexicalandsyntacticalfeaturesfromsourcecode.Atthe
+same time, various automatic metrics such as BLEU [39], ROUGE [27], METEOR [4], CIDEr [48],
+and SPICE [2]i nt h eNatural Language Processing (NLP) domain are adopted to evaluate code
+documentation models. Generally, these metrics measure different models by comparing overlap-
+ping text between the reference and the generated text. The model can achieve higher scores if
+there are more overlapping words.
+Someworksevaluatethequalityofmodelsthroughautomaticmetricsaccompaniedbyahuman
+study, in which programmers are asked to rate various aspects of the generated contents or nat-
+uralness of the documentation. For example, Jiang et al. [23]a n dH ue ta l .[20] asked developers
+to give scores by comparing the semantic similarity between the generated documentation and
+thereferencetext.Weietal.[ 50]askeddeveloperstoscoredifferentdocumentationfromthreeas-
+pects:thesimilarityofgeneratedcommentsandreferences,naturalness(grammaticalcorrectness
+andfluencyofthegeneratedcomments),andinformativeness(theamountofcontentcarriedover
+from the input code to the generated comments, ignoring fluency of the text). Because doing user
+studiesistime-consuming,costly,andrelyingonsubjectivejudgments,someworksonlycompare
+different models through automatic metrics [19, 49] without human evaluation.
+Sincepracticalconsiderationshaveforcedthefieldto relyon automatedmetrics,itis crucialto
+determine how well these metrics compare to human judgments. A reliable automatic metric can
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 63. Pub. date: July 2022.
+Correlating Automated and Human Evaluation 63:3
+serveasaproxyforhumanevaluationwhichisconsiderablymoreexpensiveandtime-consuming.
+Judgingwhether,andtowhatextent,automaticmetricsconcurwiththehumanevaluationhasnot
+been sufficiently established in existing studies.
+Tofigureoutwhetherautomatedmetricsarereliableandcanindeedreplacehumanjudgmentin
+thedomainofautomaticcodedocumentationgeneration,weexplorethecorrelationbetweenfive
+automaticmetricsandsixhumanevaluationmetricsforcodedocumentationgenerationtasks.The
+automaticmetricsusedinthisarticleareBLEU,METEOR,ROUGE-L,CIDEr,andSPICEwhichare
+widelyusedinvariousdocumentationgenerationworks[ 19,20,23,32,49].Weinvestigatethehu-
+manevaluationmetricsusedinpreviousstudiesandselectsixwidelyusedmetrics.Thesemetrics
+areusedtoevaluatemodelsfromthreeaspects,including Language-related (measuresnaturallan-
+guage features and ignore the documentation’s contents),Content-related (measures the amount
+ofcontentscarriedfromtheinputcodetothegenerateddocumentation),and Effectiveness-related
+(evaluate whether generated documentation is useful or helps developers understand programs).
+Each aspect contains two metrics: Naturalness and Expressiveness for theLanguage-related as-
+pect;ContentAdequacyandConcisenessforthe Content-related aspect;Usefulness(evaluatehow
+useful the documentation is) and Code Understandability (evaluate to what extent the generated
+documentation can help developers understand programs) for theEffectiveness-related aspect. In
+this article, we conduct experiments on two documentation generation tasks, the code comment
+generation task and the commit message generation task. For each task, we first replicate three
+state-of-the-art approaches (i.e., Hybrid-DeepCom [20], Code2Seq [1], and Re2Com [50]f o rc o d e
+commentgenerationtask;NMT[ 23],NNGen[ 32],andPtrGNCMsg[ 30]forcommitmessagegener-
+ationtask).Then,weevaluatethembyusingautomaticmetricsandhumanevaluationmetrics.We
+recruit24evaluatorstoscore200randomlysampledcommentsandcommitmessages,respectively.
+Then, we analyze the correlation between different automatic and human evaluation metrics.
+Our study aims at answering the following research questions:
+RQ1: What are the results of state-of-the-art approaches on automatic metrics and hu-
+man evaluation metrics?
+We investigate this RQ to compare the generated documentation from automatic metrics and
+human evaluation metrics. The automatic metrics mainly evaluate generated documentation by
+counting the number of overlapping N-grams between it and human-written reference text. The
+humanevaluationmetricsarecomputedbasedonuserstudyparticipantfeedback;eachparticipant
+is asked to give a score for each documentation with respect to a given source code/diff.
+RQ2: What are the correlation inside human evaluation metrics and automatic evalua-
+tion metrics, respectively?
+FromtheexperimentsinRQ1,wepresenttheoverallscoresofdocumentationgeneratedbydiffer-
+ent approaches. Another important question is whether automatic metrics or human evaluation
+metrics are consistent in evaluating the generated documentation. We measure the Kendallτcor-
+relation and Pearsonr correlation to explore whether these metrics are concordant while scoring
+different approaches.
+RQ3: Do automatic metrics such as BLEU, METEOR, ROUGE-L, CIDEr, and SPICE corre-
+late with human judgment on generated documentation?
+In neural machine translation literature, automatic metrics have been shown to correlate well
+with human judgment and can replace human raters [9]. In this RQ, we propose to establish the
+correlation between automatic metrics and human evaluation metrics. According to the corre-
+lation, we can quantify the extent of automatic metrics reflecting the human perspectives and
+find the most relevant automatic metrics to human judgments. We follow Coughlin et al. [9]a n d
+ACM Transactions on Software Engineering and Methodology, Vol. 31, No. 4, Article 63. Pub. date: July 2022.

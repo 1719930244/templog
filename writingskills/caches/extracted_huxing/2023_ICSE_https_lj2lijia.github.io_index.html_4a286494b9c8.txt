@@ -1,0 +1,287 @@
+SKCODER : A Sketch-based Approach for
+Automatic Code Generation
+Jia Li ♂
+Key Lab of High Confidence Software
+Technology, MoE (Peking University)
+Beijing, China
+lijia@stu.pku.edu.cn
+Yongmin Li
+Key Lab of High Confidence Software
+Technology, MoE (Peking University)
+Beijing, China
+liyongmin@pku.edu.cn
+Ge Li*
+Key Lab of High Confidence Software
+Technology, MoE (Peking University)
+Beijing, China
+lige@pku.edu.cn
+Zhi Jin*
+Key Lab of High Confidence Software
+Technology, MoE (Peking University)
+Beijing, China
+zhijin@pku.edu.cn
+Yiyang Hao
+aiXcoder
+Beijing, China
+haoyiyang@aixcoder.com
+Xing Hu
+Zhejiang University
+Ningbo, China
+xinghu@zju.edu.cn
+Abstract—Recently, deep learning techniques have shown great
+success in automatic code generation. Inspired by the code
+reuse, some researchers propose copy-based approaches that can
+copy the content from similar code snippets to obtain better
+performance. Practically, human developers recognize the content
+in the similar code that is relevant to their needs, which can be
+viewed as a code sketch. The sketch is further edited to the desired
+code. However, existing copy-based approaches ignore the code
+sketches and tend to repeat the similar code without necessary
+modifications, which leads to generating wrong results.
+In this paper, we propose a sketch-based code generation
+approach named SKCODER to mimic developers’ code reuse
+behavior. Given a natural language requirement, SKCODER
+retrieves a similar code snippet, extracts relevant parts as a
+code sketch, and edits the sketch into the desired code. Our
+motivations are that the extracted sketch provides a well-formed
+pattern for telling models “how to write”. The post-editing
+further adds requirement-specific details into the sketch and
+outputs the complete code. We conduct experiments on two public
+datasets and a new dataset collected by this work. We compare
+our approach to 20 baselines using 5 widely used metrics.
+Experimental results show that (1) SKCODER can generate more
+correct programs, and outperforms the state-of-the-art – CodeT5-
+base by 30.30%, 35.39%, and 29.62% on three datasets. (2) Our
+approach is effective to multiple code generation models and
+improves them by up to 120.1% in Pass@1. (3) We investigate
+three plausible code sketches and discuss the importance of
+sketches. (4) We manually evaluate the generated code and prove
+the superiority of our SKCODER in three aspects.
+Index Terms—Code Generation, Deep Learning
+I. I NTRODUCTION
+As the complexity and scale of the software continue to
+grow, developers cost lots of effort to write the source code
+by hand. Code generation aims to automate this coding process
+and generate the source code that satisfies a given natural lan-
+guage requirement. Nowadays, deep learning (DL) techniques
+have been successfully applied to automatic code generation
+[1], [2], [3]. DL-based models take a natural language (NL)
+* Corresponding authors
+check if all elements in listtmpare integer
+Searchforsimilarcode
+Extractrelevantcontentall(_forx in_)
+all(isinstance(x, int) forx intmp)Addingdetailsguidance
+Fig. 1. The process of reusing the similar code by developers.
+description as the input and output the corresponding source
+code. The models are trained with a corpus of real NL-code
+pairs. During the inference, trained models can automatically
+generate the desired code for a new NL description.
+Recently, inspired by the code reuse [4], some researchers
+[5], [6], [7] introduce the information retrieval techniques into
+code generation. They retrieve the similar code and provide it
+as a supplement to code generation models. The models are
+trained to copy some content from the similar code and obtain
+a better performance. In this paper, we refer to these studies
+as copy-based code generation models.
+Practically, human developers often make necessary mod-
+ifications in the similar code instead of simply copying,
+during the code reuse process [8]. As shown in Figure 1,
+developers search for a similar code snippet in open-source
+communities ( e.g., Stack Overflow [9]) and further analyze
+the relevance of similar code to their requirements. Then,
+developers recognize the parts ( i.e., all( _ for x in _
+)) that are relevant to their needs and ignore the irrelevant parts
+Inputdescription:countelements in a list which are within a specific range
+defcount_range(list1, min, max): result= 0forxinlist1: ifmin<= x<= max: result=result+1returnresult
+Top-1similarcode:Codesketch:Finalcode:retrievesketch editdefcount_integer(list1):result=0forxinlist1:ifisinstance(x,int):result=result+1returnresult
+def_(list1): result= 0forxinlist1: if_: result=result+1returnresult
+Fig. 2. The illustration of how developers reuse the similar code. The relevant content in the similar code is highlighted.
+(i.e., x==myList[0] and myList). The relevant content
+can be viewed as a code sketch , which specifies a viable
+code pattern ( e.g., API usage patterns [10], [11]) to guide
+developers on how to write their code. Next, developers
+understand the current requirement ( i.e., check integer) and
+edit the sketch into the desired code by adding some details
+(i.e., isinstance(x,int)). In the above pipeline, code
+sketches play a key role in the code reuse. The sketches denote
+the knowledge that developers extract from the similar code,
+and are further reused in the newly-written code. However,
+previous copy-based models [5], [7] ignore the importance of
+sketches. Experimental results show that copy-based models
+tend to repeat the similar code without necessary modifications
+and even copy the irrelevant content.
+To mimic the above developers’ code reuse behavior,
+we propose a novel sketch-based code generation approach,
+named S KCODER . Different from simply copying in previous
+copy-based approaches, S KCODER can identify the content
+in similar code that is relevant to current requirements and
+further modify those relevant content. Our motivations are
+that code sketches denote the guidance from the similar code
+that tells models “how to write”, and NL descriptions express
+requirements that tell models “what to write”. Specifically,
+SKCODER generates the source code in three steps:
+• Retrieve. Given an NL description, we use a retriever to
+choose a similar code snippet from a retrieval corpus.
+• Sketch. Based on the NL description, we use a sketcher
+to extract a code sketch from the similar code.
+• Edit. We employ an editor to edit the sketch based on
+the NL description and obtain the target code.
+We conduct extensive experiments to evaluate our
+SKCODER . (1) We evaluate S KCODER on two public datasets
+[12], including HearthStone and Magic. We employ three
+widely used evaluation metrics (exact match (EM), BLEU
+[13], and CodeBLEU [14]). Results demonstrate the impres-
+sive performance of our S KCODER . In terms of the EM,
+SKCODER outperforms state-of-the-art (SOTA) baselines by
+up to 22.41% and SOTA copy-based baselines by up to
+42.86%. (2) We collect a new code generation dataset named
+AixBench-L that consists of 200k real NL-code pairs. Each
+test sample is equipped with a set of unit tests. We use
+Pass@1 and AvgPassRatio to verify the correctness of the
+generated code. Results show that S KCODER outperforms
+SOTA baselines 12.9% in Pass@1 and 8.49% in AvgPassRatio.
+(3) We conduct an ablation study of our approach on multiple
+code generation models by gradually adding the retriever
+and sketcher to these models. Results prove the contributions
+of different modules and our S KCODER can substantially
+improve different models by up to 120.1% in Pass@1. (4) We
+investigate three plausible design choices for code sketches.
+Results demonstrate the importance of the sketch and our
+used sketch has a better performance. We also discuss the
+importance of code sketches through real examples. (5) We
+conduct a human evaluation to evaluate the generated code in
+three aspects, including correctness, code quality, and main-
+tainability. Results show that SKCODER outperforms baselines
+in all three aspects.
+We summarize our contributions in this paper as follows.
+• To mimic developers’ code reuse behavior, we pro-
+pose a sketch-based code generation approach named
+SKCODER . It extracts a code sketch from the retrieved
+similar code and further edits the sketch into the target
+code based on the input description.
+• We collect a new code generation dataset named
+AixBench-L that consists of 200k real NL-code pairs.
+Each test sample is equipped with a set of unit tests to
+evaluate the correctness of functions.
+• We conduct extensive experiments on three datasets.
+Qualitative and quantitative analysis shows the effective-
+ness of our S KCODER . We further investigate different
+design choices of code sketches and discuss the impor-
+tance of code sketches.
+Data Availability. We open source our replication package
+[15], including the datasets and the source code of S KCODER ,
+to facilitate other researchers and practitioners to repeat our
+work and verify their studies.
+II. M OTIVATING EXAMPLES
+In Figure 2, we show an example to analyze how developers
+reuse the similar code and explain our motivations.
+(1) For an input requirement, the retrieved similar code
+contains the relevant content and irrelevant parts. Given an
+NL description, developers first retrieve a similar code snippet.
+Figure 2 shows the Top-1 similar code snippet that is retrieved
+based on the similarity of NL descriptions. Then, developers
+understand the implementation details of the similar code
+and determine which parts are relevant to their requirements.
+We can see that the similar code contains lots of relevant
+content (i.e., highlight in Figure 2), e.g., parameters (list1),
+control flow statements (for x in list1: ), and data flow
+statements ( result=result+1). Meanwhile, the similar
+code also contains irrelevant parts, such as the if condition
+statement (if instance(x,int): ).
+Thus, simply copying from the similar code is inappropriate,
+which probably causes the generated code contains some irrel-
+RetrievalcorpusRetriever
+count elements in a list which are within a specific rangeNLdescriptionSimilarcodesnippets
+Sketcher
+Inputdescriptioncount…defcount_int(list1)Similarcode:…
+√×√√ …√√
+def<pad>(list1): result= 0forxinlist1: if<pad>: result=result+1returnresult
+Codesketch
+count elements in a list which are within a specific rangeNLdescription
+Editor
+defcount_range(list1,min,max):result=0forxinlist1:ifmin<=x<=max:result=result+1returnresult
+Generatedcode
+edit
+guidance
+(a)Retriever:Selectingthesimilarcode
+(b)Sketcher:Extractingacodesketch(c)Editor:Editingthesketchintothetargetcode
+softtemplate
+result
+√
+=
+√
+Fig. 3. The overview of our approach.
+evant parts. We show a wrong output of the SOTA copy-based
+approach named REDCODER [7] in Figure 6. REDCODER
+directly copies an incorrect statement from the similar code
+without necessary modifications.
+(2) We should extract the relevant content from the
+similar code as a code sketch. Practically, developers will
+recognize the relevant content from the similar code, ignoring
+irrelevant parts. The relevant content can be viewed as a
+code sketch, which specifies a code pattern to guide devel-
+opers on how to write the source code. Figure 2 shows a
+sketch extracted from the similar code. The token “ _” is
+a placeholder. We can see that the sketch provides a high-
+level code structure for developers, i.e., initializing a counting
+variable → iterating the list and counting → returning the
+counting variable. Some details are replaced by placeholders
+and elaborated by developers.
+Thus, we argue that code sketches are the core of a code
+reuse process, which denote the valuable knowledge from the
+similar code and are further reused in the new code.
+(3) The sketch needs to be edited based on the input
+description to obtain the target code. Code sketches provide
+code patterns that tell developers “how to write”, and the
+NL descriptions express requirements that tell developers
+“what to write”. Thus, developers will edit sketches based
+on their requirements and obtain the final code. Figure 2
+shows the final code. Developers understand requirements (i.e.,
+counting elements within a specific range) from the input
+description and fill in sketches with implementation details,
+e.g., function name ( count_range), if condition statements
+(if min<=x<=max: ).
+Based on the above observations, we propose a sketch-based
+code generation approach to mimic the developers’ code reuse
+behavior. Different from previous copy-based code generation
+models, our approach contains a sketcher module that can
+extract the relevant content from the similar code and output
+a code sketch. Then, we utilize an editor module to edit the
+sketch into the target code. Through the above pipeline, our
+approach effectively mines the knowledge from existing high-
+quality code corpus and transfers the knowledge into newly-
+written programs.
+III. A PPROACH
+In this section, we present a sketch-based code generation
+approach, named S KCODER . We formally define the overview
+of our S KCODER and describe the details in the following
+sections, including three modules and the training details.
+A. Overview
+The goal of code generation is to train a model G(Y |X) that
+predicts a code snippet Y based on an input natural language
+(NL) description X. In this work, we decompose this model
+into three modules, including a retriever, a sketcher, and an
+editor. The three modules work in a pipeline as shown in
+Figure 3:
+• Retrieve. Given an NL description X, a retriever selects
+a similar code snippet Y ′ from a retrieval corpus.
+• Sketch. Based on the NL description X, a sketcher
+extracts a code sketch S from the similar code Y ′.
+• Edit. An editor edits the sketch S into the target code Y
+based on the NL description X.
+B. Retriever
+As shown in Figure 3 (a), the retriever aims to select
+similar code snippets from a retrieval corpus based on the
+input NL description. Inspired by previous studies [5], [6],
+we think that similar code snippets are likely to have similar
+NL descriptions. Therefore, we take the input description as a
+query to search for similar descriptions in a retrieval corpus.
+Then, the corresponding code of similar descriptions is viewed
+as the similar code.
+Specifically, we employ the BM25 score [16] as our retrieval
+metric, which is widely used in previous studies [17], [18],
+[19]. BM25 is a bag-of-words retrieval function to estimate
+the lexical-level similarity of two sentences. The more similar
+two sentences are, the higher the value of BM25 scores. We
+leverage the open-source search engine Lucene [20] to build
+our retriever and use the training set as our retrieval corpus.

@@ -1,0 +1,335 @@
+SelfPiCo: Self-Guided Partial Code Execution with LLMs
+Zhipeng Xue
+Zhejiang University
+Hangzhou, China
+zhipengxue@zju.edu.cn
+Zhipeng Gao
+Zhejiang University
+Hangzhou, China
+zhipeng.gao@zju.edu.cn
+Shaohua Wang
+Central University of Finance and
+Economics
+Beijing, China
+davidshwang@ieee.org
+Xing Hu
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Xin Xia
+Zhejiang University
+Hangzhou, China
+xin.xia@acm.org
+Shanping Li
+Zhejiang University
+Hangzhou, China
+shan@zju.edu.cn
+Abstract
+Code executability plays a vital role in software debugging and
+testing (e.g., detecting runtime exceptions or assertion violations).
+However, code execution, especially partial or arbitrary code ex-
+ecution, is a non-trivial task due to missing definitions and com-
+plex third-party dependencies. To make partial code (such as code
+snippets posted on the web or code fragments deep inside com-
+plex software projects) executable, the existing study has proposed
+a machine learning model to predict the undefined element types
+and inject the pre-defined dummy values into execution. However,
+the performance of their tool is limited due to its simply designed
+dummy values and the inability to continue learning. In this pa-
+per, we design and implement a novel framework, named Self-
+PiCo (Self-Guided Partial Code Executor), to dynamically guide
+partial code execution by incorporating the open-source LLM (i.e.,
+Code Llama) within an interactive loop. Particularly, SelfPiCo
+leverages few-shot in-context learning and chain-of-thought rea-
+soning to elicit human knowledge and logical reasoning based on
+fine-tuning the Code Llama model. SelfPiCo continuously learns
+from code execution results and refines its predictions step after
+step. Our evaluations demonstrate thatSelfPiCo can execute 72.7%
+and 83.3% of all lines in the open-source code and Stack Overflow
+snippets, outperforming the most recent state-of-the-art Lexecutor
+by 37.9% and 33.5%, respectively. Moreover, SelfPiCo success-
+fully detected 18 and 33 runtime type error issues by executing
+the partial code from eight GitHub software projects and 43 Stack
+Overflow posts, demonstrating the practical usage and potential
+application of our framework in practice.
+CCS Concepts
+• Software and its engineering→ Software testing and debug-
+ging.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full cita-
+tion on the first page. Copyrights for components of this work owned by others than
+the author(s) must be honored. Abstracting with credit is permitted. To copy other-
+wise, or republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee. Request permissions from permissions@acm.org.
+ISSTA ’24, September 16–20, 2024, Vienna, Austria
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0612-7/24/09
+https://doi.org/10.1145/3650212.3680368
+Keywords
+Partial Code Execution, Dynamic Analysis, Large Language Model,
+Prompt Engineering
+ACM Reference Format:
+Zhipeng Xue, Zhipeng Gao, Shaohua Wang, Xing Hu, Xin Xia, and Shan-
+ping Li. 2024. SelfPiCo: Self-Guided Partial Code Execution with LLMs.
+In Proceedings of the 33rd ACM SIGSOFT International Symposium on Soft-
+ware Testing and Analysis (ISSTA ’24), September 16–20, 2024, Vienna, Aus-
+tria. ACM, New York, NY, USA, 13 pages. https://doi.org/10.1145/3650212.
+3680368
+1 Introduction
+To share ideas or programming techniques, developers write code
+snippets to illustrate specific task solutions and/or demonstrate
+programming concepts in the software development community,
+such as Stack Overflow or GitHub [ 19, 20, 23, 66, 67]. These ar-
+bitrary code snippets are often written for illustrative purposes
+and as quick ways to convey solutions, without implementation
+detail, which are widely used by developers [21, 22, 49]. Despite the
+wide adoption of code snippets among developers, 75% of the code
+snippets can not be directly executed [ 16, 18, 79, 80] and reused.
+This is because a significant number of code snippets are partial
+and incomplete (i.e., missing variable or function definitions, miss-
+ing third-party dependencies). Therefore, executing arbitrary code
+snippets written by developers is essential for reusing these code
+snippets immediately and effectively.
+The capability of executing partial code also facilitates diverse
+applications of dynamic program analysis, such as taint analysis [4,
+9, 32, 60], vulnerability and bug detection [ 17, 29, 39, 41, 42, 44, 68,
+74, 82], type inference [ 25, 43, 51, 52]. Dynamic analysis provides
+valuable insights into a program’s runtime behavior, capturing in-
+formation such as actual data inputs, execution traces, and system
+reactions. It has proven to be effective in unveiling various runtime
+bugs (e.g., memory leaks, buffer overflow, race conditions [34, 71]).
+However, for large-scale software projects, it is difficult, if not pos-
+sible, to run the dynamic analysis tools on any arbitrary code area
+that is deep inside the project. Executing arbitrary code fragment
+enable us to run dynamic analysis tools on the key components
+and vulnerable code area (e.g., the newly updated code), without
+worrying about the complex building procedure and sophisticated
+third-party dependencies.
+To achieve the goal of executing arbitrary code snippets, Souza
+et al. [63] first proposed Lexecutor, a neural network guided tool to
+1389
+
+ISSTA ’24, September 16–20, 2024, Vienna, Austria Zhipeng Xue, Zhipeng Gao, Shaohua Wang, Xing Hu, Xin Xia, Shanping Li
+predict and inject missing values into program execution. In partic-
+ular, when a missing element (e.g., variable, attributes, or function
+calls) is encountered, their approach queries a machine learning
+model (i.e., CodeT5[ 70]) to predict the element type and inject a
+pre-defined dummy value instead. However, the performance of
+Lexecutor is still relatively suboptimal in terms of the code cover-
+age on open-source project functions (50.6%) and Stack Overflow
+code snippets (61.0%). After empirically investigating their exper-
+imental results, two main challenges are observed regarding their
+approach: (i) the pre-defined dummy values are too simple and in-
+flexible to cover the practical scenarios in the real development
+environment. For instance in Listing 1, Lexecutor successfully pre-
+dicts the correct type of filter_cached, i.e., Callable. Then Lex-
+ecutor will inject a pre-defined DummyCall for it. However, the
+program will crash during the execution, since the expected re-
+turn of filter_cached includes two values, while the pre-defined
+DummyCall returns only a single value. (ii) the disability of inter-
+active learning. The Lexecutor uses a machine learning model to
+predict the missing value types, the prediction results are constant
+when the input samples are fixed. It cannot continue learning from
+the program execution results, which can provide valuable infor-
+mation to guide the model to make more accurate predictions. A
+skilled developer can gain insights from failed execution results to
+refine predictions step by step. According to the error message in
+Listing 1, the skilled developer would rectify theDummyCall by re-
+turning either two values or an iterable object, e.g., Tuple. Thus the
+key question we ask in this work is: can we design models that can
+continuously learn from code execution results and incrementally re-
+fine predictions, ultimately enabling non-executable code to become
+executable.
+Listing 1: A Failure Case of Lexecutor
+1 # Original Code : black / src / black / concurrency . py :
+2 sources , cached = filter_cached ( cache , sources )
+3 # Lexecutor Injection :
+4 filter_cached = DummyCall (* args )
+5 TypeError: cannot unpack non-iterable DummyObject object
+6 # SelfPiCo Injection :
+7 def filter_cached (* args ) :
+8 return (1 , 2)
+Inspired by the impressive capacities of LLMs (Large Language
+Models) for code comprehension and their great potential for in-
+teracting with humans [ 10, 15, 47–49, 70, 78, 81], in this work, we
+first investigate incorporating LLMs for the task of executing ar-
+bitrary code snippets. The key idea of this work is LLM-in-the-
+loop. Compared with human-in-the-loop (HITL) which uses hu-
+man interaction to aid computers in making decisions, we first in-
+troduce the concept of LITL (LLM-in-the-loop), where the LLMs
+are engaged within an interactive loop for generating useful arti-
+facts. In particular, we design and implement a novel LLMs-based
+framework, named SelfPiCo, to guide partial code execution. The
+SelfPiCo is constructed by following three components:
+• Interactive Value Predictor.The interactive value predictor
+is the core module of SelfPiCo, which includes an interactive
+value generator and an execution value checker . The interactive
+value generator is responsible for generating likely values for
+the missing elements (e.g., undefined variables, return values,
+or missing functions). The execution value checker is responsible
+for ensuring the validity of the generated values. If the gener-
+ated values provided byinteractive value generator fail to execute
+the given arbitrary code snippet, the execution value checker will
+query back the interactive value generator with error execution
+messages for regenerating new likely values.
+• Complementary Type Predictor.This component serves as a
+complement module to the interactive value predictor, address-
+ing cases where the interactive value predictor exceeds maxi-
+mum iterations. If the value predictor can not predict appropri-
+ate values, the complementary type predictor predicts the type
+of missing element and injects the pre-defined dummy value.
+• Runtime Engine.The runtime engine instruments the partial
+code with execution hooks, which catch the exceptions during
+code execution, and inject values from interactive value predic-
+tor to guide partial code execution.
+Automated program repair (APR) techniques aim to generate a
+patch that passes compilation and test execution and recent stud-
+ies have leveraged LLMs for fixing bugs (e.g., compilation or exe-
+cution bugs) [ 11, 30, 31, 38, 40, 75]. The goal of APR overlaps to
+some extent with our partial code execution. However, there are
+two significant distinctions between them: (i) The goal is differ-
+ent. APR aims to fully repair programs to pass all tests, while our
+task seeks to make partial code executable. Our work can be re-
+garded as a base model to enable other dynamic analysis tools for
+checking partial code. Notably, our tool can also assist developers
+in fixing bugs or code errors (e.g., exposing runtime errors during
+execution), but fixing bugs is not the final goal of this research. (ii)
+The way of interacting with code is different.APR generates
+correct patches to fix bugs in buggy code, which need to modify
+and update the original buggy code. In contrast, our tool injects
+missing values to run partial code, we keep the original code un-
+touched without changing any original code elements. Due to dif-
+ferent goals and ways of generating code, APR methods are not
+applicable to our partial code execution task.
+To evaluate the effectiveness of our SelfPiCo, we used the
+same dataset from Lexecutor containing two sets of code snippets:
+functions extracted from popular open-source projects and code
+snippets extracted from Stack Overflow posts. Our results indicate
+that the SelfPiCo enables the execution of 72.7% and 83.3% of
+all lines in the open-source code and Stack Overflow snippets, re-
+spectively, outperforming Lexecutor by 37.9% and 33.5%. Souza et
+al. [63] first propose the task of partial code execution, and they use
+Lexecutor to find the semantics-changing commits. In this paper,
+we attempt to validate the practical usage of SelfPiCo on a dy-
+namic analysis task: runtime type error detection. Specifically, by
+running SelfPiCo on partial code fragment, our framework suc-
+cessfully detected 18 type error issues from eight popular Python
+GitHub repositories and 33 type error issues from Stack Overflow
+posts. In summary, this paper contributes the following:
+• We design and implement a framework, named SelfPiCo, to
+engage the Code Llama model within LITL (LLM-in-the-loop)
+to guide the partial code execution. Our fine-tuned Code Llama
+model performs similarly to the close-source, commercial GPT-
+3.5 model in the task of guiding partial code execution. The richer
+1390
+SelfPiCo: Self-Guided Partial Code Execution with LLMs ISSTA ’24, September 16–20, 2024, Vienna, Austria
+complimentary dummy types help SelfPiCo to guide more par-
+tial code execution.
+• We extensively evaluate SelfPiCo on both functions extracted
+from popular open-source projects and code snippets extracted
+from Stack Overflow posts. The evaluation results show that
+SelfPiCo can significantly outperform Souza et al [63]’s method
+in both datasets (37.9% code coverage and 62.6% fully executed
+rate improvement on the Open-source projects dataset, 33.5%
+code coverage and 57.7% fully executed rate improvement on
+Open-source projects dataset), achieving the state-of-the-art per-
+formance.
+• We validate SelfPiCo with a practical dynamic analysis appli-
+cation: runtime type error detection. From eight popular Python
+GitHub repositories and 43 Stack Overflow posts, we success-
+fully detected 18 and 33 type error issues, respectively. To the
+best of our knowledge, our work is the first attempt to identify
+type errors at runtime, our tool can expose the runtime type
+error before compiling or running the entire software project,
+illustrating the effectiveness of our approach in practice.
+2 Motivation
+The ability to execute partial code is essential for various dynamic
+analysis applications. We demonstrate a motivating example of
+checking runtime type errors using our approach, however, we ar-
+gue that our approach is not limited to this particular application.
+It can be used to incorporate dynamic analysis tools to support a
+wide range of applications, for example, detecting security vulnera-
+bilities via taint analysis. Better combining our tool with advanced
+dynamic checking techniques is an interesting future direction, but
+it is beyond the scope of our current research.
+Motivating Example.Python is one of the most popular program-
+ming languages nowadays. However, due to its dynamic type char-
+acteristics, variable types are determined and validated at runtime
+rather than compile time. Developers often suffer from runtime
+type errors when performing operations on inconsistent types of
+variables. Although Python static checkers (e.g., Pyre [ 2]) are de-
+signed to detect such type inconsistencies, however, they primar-
+ily rely on manually written type annotations which are unavail-
+able most of the time. As a result, Python type errors are often
+hard to detect unless they are exposed at runtime. Figure 1 demon-
+strates an example of Python type error in Luigi project. Specifi-
+cally, the method replace expects to be passed with two variables
+of the same type, in this case, both should be bytes objects. How-
+ever, the developer wrongly passed a string object and thus in-
+troduced a type error. Due to complex internal dependencies, such
+type errors are difficult to trigger or reach out until bugs are even-
+tually exposed. We manually checked the development history of
+the Luigi project, this runtime type error has existed for over two
+years until finally exposed by a bug issue report. During this time,
+any code refactorings associated with this buggy method could be
+influenced, posing significant risks to software quality and main-
+tenance. It is thus beneficial to have a tool that can discover such
+type errors without worrying about complex code dependencies
+or writing extensive test cases.
+SelfPiCo Usage Scenarios. SelfPiCosuccessfully detected this
+runtime type error without building/running the whole project.
+Based on the code snippet context, our framework correctly in-
+jects a bytes value object for the variable d and a string value ob-
+ject for the variable module, which successfully triggered the same
+runtime error reported by the bug issue report. Our framework
+can help developers expose this bug in an early stage (e.g., check-
+in time) and reduce the risks of introducing any unwanted prob-
+lems or negative impacts. Suppose the developer who adopts our
+SelfPiCo during his/her development, when code change hap-
+pens, our tool can be performed on the newly updated partial code
+snippets for checking runtime type errors and discovering poten-
+tial type errors just-in-time. It is worth mentioning that the usage
+scenario of our SelfPiCo is not limited to runtime type error de-
+tection, our framework can be further extended to enable different
+dynamic analysis applications (e.g., assertion violation, taint anal-
+ysis). In this work, we use runtime type error detection as a pre-
+liminary study to validate the practical usage of our framework.
+#   h t t p s : / /  g i t h u b . c o m  /  s p o t i f y  /  l u i g i  /  i s s u e s  / 1 9 8 8
+def   _dump ( self ,   fd ) :
+. . .
+d  =   pickle . dumps ( fd )
+module =  os . path . basename ( sys . argv [0]) 
+. r split ( '  . ' ,   1) [0]
+d  =  d . replace ( b ' ( c     main     ' ,   " ( c "  +   module )
+f d  .  w r i t e  (  d  )
+TypeError: a bytes-like 
+object is required, not 'str'
+Figure 1: A Type Error Detected From Partial Code
+3 Our Approach
+In this work, we design and implement an LLM-based framework,
+SelfPiCo, to interactively make predictions and execute partial
+code snippets. SelfPiCo includes three key components: the run-
+time engine, the interactive value predictor, and the complemen-
+tary type predictor. As shown in Fig. 2, for a given non-executable
+arbitrary code snippet, the runtime engine first instruments it with
+execution hooks, and then executes the partial code and catches
+any exception that might be thrown when undefined code elements
+(e.g., variable, attribute) are met. The raised exception will trigger
+the execution hooks, which send the undefined element and its
+contextual information to the interactive value predictor for infer-
+encing the valid values for the undefined element. The execution
+hooks inject the inference values to the undefined element and
+guide code execution. The interactive value predictor adaptively re-
+generates the likely values for the undefined elements and checks
+if these values can be executed by the runtime engine successfully.
+In certain cases, LLMs may fail to generate valid values even after
+multiple interactions, leading to the activation of the complemen-
+tary type predictor. It queries the LLMs to predict the type of the
+undefined element and returns a pre-defined dummy value to the
+runtime engine. Details of each component are as follows.
+3.1 Runtime Engine
+The goal of the runtime engine is to catch the exception during
+partial code execution, query the interactive value generator, and
+inject the replied value to guide code execution.
+1391

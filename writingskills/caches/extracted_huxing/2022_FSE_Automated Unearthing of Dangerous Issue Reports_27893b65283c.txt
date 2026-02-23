@@ -1,0 +1,337 @@
+Automated Unearthing of Dangerous Issue Reports
+Shengyi Pan
+Zhejiang University
+Hangzhou, Zhejiang, China
+shengyi.pan@zju.edu.cn
+Jiayuan Zhou
+Centre for Software Excellence,
+Huawei
+Kingston, Ontario, Canada
+jiayuan.zhou1@huawei.com
+Filipe Roseiro Cogo
+Centre for Software Excellence,
+Huawei
+Kingston, Ontario, Canada
+filipe.roseiro.cogo1@huawei.com
+Xin Xia
+Huawei
+Hangzhou, Zhejiang, China
+xin.xia@acm.org
+Lingfeng Bao∗
+Zhejiang University
+Hangzhou, Zhejiang, China
+lingfengbao@zju.edu.cn
+Xing Hu
+Zhejiang University
+Ningbo, Zhejiang, China
+xinghu@zju.edu.cn
+Shanping Li
+Zhejiang University
+Hangzhou, Zhejiang, China
+shan@zju.edu.cn
+Ahmed E. Hassan
+Queen’s University
+Kingston, Ontario, Canada
+ahmed@cs.queensu.ca
+ABSTRACT
+The coordinated vulnerability disclosure (CVD) process is com-
+monly adopted for open source software (OSS) vulnerability man-
+agement, which suggests to privately report the discovered vul-
+nerabilities and keep relevant information secret until the official
+disclosure. However, in practice, due to various reasons (e.g., lack-
+ing security domain expertise or the sense of security management),
+many vulnerabilities are first reported via public issue reports (IRs)
+before its official disclosure. Such IRs are dangerous IRs, since at-
+tackers can take advantages of the leaked vulnerability information
+to launch zero-day attacks. It is crucial to identify such dangerous
+IRs at an early stage, such that OSS users can start the vulnerability
+remediation process earlier and OSS maintainers can timely manage
+the dangerous IRs. In this paper, we propose and evaluate a deep
+learning based approach, namely MemVul, to automatically iden-
+tify dangerous IRs at the time they are reported.MemVul augments
+the neural networks with a memory component, which stores the
+external vulnerability knowledge from Common Weakness Enu-
+meration (CWE). We rely on publicly accessible CVE-referred IRs
+(CIRs) to operationalize the concept of dangerous IR. We mine 3,937
+CIRs distributed across 1,390 OSS projects hosted on GitHub. Eval-
+uated under a practical scenario of high data imbalance, MemVul
+achieves the best trade-off between precision and recall among all
+baselines. In particular, the F1-score ofMemVul (i.e., 0.49) improves
+the best performing baseline by 44%. For IRs that are predicted as
+CIRs but not reported to CVE, we conduct a user study to inves-
+tigate their usefulness to OSS stakeholders. We observe that 82%
+∗Corresponding Author.
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than ACM
+must be honored. Abstracting with credit is permitted. To copy otherwise, or republish,
+to post on servers or to redistribute to lists, requires prior specific permission and/or a
+fee. Request permissions from permissions@acm.org.
+ESEC/FSE ’22, November 14–18, 2022, Singapore, Singapore
+© 2022 Association for Computing Machinery.
+ACM ISBN 978-1-4503-9413-0/22/11. . . $15.00
+https://doi.org/10.1145/3540250.3549156
+(41 out of 50) of these IRs are security-related and 28 of them are
+suggested by security experts to be publicly disclosed, indicating
+MemVul is capable of identifying undisclosed dangerous IRs.
+CCS CONCEPTS
+•Security and privacy → Software security engineering.
+KEYWORDS
+Software Security, Vulnerability, Issue Report, Deep Learning
+ACM Reference Format:
+Shengyi Pan, Jiayuan Zhou, Filipe Roseiro Cogo, Xin Xia, Lingfeng Bao,
+Xing Hu, Shanping Li, and Ahmed E. Hassan. 2022. Automated Unearthing
+of Dangerous Issue Reports. In Proceedings of the 30th ACM Joint European
+Software Engineering Conference and Symposium on the Foundations of Soft-
+ware Engineering (ESEC/FSE ’22), November 14–18, 2022, Singapore, Singapore.
+ACM, New York, NY, USA, 13 pages. https://doi.org/10.1145/3540250.3549156
+1 INTRODUCTION
+Open source software (OSS) is widely used by the software indus-
+try [35], from small-scale projects to critical applications deployed
+in global infrastructures. Despite its benefits [64], the usage of OSS
+also incurs on security risks [41, 60, 71] that can lead to negative
+impacts to individuals and organizations [ 3]. To better manage
+OSS vulnerabilities and minimize the risk of exploits, the coordi-
+nated vulnerability disclosure (CVD) process [2, 46] is commonly
+adopted [4, 7, 22]. The CVD suggests to privately report the discov-
+ered vulnerabilities to OSS maintainers, so that relevant informa-
+tion is not publicly available until the maintainers are ready for the
+disclosure (e.g., a patch is available) [4].
+In practice, however, due to various reasons (e.g., lacking security
+domain expertise [42] or the sense of security management [32]),
+many IRs that report vulnerabilities are first submitted to publicly
+accessible issue tracking systems (ITS), and then the associated
+vulnerabilities are officially disclosed. Such vulnerability IRs are
+dangerous IRs, as the time gap between the IR creation date and
+the vulnerability disclosure date provides a window of opportu-
+nity for attackers to develop and deploy exploits (e.g., zero-day
+ESEC/FSE ’22, November 14–18, 2022, Singapore, Singapore Pan et al.
+attacks [31]). In particular, attackers can take advantage of the
+leaked vulnerability information (e.g., the reproducible steps of an
+attack), which puts OSS users at a great disadvantage in defending
+against exploitation. For instance, many vulnerability IRs are first
+submitted to the GitHub ITS, then referred by a Common Vulner-
+abilities and Exposure (CVE) record that officially discloses the
+vulnerability [62, 77]. Such CVE-referred IRs (CIRs) are a type of
+typical dangerous IRs, as the leaked vulnerability information are
+earlier available with a median time of 13 days (see Section 2.3),
+and the reported vulnerability details provides an advantage for
+attackers (see Section 2.2 for a motivation example).
+It is crucial for OSS users, especially downstream software ven-
+dors, to identify dangerous IRs at an early stage so that they can
+take an active role in the race against attackers (i.e., the race be-
+tween patching and exploiting vulnerabilities). With the ability
+of early sensing dangerous IRs, vendors can start the remediation
+process earlier, instead of waiting for the official disclosure and
+then rushing to remediate. Since one project may rely on hundreds
+of OSS projects [35] and it takes too much work from OSS users
+to monitor every IR in the upstream OSS projects, an automated
+solution is necessary to identify dangerous IRs.
+Furthermore, it is also important for ITS platforms to implement
+mechanisms to identify emerging dangerous IRs. ITS platforms, as a
+service provider, should take the responsibility of better managing
+vulnerability reports to comply with the CVD process, reducing the
+threat of dangerous IRs and consequently making the OSS ecosys-
+tem safer. For example, by identifying dangerous IRs in advance,
+ITS platforms can warn reporters before posting the IR and suggest
+them to privately report to the maintainers instead. Moreover, ITS
+platforms can automatically hide the existing dangerous IRs from
+the public channel, and flag them as priorities for maintainers.
+The goal of our work is to provide a tool that can automatically
+unearth the emerging dangerous IRs at their early stage. Given
+the prevalent usage of CVE in OSS vulnerability management, and
+the popularity of GitHub ITS in OSS IR management, we opera-
+tionalize dangerous IRs as CIRs. In this paper, we take a first step
+to explore the characteristics of CIRs and to propose an automated
+approach to identify them at their creation time. We first build
+a large-scale dataset consisting of 1,221,677 IRs from 1,390 OSS
+systems hosted on GitHub, with 3,937 CIRs in total. The number
+of CIRs in our dataset is larger and more up-to-date than those of
+the five datasets (351 in total, collected before 2015) as proposed
+by existing studies [62, 67, 78]. Moreover, the existing datasets are
+limited in project-scope, which hinders the construction and eval-
+uation of a generic approach. The small proportion of CIRs (0.3%)
+agrees with real-world distributions and shows the challenge of
+unearthing dangerous IRs.
+Our preliminary study shows that ❶ 98.5% of the CIRs are cre-
+ated before the disclosure of the corresponding CVE records, sug-
+gesting that early leakage of vulnerability information through a
+public IR is very common. ❷ CIRs account for only 0.3% of all IRs,
+indicating that there is a limited vulnerability knowledge for data-
+driven models. Moreover, all CIRs belong to 132 different CWE
+vulnerability types, which can have diverse causes, behaviours,
+and consequences. It is challenging to predict CIRs under such
+a highly imbalanced class distribution and diverse vulnerability
+types, particularly by using existing machine learning approaches
+that are adopted from similar tasks (e.g., triaging security bug re-
+ports [42, 62, 77, 78, 81]).
+To cope with these challenges, we propose MemVul, a deep
+learning based approach that leverages language models [40] and
+a memory component to incorporate the external vulnerability
+knowledge from CWE (Common Weakness Enumeration): a curated
+classification schema for describing vulnerabilities. The memory
+component is designed to act as a vulnerability knowledge base
+during model inference. MemVul predicts whether an input IR is a
+CIR by matching the description of the IR against the knowledge
+base. To evaluate the effectiveness of MemVul, we conduct exper-
+iments under a practical scenario where the proportion of CIRs
+(0.3%) agrees with the real-world distribution. Evaluation results
+show that our approach achieves an F1-score of 0.49, which outper-
+forms the best baseline by 44%. With an ablation study, we further
+verify the effectiveness of incorporating the memory component as
+a knowledge base of vulnerabilities. In summary, our paper makes
+the following contributions:
+• We are the first to introduce the task of unearthing dangerous
+IRs at their early stage. We build a real-world dataset with larger
+and more-up-date security-related IR data, i.e., 3937 CIRs from
+1,390 OSS systems. We consider IRs linked to CVE records as
+CIRs, and use them as a proxy to dangerous IRs.
+• We propose MemVul, a deep learning based approach that
+uses language models and incorporates external vulnerability
+knowledge from CWE, improving the identification of CIRs.
+• We evaluateMemVul under a practical scenario of extreme data
+imbalance. MemVul achieves an F1-score of 0.49, improving
+the best performing baseline by 44%.
+• To foster future work and in line with good research practices,
+we provide a complete replication package of our approach and
+experiments [25].
+2 MOTIV ATION AND PRELIMINARIES
+In this section, we first introduce the background of our paper
+(Section 2.1). Then, we provide a motivation example (Section 2.2).
+Finally, we conduct a preliminary study on CIRs (Section 2.3).
+2.1 Background
+Common Vulnerabilities and Exposure (CVE): CVE provides a stan-
+dardized method to identify, define and catalog publicly disclosed
+software vulnerabilities [9]. Once a vulnerability is discovered, de-
+velopers can request a CVE ID from the CVE Numbering Authority
+(e.g., MITRE Corporation). The ID being reserved is regarded as the
+initial state of a CVE record. However, the record is not publicly
+available until its publication to the CVE list, when the minimum
+required details are prepared. Except for the CVE ID, each CVE
+record includes a brief and project-oriented description of the vul-
+nerability and the related references (i.e., a list of URLs). When
+constructing our dataset, we use the URLs from the references to
+identify the corresponding GitHub CIRs.
+Common Weakness Enumeration (CWE): CWE serves as a common
+language for discussing and describing weaknesses [10]. Each CWE
+entry represents a single vulnerability type, providing detailed
+information including the common causes, behaviours, and con-
+sequences. CWE entries are organized in a tree-like structure of
+multiple levels of abstraction.
+Automated Unearthing of Dangerous Issue Reports ESEC/FSE ’22, November 14–18, 2022, Singapore, Singapore
+Table 1: An example of vulnerability that was publicly posted
+as a GitHub IR, prior to its disclosure.
+Report date: Apr 24, 2019
+Issue title: LDAP connector does not verify TLS certificates
+Labels: bug, ldap, triaged
+Issue body:
+Expected Behavior: Graylog should verify the LDAP server certifi-
+cate chain up to a trusted root, and refuse the connection when the
+certificate chain cannot be verified.
+Current Behavior: Graylog accepts LDAP server certificates whose
+root certificate is not in any trust store. This presents a vulnerability
+for man-in-the-middle attacks.
+Steps to Reproduce (for bugs):
+- 1. Navigate to the LDAP / Active Directory configuration page.
+......
+Context: We run Graylog in a Docker container, using the official
+Docker image.1 Our LDAP server is on a different network. We would
+be better protected against man-in-the-middle attacks if Graylog veri-
+fies the LDAP server certificate.
+Your Environment:
+<Environment settings>
+Disclosure date: Jul. 17, 2020
+CVE ID: CVE-2020-15813
+CVE description (key information):
+Graylog before 3.3.3 lacks SSL Certificate Validation for LDAP servers.
+...... Therefore, any attacker with the ability to intercept network traffic
+between a Graylog server and an LDAP server is able to redirect
+traffic to a different LDAP server ...... , effectively bypassing Graylog’s
+authentication mechanism.
+CVSS v2.0 exploitability score: 8.6
+CVSS v2.0 severity ratings: Medium
+Note that the detailed environment setting is replaced with a placeholder.
+National Vulnerability Database (NVD): NVD [24] is one of the most
+popular security advisories [77]. NVD fully syncs with CVE list, i.e.,
+once a CVE record is published, it will appear in NVD immediately.
+Upon the information included in CVE records, NVD provides
+enhanced vulnerability information including the severity score
+rankings, the exploitation scores, and the weakness type (CWE).
+NVD uses CWE as a categorization mechanism to differentiate
+CVEs according to their vulnerability type. NVD is a widely used
+public source for new OSS vulnerabilities.
+2.2 Motivation Example
+Table 1 shows an example of vulnerability that was publicly posted
+as a GitHub IR [16] prior to its disclosure as a CVE record [55] (CVE-
+2020-15813). CVE-2020-15813 is an “Improper Certificate Validation”
+type vulnerability with an exploitability score of 8.6 and a medium
+level of severity rating. This vulnerability allows an attacker to
+bypass the authentication mechanism of graylog2/graylog2-server
+project, which is a widely used (6,000+ GitHub stars) OSS log man-
+agement system. The vulnerability was disclosed via NVD on Jul.
+17, 2020, while it was first reported and publicly available 450 days
+earlier (Apr. 24, 2019) on GitHub ITS.
+This CIR was dangerous as it leaked sensitive vulnerability infor-
+mation, giving hackers a chance to launch attacks when the general
+public was unprepared or even unaware. Moreover, the CIR de-
+scribed the detailed information of the vulnerability, including the
+expected behavior, current behavior, and reproduction steps. These
+Table 2: Number of IRs that contain vulnerability patterns.
+Issue report type #Issue reports
+Contain vuln. patterns No vuln. patterns
+CVE-referred IR 3,271 666
+Not CVE-referred IR 189,545 1,028,195
+(-∞,0] (0,7] (7,30] (30,180] (180,+∞)
+(NVD Disclosure Date - CVE-Referred IR Creation Date) in Days
+0.0%
+5.0%
+10.0%
+15.0%
+20.0%
+25.0%
+30.0%
+35.0%
+40.0%
+45.0%Percentage
+1.3%
+40.8%
+22.1% 23.0%
+12.7%
+Figure 1: The distribution of delta days between the creation
+date of CIRs and the NVD disclosure date of the correspond-
+ing vulnerabilities.
+information provided attackers with advantages in creating a func-
+tioning exploit. According to CVD, such vulnerability information
+should not be publicly available until the official disclosure when
+the general public can start the remediation process. However, due
+to the lack of security domain expertise or the sense of security
+management, the end-user directly reported the vulnerability to
+the public ITS, leading to a dangerous issue report. Even worse,
+the maintainers let the CIR be publicly available for more than one
+year before the NVD disclosure, leaving potential attackers with a
+large time window to exploit the vulnerability.
+It is crucial to identify such CIRs at an early stage. So that OSS
+users can take an active role in the race against potential attackers.
+Specifically, OSS users can sense the threat and take remediations
+in time, instead of waiting for the NVD disclosure and then hurry to
+remediate. Also, ITSs can warn reporters before posting a possible
+CIR, and help OSS maintainers to handle them appropriately by
+flagging CIRs as priorities and restricting the access to the IR from
+the public. With such mechanisms, ITS platforms can provide OSS
+stakeholders a safer ecosystem.
+2.3 Preliminary Study
+We build a large-scale dataset (see Section 4.2) for understanding
+the characteristics of CIRs and to evaluate our approach, which
+consists of 1,221,677 GitHub IRs from 1,390 GitHub projects. We
+consider IRs that are referred by CVE records as CIRs (3,937 in
+total), and the remaining IRs as not CVE-referred IRs (NCIRs). In
+this section, we perform a preliminary study using the collected
+dataset to show the importance and challenges of identifying and
+flagging potential CIRs at their creation time.
+The majority (98.7%) of CIRs are created before the cor-
+responding NVD disclosure date, exposing OSS users to un-
+perceived security risks. Figure 1 shows the distribution of the
+number of days between the CIR creation and the NVD disclosure.
+We observe that only 1.3% of the CIRs were created after the asso-
+ciated vulnerability was disclosed via NVD. This result shows that

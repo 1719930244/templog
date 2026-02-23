@@ -1,0 +1,330 @@
+Ppt4J: Patch Presence Test for Java Binaries
+Zhiyuan Pan
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+zy_pan@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Xin Xia
+Software Engineering Application
+Technology Lab, Huawei
+Hangzhou, China
+xin.xia@acm.org
+Xian Zhan
+The Hong Kong Polytechnic
+University
+Hong Kong, China
+chichoxian@gmail.com
+David Lo
+School of Computing and Information
+Systems, Singapore Management
+University
+Singapore
+davidlo@smu.edu.sg
+Xiaohu Yang
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+yangxh@zju.edu.cn
+ABSTRACT
+The number of vulnerabilities reported in open source software has
+increased substantially in recent years. Security patches provide the
+necessary measures to protect software from attacks and vulnera-
+bilities. In practice, it is difficult to identify whether patches have
+been integrated into software, especially if we only have binary
+files. Therefore, the ability to test whether a patch is applied to the
+target binary, a.k.a. patch presence test, is crucial for practitioners.
+However, it is challenging to obtain accurate semantic information
+from patches, which could lead to incorrect results.
+In this paper, we propose a new patch presence test framework
+named Ppt4J (Patch Presence Test for Java Binaries). Ppt4J is
+designed for open-source Java libraries. It takes Java binaries (i.e.
+bytecode files) as input, extracts semantic information from patches,
+and uses feature-based techniques to identify patch lines in the bina-
+ries. To evaluate the effectiveness of our proposed approach Ppt4J,
+we construct a dataset with binaries that include 110 vulnerabilities.
+The results show that Ppt4J achieves an F1 score of 98.5% with rea-
+sonable efficiency, improving the baseline by 14.2%. Furthermore,
+we conduct an in-the-wild evaluation of Ppt4J on JetBrains IntelliJ
+IDEA. The results suggest that a third-party library included in the
+software is not patched for two CVEs, and we have reported this
+potential security problem to the vendor.
+CCS CONCEPTS
+•Software and its engineering → Software reliability.
+KEYWORDS
+Patch Presence Test, Binary Analysis, Software Security
+∗Corresponding Author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0217-4/24/04. . . $15.00
+https://doi.org/10.1145/3597503.3639231
+ACM Reference Format:
+Zhiyuan Pan, Xing Hu, Xin Xia, Xian Zhan, David Lo, and Xiaohu Yang.
+2024. Ppt4J: Patch Presence Test for Java Binaries. In 2024 IEEE/ACM 46th
+International Conference on Software Engineering (ICSE ’24), April 14–20,
+2024, Lisbon, Portugal. ACM, New York, NY, USA, 12 pages. https://doi.org/
+10.1145/3597503.3639231
+1 INTRODUCTION
+The reuse of open source libraries is widespread [25]. Vulnerabili-
+ties in open-source software have become a major concern, posing
+significant threats to software and users [ 17]. For example, the
+number of Common Vulnerabilities and Exposures (CVEs [6]) re-
+ported during the first quarter of 2023 has already exceeded the
+total number of CVEs reported in 2016 [ 37]. Although upstream
+developers may discover and fix these vulnerabilities over time,
+vulnerable versions may still propagate to downstream software or
+libraries, potentially compromising the security of the systems that
+rely on them.
+Since open source libraries are frequently distributed as binary
+files, it is essential that developers and users in the software supply
+chain be aware of potential vulnerabilities in the libraries they
+introduce. For example, Log4Shell (CVE-2021-44228 [33]) is a well-
+known vulnerability in Apache Log4j [ 12] that can lead to the
+execution of arbitrary code. If a software development team has
+integrated Log4j into their project, developers should verify if their
+version of Log4j is vulnerable to Log4Shell. In other words, they
+have to confirm whether the binary contains the patch for CVE-
+2021-44228.
+The above process of testing whether a security patch is applied
+to the program binaries is called patch presence test [44]. However,
+traditional approaches that only take binary files for analysis cannot
+be utilized for patch presence tests due to the coarse granularity [
+44].
+For example, binary bug search tools, such as Genius proposed
+by Feng et al. [
+10], identify vulnerability types but cannot test
+the presence of an arbitrary patch commit. Similarly, binary code
+search tools, such as Tracy proposed by David et al. [8], find similar
+functions but cannot tell whether the function is patched or not.
+To accurately test the presence of a patch in fine granularity,
+Zhang et al. propose FIBER [44], a patch presence test framework
+for C/C++ binaries that extracts a localized part of patchdiff [40] for
+
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal Zhiyuan Pan, Xing Hu, Xin Xia, Xian Zhan, David Lo, and Xiaohu Yang
+signature generation. BScout [7], another framework that targets
+Java binaries, utilizes the entire patch diff.
+However, existing studies on patch presence test for Java binaries
+still have the following two limitations:
+• Inability to capture minor changes. The features ex-
+tracted by current approaches are unable to handle some sub-
+tle modifications to the source code (e.g., changing method
+call parameters, branch conditions and statements outside
+method bodies).
+• Limited patch semantic. The diffs utilized in existing ap-
+proaches cannot perfectly reflect semantic changes (i.e., ac-
+tual discrepancies in program behavior) in the patches, lead-
+ing to the inclusion of extraneous information that does not
+exist in the patches.
+Given the widespread application of Java, such as server-side pro-
+grams and Android applications, the limitations mentioned above
+highlight the need for a more comprehensive and accurate approach.
+To address these limitations, we propose a new patch presence test
+framework named Ppt4J (Patch Presence Test for Java Binaries).
+Ppt4J exploits the correspondence between source code features
+and binary features. It first extracts features from the source code
+to generate semantic changes. Then, the semantic changes guide
+Ppt4J to perform source-to-binary feature matching and feature
+queries. Finally, Ppt4J provides the test result by summarizing the
+queries.
+To evaluate the effectiveness of Ppt4J, we construct a dataset
+with binaries that include 110 vulnerabilities in total. We compare
+Ppt4J with a state-of-the-art Java patch presence test framework,
+BScout [7], in terms of accuracy, precision, recall, and F1 score. To
+evaluate the effectiveness of Ppt4J in real-world software, we per-
+form an in-the-wild evaluation by testing the presence of patches
+in various versions of JetBrains IntelliJ IDEA [38]. The results on
+the dataset demonstrate that Ppt4J achieves an F1 score of 98.5%,
+improving the baseline by 14.2% while maintaining reasonable effi-
+ciency. The results of the in-the-wild evaluation indicate thatPpt4J
+remains accurate in real-world scenarios. In addition, our evalua-
+tion reveals that Ppt4J has the ability to uncover instances where
+application vendors (e.g., JetBrains) have failed to apply security
+patches to third-party libraries they import, further demonstrating
+its utility in practical settings.
+In summary, we make the following contributions:
+(1) We propose a novel framework for Java binaries, Ppt4J, to
+accurately test the presence of patches by highlighting se-
+mantic code differences from patches.
+(2) We construct a dataset to evaluate the effectiveness of Ppt4J
+by obtaining source code from GitHub repositories, labeling
+ground truths, and building binaries.
+(3) We evaluate Ppt4J using the dataset and real-world soft-
+ware. Ppt4J outperforms the baseline and is able to test the
+presence of patches in real-world scenarios.
+(4) We release the replication package of Ppt4J1, including the
+source code of Ppt4J and our dataset, to facilitate future
+research.
+1https://github.com/pan2013e/ppt4j
+The remainder of the paper is structured as follows. Section 2
+introduces the background concepts for this paper and motivates
+the problem using an example. Section 3 presents the approach of
+Ppt4J. Section 4 describes the baseline approach, the preparation
+for our dataset, and the evaluation metrics. Section 5 presents the
+experimental results and our case study. Section 6 and Section 7
+discusses comparsions with the baseline and threats of validity.
+Section 8 summarizes the related work. Section 9 concludes the
+paper.
+2 BACKGROUND
+In this section, we discuss the background of the patch presence
+test task and provide a motivating example to illustrate the main
+idea of Ppt4J.
+2.1 Patch Presence Test
+The task of patch presence test and its scope of the problem are
+defined as follows:
+Definition. Given a security patch diff 𝑃 from a specific open
+source library in the upstream, patch presence test works by evalu-
+ating target program binaries 𝐵 on a boolean function
+𝑓 : (𝐶1, 𝐶2, 𝑃, 𝐵) → { True, False},
+where 𝐶1 and 𝐶2 refer to the upstream source code of the software
+right before and after patch 𝑃. 𝐵 refer to the standard Java bytecode
+in this paper and should be provided by the user. Among 𝐶1, 𝐶2
+and 𝑃, at least two of them must be provided and the third can be
+automatically derived.
+Patch presence test checks if a specific patch is applied to the
+provided target binaries [44]. In this task, the upstream source code
+𝐶1, 𝐶2 and the target binaries 𝐵 are supposed to belong to the same
+library, but the target binaries can be compiled from any version
+of source code. The function 𝑓 has two possible return values. If
+𝑓 returns true, we confirm the existence of a patch commit within
+the binaries, and vice versa.
+The advantage of patch presence test lies in its ability to detect
+specific patch commits. This enables users to specifically check for
+security patches that they are most concerned about. Thus, the
+potential risks that arise from vulnerabilities can be mitigated.
+2.2 Motivating Example
+Existing patch presence test work for Java binaries takes the com-
+plete diff (i.e., the exact differences in characters) as input to analyze
+patch presence. However, existing work is limited as the whole diff
+will introduce “semantic redundancy”, that is, some (-) and (+)
+lines end up with no semantic changes, which may introduce unre-
+lated information.
+Intuitively, to accurately test the presence of a patch, we should
+extract precise semantic changes from diff that reflect all seman-
+tic information while not including unrelated information. We il-
+lustrate the importance of semantic changes by using real-world
+examples shown in Figure 1.
+In the first case of Figure 1, the diff introduces a try-catch
+block with six diff lines. However, there are no differences be-
+tween lines 1, 2, and 5, 6, except for indentations. If we trim the
+Ppt4J: Patch Presence Test for Java Binaries ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+1 - XmlPullParser parser = Xml.newPullParser();
+2 - XPPAttributesWrapper attributes = new XPPAttributesWrapper(parser);
+3 + try
+4 + {
+5 + XmlPullParser parser = Xml.newPullParser();
+6 + XPPAttributesWrapper attributes = new XPPAttributesWrapper(parser);
+(a) CVE-2017-1000498 [28]
+1 - Document<T> doc = parser.parse(is);
+2 + XMLStreamReader reader = StaxUtils.createXMLStreamReader(is);
+3 + Document<T> doc = parser.parse(reader);
+(b) CVE-2016-8739 [27]
+1 - if (A == Algorithm.none && B == 2 && C == 0) {
+2 - return Mapper.deserialize(base64Decode(...), JWT.class);
+3 + if (B == 2 && C == 0) {
+4 + if (A == Algorithm.none) {
+5 + return Mapper.deserialize(base64Decode(...), JWT.class);
+6 + } else {
+7 + throw new InvalidJWTSignatureException();
+8 + }
+(c) CVE-2018-11797 [30]
+Figure 1: Examples of “semantic redundancy”: diff lines ex-
+cerpted from full security patches.
+leading spaces/tabs, these lines would be identical. In other words,
+the actual semantic-related change of the patch is the try-catch
+environment, rather than these four statements. Similar cases in-
+clude moving statements into if-else, for, or while blocks. In
+the second case (Figure 1b), lines 1 and 3 differ due to the change
+of a variable (i.e., is − →reader). The change originates from
+calling the method createXMLStreamReader. Thus, the code that
+causes the actual semantic change is line 2, not lines 1 and 3. In the
+third case (Figure 1c)2, we can observe that an if block is deleted
+and another if block is added. But after inspecting the code, the
+only semantic change is line 7, that is, throw an exception when
+B == 2 && C == 0 && A != Algorithm.none.
+From these examples, we conclude that the differences in charac-
+ters may not correspond to semantic changes. Motivated by this, we
+illustrate the idea of our work, which highlights semantic changes
+and is carried out in the following steps:
+Step 1 Feature extraction. We extract features for patch-relevant
+Java source code and binaries.
+Step 2 Semantic change generation.We generate semantic changes
+for a patch based on the original diff and the extracted fea-
+tures in Step 1.
+Step 3 Feature matching. We match sequences of source-level
+features and binary-level features extracted in Step 1.
+Step 4 Patch presence evaluation.Instructed by semantic changes
+in Step 2 and feature matching results in Step 3, we evaluated
+the patch presence for the binaries.
+3 APPROACH
+In this section, we first provide an overview of Ppt4J and its archi-
+tecture. Then, we introduce each component in detail.
+2The code in the figure is simplified for illustration. The original version
+is available at https://github.com/FusionAuth/fusionauth-jwt, with commit hash
+0d94dcef0133d699f21d217e922564adbb83a227
+3.1 Overview of Ppt4J
+The framework of Ppt4J is depicted in Figure 2. Ppt4J takes the
+source code and binaries as input. The output of the framework
+is the patch presence status (i.e., true or false) of the binaries.
+Additionally, the framework provides user-configurable parameters,
+which we will discuss in detail later in this section. By utilizing
+this framework, Ppt4J is able to efficiently analyze binaries and
+accurately test the presence of patches.
+3.2 Feature Extraction
+This component extracts rule-based features for Java code lines and
+bytecode blocks.
+3.2.1 Pre-Process. Raw source code and binaries are not ideal for
+feature extraction due to certain programming practices, e.g., a
+statement might be splitted into multiple lines. Additionally, a single
+instruction may not accurately represent the intended semantic
+information of a Java statement, which is usually compiled into a
+group of instructions.
+To address this issue, Ppt4J incorporates filters that aggregate
+discrete elements. For instance, we merge split lines in Java source
+code to create logical lines from abstract syntax trees (ASTs). As
+for binaries, we propose to split instruction sequences into logi-
+cal blocks using line number information in binaries. Sometimes,
+line numbers may be absent or stripped. We discuss such case in
+Section 6.1.
+3.2.2 Feature Types. Each line of logical source code or each logical
+bytecode block corresponds to a set of features that can include
+zero or more features. Our goal is to select feature types that reflect
+a large proportion of the Java language specifications and Java VM
+specifications [1]. To achieve this, we select a variety of simple
+and non-trivial feature types. This ensures that Ppt4J is capable
+of capturing significant information and minimizing the risk of
+missing important details. As shown in Figure 3, the feature types
+in our definition include literals, method invocations, field accesses,
+array creations, and special instructions.
+To be specific, “literal” contains compile-time constant values,
+fields, and expressions. “Method invocation" contains calls to static
+methods, virtual methods, and interface methods. We exclude method
+invocations that can be implicitly generated by the compiler fre-
+quently. The excluded methods are<init> in Object and String-
+Builder, toString, valueOf, append and longValue. For other
+method invocations, we include a method’s name, owner (i.e., the
+class to which it belongs), and actual parameter types. “Field access”
+and “array creation”, as their names suggest, contain read/write to
+mutable fields and creation of array objects, respectively. Finally,
+when extracting “special instructions”, we seek source code ele-
+ments or instructions that meet one of the following characteristics:
+(1) Distinctive calculations. ❶ Special binary operators: shift
+and instanceof; ❷ Special unary operators: ++ and -- (in-
+cluding prefix and postfix).
+(2) Control flow manipulations:return statements, throw state-
+ments, if blocks and loops.
+(3) Synchronization primitives, e.g., monitorexit instruction
+and synchronized blocks.

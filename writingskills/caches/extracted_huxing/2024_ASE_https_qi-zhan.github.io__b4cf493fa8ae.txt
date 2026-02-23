@@ -1,0 +1,342 @@
+REACT: IR-Level Patch Presence Test for Binary
+Qi Zhan
+The State Key Laboratory of Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+qizhan@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Xin Xia
+Software Engineering Application Technology Lab,
+Huawei
+China
+xin.xia@acm.org
+Shanping Li
+The State Key Laboratory of Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+shan@zju.edu.cn
+ABSTRACT
+Patch presence test is critical in software security to ensure that
+binary files have been patched for known vulnerabilities. It is chal-
+lenging due to the semantic gap between the source code and the
+binary, and the small and subtle nature of patches. In this paper, we
+propose React, the first patch presence test approach on IR-level.
+Based on the IR code compiled from the source code and the IR code
+lifted from the binary, we first extract four types of feature (return
+value, condition, function call, and memory store) by executing the
+program symbolically. Then, we refine the features from the source
+code and rank them. Finally, we match the features to determine the
+presence of a patch with an SMT solver to check the equivalence
+of features at the semantic level.
+To evaluate our approach, we compare it with state-of-the-art
+approaches, BinXray and PS3, on a dataset containing binaries
+compiled from different compilers and optimization levels. Our
+experimental results show that React achieves scores of 0.88, 0.98,
+and 0.93, in terms of precision, recall, and F1 score, respectively.
+React outperforms the baselines by 39% and 12% in terms of the
+F1 score, while the testing speed of our approach is 2x faster than
+BinXray and 100x faster than PS3. Furthermore, we conduct an
+ablation study to evaluate the effectiveness of each component in
+React, which shows that SMT solver and refinement can contribute
+to 16% and 10% improvement in terms of the F1 score, respectively.
+CCS CONCEPTS
+•Security and privacy → Software security engineering.
+KEYWORDS
+Patch presence test, security, program analysis
+∗Corresponding Author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ASE ’24, October 27-November 1, 2024, Sacramento, CA, USA
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-1248-7/24/10
+https://doi.org/10.1145/3691620.3695012
+ACM Reference Format:
+Qi Zhan, Xing Hu, Xin Xia, and Shanping Li. 2024. REACT: IR-Level Patch
+Presence Test for Binary. In 39th IEEE/ACM International Conference on
+Automated Software Engineering (ASE ’24), October 27-November 1, 2024,
+Sacramento, CA, USA. ACM, New York, NY, USA, 12 pages. https://doi.org/
+10.1145/3691620.3695012
+1 INTRODUCTION
+Open-source software is widely used in various fields, such as
+operating systems [36], web servers [20], and databases [21]. Many
+companies and organizations rely on open-source software to build
+their products and services. According to the Veracode report [37],
+96% of organizations use open-source libraries.
+Although the company benefits from open-source software, it
+also introduces some security problems. As shown in Figure 1, a
+common workflow in companies is to customize the open-source
+library to meet the specific requirements of users and release only
+binaries to them. Users are usually aware of the information about
+open-source libraries used. Problems arise when vulnerabilities
+are found in open-source software. Attackers may steal important
+information or remotely take control of the entire system through
+these vulnerabilities in open-source components. Users want to
+know whether the binary files they are using are vulnerable or not.
+Furthermore, the vulnerability can be fixed by applying a patch, and
+it is essential to ensure that these binary files have been patched
+for the corresponding vulnerabilities. The process for ensuring this
+is referred to as the patch presence test.
+The patch presence test determines whether a specific patch has
+been applied to a target binary. The input consists of two parts:
+(1) information about a particular patch and the source code of
+corresponding project; (2) the target binary to be tested. The output
+of the patch presence test is a binary decision as to whether the
+specific patch is present in the target binary.
+Determining whether a given binary file has been patched for
+a corresponding vulnerability is challenging. The key challenge is
+the semantic gap between the source code and the binary, making it
+difficult to reason about the presence of a small modification in the
+binary. Many techniques have been proposed [24, 38, 40, 42, 44] to
+automate patch presence test in binaries or Java bytecode. A typical
+workflow for the binary-level patch presence test is to compile the
+source code before and after the patch commit to the corresponding
+binaries. Then, they compare the binaries with the target binary to
+381
+2024 39th IEEE/ACM International Conference on Automated Software Engineering (ASE)
+
+ASE ’24, October 27-November 1, 2024, Sacramento, CA, USA Qi Zhan, Xing Hu, Xin Xia, and Shanping Li
+Open Source Software Customized Binaries
+May affect?
+Is Patched?
+Patch Presence 
+Test tool
+ Vulnerable
+Patched
+Patch (diff)
+Existing Vulnerability
+Affect
+Figure 1: Background of patch presence test
+determine whether the patch has been applied. These approaches
+formulate the problem from “source to binary” to “binary to binary”.
+Although these approaches have achieved reasonable results,
+the lack of semantic information makes analyzing binary code dif-
+ficult, especially when the target binary is compiled from different
+compiler optimizations. Generally, the patch file is used to map
+the line number of the source code modifications to the binary
+code according to the debug information so that one can recognize
+which part of the assembly code is added in the patch. However, the
+rich information in the source code is ignored. In addition, these
+approaches usually focus on binary in one architecture (FIBER for
+Arm64 [44], PS3 for Amd64 [42]) and cannot be easily migrated to
+other architectures.
+In this paper, to address the aforementioned challenges, we pro-
+pose an approach calledReact, referred to iR lEvel pAtch presenCe
+Test, to conduct patch presence test on the intermediate representa-
+tion (IR) level. We obtain the reference IR codes before and after the
+patch by compiling the source code and target IR code by binary
+lifting [2]. Compared with previous work, we formulate the prob-
+lem from the “source to binary” to “IR to IR”. IR can help bridge the
+semantic gap between the source code and the binary, as semantic
+relationships in the same language are more straightforward. Fur-
+thermore, analyzing IR is more convenient than analyzing binary
+codes. The other advantage is that it can be applied to different
+architectures and executables in different operating systems as long
+as they can be lifted to IR.
+To take advantage of the IR code, we perform fine-grained anal-
+ysis on the IR level, including feature generation, refinement tech-
+nique, and feature matching:
+❶ Feature Generation. We extract four types of features from
+the lifted and complied IR code, including return value, function
+call, memory store, and condition by executing basic blocks sym-
+bolically.
+❷ Feature Refinement. The generated features may not be
+suitable for matching directly due to compiler optimization and
+local variables. We propose a novel feature refinement technique to
+simplify the features while keeping the unique parts and ranking
+them based on their importance.
+❸ Feature Matching. We compare the features extracted from
+the complied and the lift IR code one by one to determine the
+presence of a patch. We utilize an SMT solver to compare the equiv-
+alence of features at the semantic level.
+Considering the widespread use of LLVM [7, 28, 35], mainstream
+binary lifting tools [1, 19, 41] choose LLVM IR for the lifting target.
+Therefore, we implement our approach on top of LLVM IR and
+use RetDec [26] to lift binaries. We expand the dataset proposed
+by Zhan et al. [42] and compare our approach with two state-of-
+the-art approaches, BinXray [40] and PS3 [42]. The experimental
+results show that our approach outperforms the baselines by 39%
+and 12% in terms of the F1 score. We also evaluate the results of our
+approach compared to PS3 for every combination of compiler and
+optimization level, demonstrating that our approach is more robust
+to compiler optimization. In addition, we conducted an ablation
+study to evaluate the effectiveness of each component proposed in
+our approach, which shows that the refinement technique and SMT
+solver bring 10% and 16% improvements in terms of the F1 score,
+respectively. Finally, we compare the efficiency of our approach
+with the baselines. The results show that React is able to detect
+the patch in 0.025 seconds on average, which is 100 times faster
+than PS3 and two times faster than BinXray.
+Contributions: In this paper, we make the following contributions:
+• We formulate the patch presence test task from “source to
+binary” to “IR to IR” and proposeReact, the first IR-based
+approach for patch presence test to our best knowledge.
+• We design a fine-grained analysis framework for patch pres-
+ence test, including feature generation, refinement, and match.
+• We systematically evaluate our approach on the dataset, and
+the results show its effectiveness with high precision.
+The remainder of the paper is organized as follows. Motivation
+is outlined in Section 2, while the design and implementation of
+the framework are detailed in Section 3. The evaluation steps and
+results of React are presented in Section 4. Section 5 examines
+the threats to validity of our approach and investigates why some
+patches are not detected. Section 6 provides a summary of related
+research. We conclude the paper in Section 7.
+2 MOTIV ATION
+This section discusses the motivation behind our approach through
+several read-world patches.
+2.1 Binary Lifting
+To see why binary lifting is useful in patch presence test, we list the
+source code, one possible target binary, compiled IR, and lifted
+IR for CVE-2021-23841 [ 14] in Figure 2. The patch is to add a
+new check for f in the original C code. As we track the data
+dependency of f , we can find that the value of f is return value
+of X509_NAME_oneline and the argument of the function call is
+a->cert_info.issuer , NULL , 0 , respectively. Due to the seman-
+tic gap between the source code and the binary code, it is challeng-
+ing to map every modified statement to binary. Although we can
+find that underlined statement in the target binary is indeed the
+same condition check, data tracking and recovery are much more
+difficult and tedious. In addition, we have to take many instruction
+set architecture-dependent features into account, e.g., the calling
+convention and register usage, to analyze the binary correctly.
+Compared with source-to-binary mapping, it is much easier to
+compare the compiled and lifted IR. The underlined statement in
+the compiled and lifted IR represents the semantic of the patch.
+The getelementptr instruction in the compiled IR is to calculate the
+offset to access elements of arrays and structs, which corresponds
+382
+REACT: IR-Level Patch Presence Test for Binary ASE ’24, October 27-November 1, 2024, Sacramento, CA, USA
+define i64 X509_issuer_and_serial_hash(a)
+%2 = alloca [16 x i8] 
+%3 = call EVP_MD_CTX_new()
+%4 = icmp eq %struct.evp_md_ctx_st* %3, null
+br %4, label %5, label %6
+5:                                                
+br label %61
+6:                                                
+%7 = getelementptr(a, 0, 0)
+%8 = getelementptr(%7, 0, 3)
+%9 = load %8
+%10 = call X509_NAME_oneline(%9, null, 0)
+%11 = icmp eq i8* %10, null
+br %11, label true, label false
+define i64 X509_issuer_and_serial_hash(%arg1) 
+%0 = alloca i8
+%1 = load %0
+%2 = load %0
+%3 = load %0
+%4 = call __readfsqword(40)
+%5 = call EVP_MD_CTX_new()
+%6 = icmp eq i64 %5, 0
+br %6, label end, label then
+then:
+%7 = add %arg1, 48
+%8 = inttoptr i64 %7 to i64*
+%9 = load %8
+%10 = call X509_NAME_oneline(%9, 0, 0)
+%11 = icmp eq i64 %10, 0
+br %11, label true, label false
+diff --git crypto/x509/x509_cmp.c 
+index c9d8933640..a964bbf94b 100644
+--- a/crypto/x509/x509_cmp.c
++++ b/crypto/x509/x509_cmp.c
+@@ 
+-39,6 +39,8 @@ 
+unsigned long X509_issuer_and_serial_hash(X509 *a)
+if (ctx == NULL)
+goto err;
+f = X509_NAME_oneline(a->cert_info.issuer, NULL, 0);
++    if (f == NULL)
++        goto err;
+if (!EVP_DigestInit_ex(ctx, EVP_md5(), NULL))
+goto err;
+if (!EVP_DigestUpdate(ctx, (unsigned char *)f, strlen(f)))
+Original C Code `X509_issuer_and_serial_hash:
+endbr64 cmpq
+$0x0, -0x30(%rbp)
+pushq %rbp je 0x25556a
+movq %rsp, %rbp movq -0x48(%rbp), %rax
+subq $0x50, %rsp movq 0x30(%rax), %rax
+movq %rdi, -0x48(%rbp) movl $0x0, %edx
+movq %fs:0x28, %rax movl $0x0, %esi
+movq %rax, -0x8(%rbp) movq %rax, %rdi
+xorl %eax, %eax callq 0x258ddf; X509_NAME_oneline
+movq $0x0, -0x38(%rbp) movq %rax, -0x28(%rbp)
+callq 0x191b69; EVP_MD_CTX_new cmpq $0x0, -0x28(%rbp)
+movq %rax, -0x30(%rbp) je 0x25556d
+Target Binary
+Compile
+LLVM IR compiled by Clang LLVM IR lifted by RetDec
+Lifting
+Figure 2: A case study comparing LLVM IR lifted by RetDec with LLVM IR compiled by clang. Both IR codes have been
+extensively simplified for readability.
+to add
+arg1, 48 in the lifted IR. The later call and icmp (int-
+comparison) instruction is to check the return value of the function
+call. Based on both IR, we can decide the target binary as patched.
+We can unify all analyses and operations for source and binary as
+we compile or lift them to the same language, which provides the
+foundation for fine-grained analysis in the following.
+The feature extracted from the above example is a condition to
+check if the function call value is NULL . In addition to the condition
+and function call, we also select the return value and memory store
+as features to extract.
+2.2 Patch Analysis
+Although tracking backward data dependency is a general ap-
+proach for feature extraction [22, 23, 44], it is not enough. For ex-
+ample, in the first patch of Figure 3a, it fixes a wrong assignment to
+ret on line 4, which is later used as a return value. Since both vul-
+nerable and patched functions call X509_STORE_CTX_get_error
+with the same argument, i.e., ctx , the backward data flow and
+dependency are the same in both versions. Only after analyzing
+the forward data flow and finding the change of return value can
+we decide whether the binary has been patched.
+Beyond generation, we also need to consider the matching pro-
+cess. Feature generation cannot be perfect, especially for complex
+arithmetic operations, for example, division or bitwise operations.
+The compiler may optimize the code and generate very different
+instructions from the same source code [5]. In addition, as register
+allocation and instruction scheduling are different, it is difficult to
+locate a modification of local variables accurately. Complex oper-
+ations and local variables may affect the result if we compare the
+feature exactly at the syntactic level. The above limitations moti-
+vate us to simplify the features. As long as the feature is unique
+under the context of the other features, we can remove some parts
+of the feature to make it more general. For example, in the second
+patch of Figure 3a, the only differences between the vulnerable
+code and the patched code are the values of group_top + 1 and
+group_top
++ 2 , while the other arguments of the function call
+are the same. Thus, we can ignore the common part of the feature
+and only keep the unique part. The features can be simplified to
+bn_wxpand(-,
+bn_get_top(-) + 1) and
+bn_wxpand(-,
+bn_get_top(-) + 2) , where “-” is a placeholder
+for any value to match. This process is called feature refinement
+in our approach.
+The last lesson we learned from the patches is that not all fea-
+tures are equally important. Although most patches are small and
+subtle [29], there are some patches with more significant changes.
+For example, in Figure 3b, there are seven deletion lines and seven
+insertion lines. In this case, there is more than one feature to extract
+and we can find that the call to the function ec_guess_cofactor
+on line 16 is the most unique feature. If the function call feature is
+found in the target code, we can confidently claim the presence of
+the patch, since the entire function is added to the patch. The other
+features are less important and can be used as supplements. This
+motivates us to rank the features based on their importance and
+focus on more unique features.
+We conclude the discussion with the following insights.
+ Insight 1. To generate the complete features for code diff, we
+need to track data flow in both forward and backward directions.
+383

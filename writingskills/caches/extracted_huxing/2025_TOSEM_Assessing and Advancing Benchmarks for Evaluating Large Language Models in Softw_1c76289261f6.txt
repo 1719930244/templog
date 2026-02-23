@@ -1,0 +1,143 @@
+111
+Assessing and Advancing Benchmarks for Evaluating Large
+Language Models in Software Engineering Tasks
+XING HU,School of Software Technology, Zhejiang University, China
+FEIFEI NIU∗,School of Electrical Engineering and Computer Science, University of Ottawa, Canada
+JUNKAI CHEN,School of Computing and Information Systems, Singapore Management University,
+Singapore
+XIN ZHOU,School of Computing and Information Systems, Singapore Management University, Singapore
+JUNWEI ZHANG,College of Computer Science and Technology, Zhejiang University, China
+JUNDA HE,School of Computing and Information Systems, Singapore Management University, Singapore
+XIN XIA,College of Computer Science and Technology, Zhejiang University, China
+DAVID LO,School of Computing and Information Systems, Singapore Management University, Singapore
+Large language models (LLMs) are gaining increasing popularity in software engineering (SE) due to their
+unprecedented performance across various applications. These models are increasingly being utilized for a
+range of SE tasks, including requirements engineering and design, code analysis and generation, software
+maintenance, and quality assurance. As LLMs become more integral to SE, evaluating their effectiveness
+is crucial for understanding their potential in this field. In recent years, substantial efforts have been made
+to assess LLM performance in various SE tasks, resulting in the creation of several benchmarks tailored
+to this purpose. This paper offers a thorough review of 291 benchmarks, addressing three main aspects:
+what benchmarks are available,how benchmarks are constructed, andthe future outlook for these benchmarks.
+We begin by examining SE tasks such as requirements engineering and design, coding assistant, software
+testing, AIOps, software maintenance, and quality management. We then analyze the benchmarks and their
+development processes, highlighting the limitations of existing benchmarks. Additionally, we discuss the
+successes and failures of LLMs in different software tasks and explore future opportunities and challenges for
+SE-related benchmarks. We aim to provide a comprehensive overview of benchmark research in SE and offer
+insights to support the creation of more effective evaluation tools.
+Additional Key Words and Phrases: Large Language Models, Benchmark, Software Engineering, Evaluation
+∗Corresponding author.
+Authors’ addresses: Xing Hu, xinghu@zju.edu.cn, School of Software Technology, Zhejiang University, Ningbo, Zhejiang,
+China; Feifei Niu, feifeiniu96@gmail.com, School of Electrical Engineering and Computer Science, University of Ottawa,
+Ottawa, Canada; Junkai Chen, School of Computing and Information Systems, Singapore Management University, Singapore,
+junkaichen2000@gmail.com; Xin Zhou, School of Computing and Information Systems, Singapore Management University,
+Singapore, xinzhou.2020@phdcs.smu.edu.sg; Junwei Zhang, College of Computer Science and Technology, Zhejiang Uni-
+versity, Hangzhou, China, jw.zhang@zju.edu.cn; Junda He, jundahe.2022@phdcs.smu.edu.sg, School of Computing and
+Information Systems, Singapore Management University, Singapore; Xin Xia, xin.xia@acm.org, College of Computer Science
+and Technology, Zhejiang University, Hangzhou, Zhejiang, China; David Lo, davidlo@smu.edu.sg, School of Computing
+and Information Systems, Singapore Management University, Singapore.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored.
+Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires
+prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+©2025 Association for Computing Machinery.
+0004-5411/2025/8-ART111 $15.00
+https://doi.org/XXXXXXX.XXXXXXX
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2025.
+arXiv:2505.08903v4  [cs.SE]  4 Nov 2025
+111:2 Xing Hu, Feifei Niu, Junkai Chen, Xin Zhou, Junwei Zhang, Junda He, Xin Xia, and David Lo
+ACM Reference Format:
+Xing Hu, Feifei Niu, Junkai Chen, Xin Zhou, Junwei Zhang, Junda He, Xin Xia, and David Lo. 2025. Assessing
+and Advancing Benchmarks for Evaluating Large Language Models in Software Engineering Tasks.J. ACM
+37, 4, Article 111 (August 2025), 76 pages. https://doi.org/XXXXXXX.XXXXXXX
+1 INTRODUCTION
+Large language models (LLMs), such as ChatGPT [252] and GPT-4o [253], have recently received
+great attention from both academia and industry community, because of their remarkable per-
+formance across a wide range of tasks, from natural language processing (NLP) [ 89, 121, 145,
+315, 379, 400] to reasoning [ 123, 164, 269] and even creative generation [ 34, 84, 96]. Their abil-
+ity to understand and generate text has been leveraged in various domains, including software
+engineering (SE) [21, 43, 74, 171, 284, 315, 329, 393, 394, 405]. LLMs have showcased remarkable
+adaptability, significantly enhancing the performance of software engineering (SE) tasks, such
+as code generation [16, 33, 159, 177, 423], automated program repair [31, 139, 410], and test case
+generation [9, 263]. These advancements highlight the potential of LLMs to transform the way we
+approach SE tasks. Meanwhile, to evaluate the capability of LLMs in SE, numerous benchmarks
+have been developed, such as HumanEval [47] for the code generation task, SWE-bench [137] for
+real GitHub issues, and CodeXGLUE [209] for code intelligence tasks.
+Benchmarks are of paramount prominence to the successful application of LLMs in SE tasks.
+They provide a standardized framework for evaluating LLMs across different models and SE tasks,
+ensuring consistency and enabling direct comparisons under uniform conditions [165, 226]. Fur-
+thermore, benchmarks are essential for understanding the performance of LLMs, as they highlight
+the strengths and weaknesses of current models, guiding future research and development efforts.
+For example, the evaluation of SWE-bench [137] demonstrates that current state-of-the-art LLMs
+still have considerable room for improvement in addressing real GitHub issues, as they can only
+resolve the simplest problems. This underscores the direction for the future development of LLMs:
+to be more practical, intelligent, and autonomous. In essence, benchmarks are indispensable for
+the rigorous, transparent, and collaborative evaluation of LLMs [ 41, 99]. They establish a solid
+foundation for tracking progress, fostering innovation, and ensuring that advancements in AI are
+translated into meaningful improvements in real-world SE applications.
+As LLMs grow in complexity and capability, a variety of benchmarks have been tailored in
+different ways, with different evaluation metrics, aiming for evaluating different LLMs on specific
+SE tasks. For example, some benchmarks are primarily constructed through manual effort [47, 423],
+some are tailored by automated collection methods [126, 209], and others leverage a combination
+of both approaches [110, 137, 255, 348]. However, currently, there is no systematic literature review
+(SLR) that provides a comprehensive overview of these benchmarks and their construction methods.
+Moreover, existing benchmarks may no longer suffice for assessing their performance and potential
+risks in SE tasks. To this end, we conduct an SLR on SE-related benchmarks. Firstly, we identify the
+current SE tasks being addressed by LLMs, which mainly include requirements engineering and
+design, coding assistant, software testing, AIOps, software maintenance, and quality management.
+Next, we identify and analyze the benchmarks 1 used to evaluate these solutions across three
+dimensions: 1)what benchmarks are available, 2)how benchmarks are constructed, and 3)the
+future outlook for these benchmarks. Specifically, “what benchmarks are available” encapsulates
+existing SE-related benchmarks that have been used for evaluating LLMs, along with the proposed
+evaluation metrics. “How benchmark are constructed” explores the methodologies behind creating
+these benchmarks, providing guidance for future development. “The future outlook for these
+1A benchmark is defined here as a dataset for evaluating LLMs; some are dataset-only without explicit metrics, but are
+included given their wide adoption in the community.
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2025.
+Assessing and Advancing Benchmarks for Evaluating Large Language Models in Software Engineering Tasks 111:3
+benchmarks” addresses the resolved issues and the remaining challenges within the domain of
+SE-related benchmarks.
+In the literature, there have been a substantial number of detailed and systematic reviews on
+LLMs’ application in SE or benchmarking for general LLMs [32, 74, 114, 329, 410, 411]. However, this
+paper serves as the first comprehensive survey on existing SE-related benchmarks for LLMs. This
+study reviews current benchmarks, raise awareness within the community about their importance,
+and, crucially, illuminate future research directions for developing new benchmarks. The main
+contributions of this paper are as follows:
+• We are the first to present a comprehensive SLR on 291 benchmarks released before June
+2025, which focus on the evaluation of LLM-based solutions to address SE challenges. We
+conducted a detailed analysis of the benchmarks.
+• We have classified the 291 benchmarks based on their applicability to specific SE tasks and
+further summarized their usage, construction methods, and trends within each task.
+• We have identified key challenges associated with LLM benchmarks in the SE domain and
+proposed several potential research directions for Benchmark4SE.
+• We have released an open-source GitHub repository [369] that curates and maintains high-
+quality benchmarks for evaluating LLMs in software engineering tasks, aiming to foster fair
+comparison and broad community impact.
+The remainder of this article is organized as follows: In Section 2, we provide background
+knowledge of LLMs and related surveys on LLMs and benchmarks. In Section 3, we introduce the
+methodology to conduct the survey. In Section 4~9, we introduce the details of up-to-date bench-
+marks under each SE task. We comprehensively discuss the future challenges and opportunities of
+LLM benchmarks in the field of SE in Section 10. We discussed the threats to validity in Sections 11.
+Finally, we conclude the whole study and summarise future work in Section 12.
+2 BACKGROUND AND RELATED WORK
+2.1 Large Language Models for Software Engineering
+LLMs are huge language models pre-trained on large amounts of datasets [379], and have shown
+great performance in various NLP tasks. Recent years have seen an emerging interest in training
+LLMs for software engineering by learning from large codebases (e.g., GitHub). These SE-related
+LLMs are exploited to solve software engineering tasks, such as code generation, code search, and
+test generation. According to Pan et al. [261] and Yang et al. [379], LLMs are primarily categorized
+into three types based on their architectures: encoder-only, decoder-only, and encoder-decoder
+models. Each of these architectures is suited to different software engineering tasks. For example,
+encoder-only models (e.g., BERT and its variants) excel at understanding and representing code,
+making them highly effective for tasks such as code search [334] and bug detection [240]. In contrast,
+decoder-only models (e.g., GPT) are particularly well-suited for generation tasks, such as automatic
+code generation [47]. Meanwhile, encoder-decoder models (e.g., T5 [277]) perform exceptionally
+well in tasks that involve transforming or summarizing code [326].
+2.2 Related Work
+In addition, there are more survey studies focusing on specific software engineering tasks, such
+as code generation [ 46, 325], requirements-based test generation [ 381], bug localization [ 246],
+software defects datasets [430]. With the rise of LLM-based agents, several survey papers have
+emerged that investigate the use of agents in software engineering [106, 138, 199, 347].
+The study of SE-related LLMs has gained significant attention due to their transformative impact
+on software engineering tasks such as code generation, bug detection, and program synthesis.
+J. ACM, Vol. 37, No. 4, Article 111. Publication date: August 2025.

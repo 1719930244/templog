@@ -1,0 +1,323 @@
+CODE-DITING: Automatic Evaluation of Code
+Generation without References or Test Cases
+Guang Yang†‡§, Yu Zhou†∗, Xiang Chen¶, Wei Zheng§, Xing Hu∥, Xin Zhou‡‡, David Lo‡‡, Taolue Chen
+x∗
+†College of Computer Science and Technology, Nanjing University of Aeronautics and Astronautics, China
+‡Institute of Artificial Intelligence and Educational Big Data, Nantong Normal College, China
+§School of Artificial Intelligence and Computer Science, Nantong University, China
+¶School of Software, Northwestern Polytechnical University, China
+∥School of Software Technology, Zhejiang University, China
+‡‡School of Computing and Information Systems,Singapore Management University, Singapore
+x
+School of Computing and Mathematical Sciences,Birkbeck, University of London, UK
+Email: novelyg@outlook.com, zhouyu@nuaa.edu.cn, xchencs@ntu.edu.cn, wzheng@nwpu.edu.cn,
+xinghu@zju.edu.cn, xinzhou.2020@phdcs.smu.edu.sg, davidlo@smu.edu.sg, t.chen@bbk.ac.uk
+Abstract—Trustworthy evaluation methods for code snippets
+play a crucial role in neural code generation. Traditional meth-
+ods, which either rely on reference solutions or require executable
+test cases, have inherent limitation in flexibility and scalability.
+The recent LLM-as-Judge methodology offers a promising alter-
+native by directly evaluating functional consistency between the
+problem description and the generated code. To systematically
+understand the landscape of these LLM-as-Judge methods, we
+conduct a comprehensive empirical study across three diverse
+datasets. Our investigation reveals the pros and cons of two
+categories of LLM-as-Judge methods: the methods based on
+general foundation models can achieve good performance but
+require complex prompts and lack explainability, while the
+methods based on reasoning foundation models provide better
+explainability with simpler prompts but demand substantial
+computational resources due to their large parameter sizes. To
+address these limitations, we propose C ODE-DITING, a novel
+code evaluation method that balances accuracy, efficiency and
+explainability. We develop a data distillation framework that
+effectively transfers reasoning capabilities from DeepSeek-R1-
+671B to our C ODE-DITING 1.5B and 7B models, significantly
+enhancing evaluation explainability and reducing the compu-
+tational cost. With the majority vote strategy in the inference
+process, CODE-DITING 1.5B outperforms all models with the
+same magnitude of parameters and achieves performance which
+would normally exhibit in a model with 5 times of parameter
+scale. C ODE-DITING 7B surpasses GPT-4o and DeepSeek-V3
+671B, even though it only uses 1% of the parameter volume
+of these large models. Further experiments show that C ODE-
+DITING is robust to preference leakage and can serve as a
+promising alternative for code evaluation.
+Index Terms—Code Generation, Evaluation, LLM-as-Judge
+I. I NTRODUCTION
+Large Language Models (LLMs) have emerged as a funda-
+mental tool in modern software development [1]–[3], demon-
+strating exceptional language understanding and generation
+capabilities. Their application has shown remarkable potential
+across various software engineering tasks [4], [5], particularly
+in code generation [6]–[8]. However, as LLMs are increasingly
+deployed, evaluating the correctness of generated code remains
+∗ Yu Zhou and Taolue Chen are the Corresponding authors.
+a significant challenge [9], [10], primarily because multiple
+correct or semantically equivalent solutions [11] may exist for
+a given programming problem.
+Traditional evaluation metrics, which are either reference-
+based or test-based, have been widely adopted. However,
+these metrics suffer from inherent limitations. Reference-based
+metrics (e.g., BLEU [12], ROUGE [13] and ChrF [14]) depend
+on high-quality reference code and frequently penalize imple-
+mentations that are correct but diverge from them. Test-based
+metrics (e.g., Pass@k [15]) require careful manual design of
+comprehensive test cases that cover edge cases, along with
+secure environments for code execution. Another evaluation
+method is human evaluation [16], which is accurate yet expen-
+sive, as it involves multiple domain experts who directly assess
+the correctness of generated artifacts. More important, human
+evaluation is prohibitively labor-intensive and time-consuming,
+rendering it impractical for large-scale assessments. These
+constraints significantly limit the flexibility and scalability of
+human evaluation for code generation evaluation [17], [18].
+Recent advancements in LLMs have motivated the devel-
+opment of LLM-as-Judge methods [19]–[21], which directly
+evaluate the functional consistency between problem descrip-
+tions and generated code. These methods offer a promising
+alternative to traditional evaluation methods [22]. However,
+with the rapid proliferation of LLM-as-Judge methods, there
+remains considerable uncertainty regarding their performance
+in code generation evaluation and it is far from clear which
+method delivers optimal results [23].
+Empirical study. We first conduct a large-scale empirical
+study to systematically compare different LLM-as-Judge meth-
+ods in code generation evaluation. Specifically, we classify ex-
+isting LLM-as-Judge methods into two categories, i.e., meth-
+ods based on general models (e.g., GPT-3.5-turbo and GPT-
+4o) and methods based on reasoning-focused models (e.g.,
+DeepSeek-R1 [24]). To ensure the comprehensive evaluation,
+we curate three datasets (i.e., HumanEval-Judge, MBPP-Judge
+and BigCodeBench-Judge) as new benchmarks for evaluating
+154
+2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)
+2643-1572/25/$31.00 ©2025 IEEE
+DOI 10.1109/ASE63991.2025.00021
+the effectiveness of LLM-as-Judge methods in code generation
+evaluation. Our findings indicate that, while these methods
+generally perform well, they exhibit significant discrepancy
+across various dimensions. In particular, the former requires
+elaborate prompts and lacks explainability, whereas the latter
+provides enhanced explainability with simpler prompts but
+demands substantial computational resources due to their
+parameter sizes.
+Our methods. To address these limitations and advance
+the state of code generation evaluation, we propose a novel
+code evaluation method that effectively balances accuracy,
+efficiency, and explainability. We name it CODE-DITING1.
+To reduce the computational cost, we develop a data dis-
+tillation framework that transfers reasoning capabilities from
+the powerful DeepSeek-R1-671B model to our more compact
+CODE-DITING model, available in 1.5B and 7B parame-
+ter sizes. Through this process, we construct a high-quality
+dataset CODEJUDGE-17K consisting of 17,000 carefully cu-
+rated samples with reasoning paths. This method not only
+enhances the explainability of the evaluation but also makes
+the reasoning process more accessible and comprehensible.
+To further enhance performance, the CODE-DITING models
+employ PiSSA [25] technique for model training and the
+majority vote strategy during inference.
+Experimental results demonstrate that CODE-DITING 1.5B
+outperforms all models of comparable parameter magnitude
+and achieves performance equivalent to models with five times
+the parameter count. Notably, C ODE-DITING 7B surpasses
+even large-scale models such as GPT-4o and DeepSeek-
+V3 671B [26], despite utilizing only 1% of their parameter
+volume. Our ablation studies reveal that all components of
+CODE-DITING are essential for its superior performance.
+In addition, we demonstrate that C ODE-DITING is robust
+to preference leakage [27], where evaluation models show
+bias toward code produced by same series of architectures,
+a common issue in LLM-as-Judge methods. These findings
+establish CODE-DITING as a promising alternative for code
+generation evaluation, representing a significant advancement
+in the field.
+Summary of contributions.
+• We curate three datasets (i.e., HumanEval-Judge, MBPP-
+Judge and BigCodeBench-Judge) as benchmark for the
+empirical study. In addition, we introduce a new dataset
+CODEJUDGE-17K designed for training purposes.
+• We design and carry out a large-scale empirical study to
+systematically compare different LLM-as-Judge methods
+in code generation evaluation.
+• We propose C ODE-DITING, a novel code evaluation
+method that effectively balances accuracy, efficiency and
+explainability.
+• We conduct extensive experiments to evaluate the per-
+formance of C ODE-DITING on different scenarios, in-
+1The name is from Chinese classic Journey to the West, reflecting the
+model’s goal to accurately discern the correctness of code implementations,
+just as the mythical creature distinguishes truth from falsehood.
+TABLE I: Comparison of Code Generation Evaluation Met-
+rics, where Func. means functional correctness, Auto. means
+automatic evaluation, Expl. means explainability and Open.
+means using open-source models. ✓ denotes applicable, ×
+denotes not applicable and◦ denotes optional.
+Metric Category Characteristics
+Ref Test Func. Auto. Expl. Open.
+BLEU [12] ✓ × × ✓ × ✓
+Rouge [13] ✓ × × ✓ × ✓
+ChrF [14] ✓ × × ✓ × ✓
+EM [28] ✓ × × ✓ × ✓
+ED [28] ✓ × × ✓ × ✓
+CrystalBLEU[29] ✓ × × ✓ × ✓
+CodeBLEU[30] ✓ × × ✓ × ✓
+CodeBERTScore [31] ✓ × × ✓ × ✓
+CodeScore[32] ✓ × ◦ ✓ × ✓
+CodeScore-R[33] ✓ × ✓ ✓ × ✓
+Human Study [16] ◦ × ✓ × ✓ ✓
+Pass@k [15] × ✓ ✓ ✓ ✓ ✓
+ICE-Score[34] ◦ × ✓ ✓ × ×
+CodeJudge[35] ◦ × ✓ ✓ × ×
+SWE-Judge[36] ✓ × ◦ ✓ ✓ ×
+CODE-DITING × × ✓ ✓ ✓ ✓
+cluding performance comparisons, ablation studies and
+analyses of preference leakage.
+To facilitate reproducibility, experimental data and model
+weights are released at https://github.com/Code-DiTing.
+II. B ACKGROUND AND RELATED WORK
+A. Problem Formulation
+We formally define thecode generation evaluation problem
+as follows. LetX be the space of problem descriptions,Y be
+the space of code implementations,R be the space of reference
+implementations andT be the space of test case sets.
+Given a problem description x ∈ X , a code generation
+model M : X → Y produces codey = M(x). The evaluation
+functionF : X ×Y×R×T → {0, 1} determines the functional
+correctness ofy with respect to x. Formally,
+F(x, y, r, T) =
+(
+1, if y is functionally correct
+0, otherwise (1)
+where r ∈ R ∪ {⊥}is an (optional) reference implementation
+(r = ⊥ means that r is not provided) and T ∈ T ∪ {⊥} is
+an (optional) set of test cases ( T = ⊥ means that T is not
+provided).
+Based on the availability ofr or T, the existing code gen-
+eration evaluation methods can be categorized into: reference-
+based, test-based, and reference-and-Test-free evaluation. Ta-
+ble I summarizes a comparison of code generation evaluation
+metrics used in various methods.
+B. Reference-Based Evaluation (r ̸= ⊥)
+Reference-based methods compute the similarity between
+y and r, based on metrics ranging from token-based metrics
+(e.g., BLEU [12] and ChrF [14]) to semantics-aware ones (e.g.,
+CodeBLEU [30] and CodeBERTScore [31]).
+155
+Token-based metrics are limited to the n-gram lexical sim-
+ilarity computation and ignore potential semantic information
+in the code. These metrics originate from, e.g., machine
+translation and text summarization, including BLEU [12],
+ROUGE [13] and ChrF [14]. Additionally, exact match (EM)
+metrics are widely used in code synthesis. Eghbali et al. [29]
+proposed the CrystalBLEU metric to enhance evaluation accu-
+racy by excluding common n-grams that inflate BLEU scores
+due to verbose syntax and coding conventions. Furthermore,
+Liguori et al. [28] argued that edit distance (ED) better mea-
+sures code similarity compared to other token-based metrics.
+Semantics-based metrics consider the syntactic structure,
+data flow information and potential semantic information of
+code. Ren et al. [30] proposed CodeBLEU, which injects
+code syntax through AST and code semantics through data
+flow. Dong et al. [32] proposed CodeScore, which conducts
+supervised learning on datasets with test cases to perform func-
+tional evaluation of code synthesis. Zhou et al. [31] proposed
+CodeBERTScore, which uses CodeBERT to performs contex-
+tual encoding of reference and predicted code to calculate
+similarity scores between each token. Yang et al. [33] proposed
+CodeScore-R based on UniXcoder and contrastive learning,
+which employs sketch processing, syntax transformation and
+mutation testing to improve the robustness of metric.
+Nevertheless, these methods cannot directly assess func-
+tional correctness, require high-quality reference code collec-
+tion, and penalize correct but divergent implementations.
+C. Test-Based Evaluation (T ̸= ⊥)
+Test-based methods [15] execute code against test casesT
+to assess functional correctness. The widely-adopted pass@k
+metric is defined as
+pass@k= Ex
+"
+1 −
+ n−c
+k
+
+ n
+k
+
+#
+where n (resp. c) is the total (resp. correct) number of
+samples for the problemx. This metric has become standard
+in evaluating code generation models.
+Despite its popularity, pass@k requires human experts for
+designing high-quality test cases, and demands secure execu-
+tion environments to prevent malicious code execution.
+D. Reference-and-Test-Free Evaluation (r = ⊥ and T = ⊥)
+When neither reference implementations nor test cases are
+available, evaluation typically relies on either human evalu-
+ation or LLM-as-judge methods [37], [38]. Human evalua-
+tion [16], while accurate, is prohibitively expensive and time-
+consuming for large-scale assessments.
+Recent LLM-as-judge methods leverage large language
+models to directly evaluate the functional consistency between
+problem descriptions and generated code. Zhuo et al. [34] pro-
+posed ICE-Score, which uses GPT-3.5 as a judge to evaluate
+code generation model performance through carefully crafted
+prompt engineering. Tong et al. [35] introduced CodeJudge,
+which not only utilizes GPT-3.5 but also explores smaller
+open-source models as judges, employing a two-stage prompt
+engineering method for evaluation. Zhou et al. [36] proposed
+SWE-Judge, an LLM-as-Ensemble-Judge framework that em-
+ploys multiple independent LLMs with different evaluation
+strategies and dynamic team selection to achieve human-
+aligned assessments. While effective, SWE-Judge incurs sig-
+nificant computational overhead as the ensemble method is
+adopted, which makes it prohibitively expensive for a com-
+parative analysis.
+Recall that current LLM-as-Judge methods incur significant
+costs through API fees, computational demands or prompt
+engineering expertise, whereas our method aims for a cost-
+effective balance of accuracy, efficiency, and explainability.
+III. E MPIRICAL STUDY
+In this section, we conduct an empirical study to explore the
+existing LLM-as-judge methods to code generation evaluation
+and analyze the various factors on their effectiveness.
+A. Experiment Setup
+Code Generation Datasets. To comprehensively evaluate
+LLM-as-judge methods, establishing accurate and diverse
+benchmarks is a crucial first step. We select three diverse
+and widely adopted datasets that faithfully simulate real-world
+code generation scenarios. Our dataset selection is guided by
+two principles: (1) To ensure accurate assessment of semantic
+correctness, we prioritize datasets with exceptional test case
+quality and quantity, specifically targeting those with test
+coverage approaching 100%; (2) Beyond algorithm-centric
+problems, datasets need to encompass a wide range of libraries
+and function call patterns typical in professional software
+development, enabling thorough evaluation of LLM-as-judge
+methods across varied programming contexts.
+As a result, we select the following datasets:
+• HumanEval-plus[39] is an enhanced variant of the Hu-
+manEval benchmark that addresses fundamental ground-
+truth issues in the original dataset (including unhandled
+edge cases, logical errors and performance limitations). It
+expands the test coverage from an average of 9.6 to 764.1
+test cases per problem, incorporating more challenging
+edge cases and complex functionalities to ensure rigorous
+and comprehensive evaluation.
+• MBPP-plus[39] applies similar enhancement techniques
+to the MBPP benchmark, resulting in a test suite 35 times
+larger than the original dataset.
+• BigCodeBench[40] specifically targets real-world soft-
+ware development scenarios by incorporating diverse
+libraries and complex function call patterns. It comprises
+1,140 function-level tasks that challenge LLMs to inter-
+pret instructions and orchestrate multiple function calls
+across 139 different libraries. Each programming task is
+validated through an average of 5.6 carefully designed
+test cases, achieving a mean branch coverage of 99%.
+Data Sampling. With the chosen benchmark datasets, we
+proceed to sample code generated by various LLMs. We
+employ different models of varying sizes: Qwen2.5Coder
+(1.5B/7B) [41] and DeepSeekCoder (1.3B/6.7B) [42] to ensure
+156

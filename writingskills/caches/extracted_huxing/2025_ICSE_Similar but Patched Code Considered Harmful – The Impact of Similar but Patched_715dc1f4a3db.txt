@@ -1,0 +1,326 @@
+Similar but Patched Code Considered Harmful
+The Impact of Similar but Patched Code on Recurring Vulnerability Detection
+and How to Remove Them
+Zixuan Tan†, Jiayuan Zhou ‡, Xing Hu †∗, Shengyi Pan †, Kui Liu §, Xin Xia §
+†Zhejiang University, Hangzhou, Zhejiang, China
+‡Centre for Software Excellence, Huawei, Toronto, Canada
+§Huawei, Hangzhou, Zhejiang, China
+{tanzixuan, xinghu, shengyi.pan }@zju.edu.cn, jiayuan.zhou1@huawei.com, brucekuiliu@gmail.com, xin.xia@acm.org
+Abstract—Identifying recurring vulnerabilities is crucial for
+ensuring software security. Clone-based techniques, while widely
+used, often generate many false alarms due to the existence of
+similar but patched (SBP) code, which is similar to vulnerable code
+but is not vulnerable due to having been patched. Although the
+SBP code poses a great challenge to the effectiveness of existing
+approaches, it has not yet been well explored.
+In this paper, we propose a programming language agnostic
+framework, Fixed Vulnerability Filter (FVF), to identify and
+filter such SBP instances in vulnerability detection. Different
+from existing studies that leverage function signatures, our
+approach analyzes code change histories to precisely pinpoint
+SBPs and consequently reduce false alarms. Evaluation under
+practical scenarios confirms the effectiveness and precision of our
+approach. Remarkably, FVF identifies and filters 65.1% of false
+alarms from four vulnerability detection tools (i.e., ReDeBug,
+VUDDY, MVP, and an elementary hash-based approach) without
+yielding false positives.
+We further apply FVF to 1,081 real-world software projects
+and construct a real-world SBP dataset containing 6,827 SBP
+functions. Due to the SBP nature, the dataset can act as a strict
+benchmark to test the sensitivity of the vulnerability detection
+approach in distinguishing real vulnerabilities and SBPs. Using
+this dataset, we demonstrate the ineffectiveness of four state-of-
+the-art deep learning-based vulnerability detection approaches.
+Our dataset can help developers make a more realistic evaluation
+of vulnerability detection approaches and also paves the way for
+further exploration of real-world SBP scenarios.
+Index Terms —Vulnerability Management, Software Mainte-
+nance, Software Security
+I. I NTRODUCTION
+Code reuse is one of the most frequent activities in software
+development [1]. By copying and pasting code snippets with
+or without modification, developers reuse existing code to
+improve the efficiency of programming. However, vulnera-
+bilities in the original code may also spread to downstream
+software. For example, more than 60,000 open-source software
+projects are exposed to the vulnerability CVE-2017-12652 [2]
+for the reuse of unsafe code snippets in the popular graphic
+library Libpng [3], [4]. Due to poor software maintenance,
+these cloned similar vulnerabilities introduced from the reuse
+process are difficult to detect [4]–[8]. Therefore, it is crucial
+∗Corresponding author
+Commit 4071bf12 on May 5, 2022  (a patch for CVE-2022-1975 [Severity: Medium])
+Commit message: 
+This patch changes allocation mode of netlink message from GFP_KERNEL to 
+GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC flag makes 
+memory allocation operation could be used in atomic context.
+File path: net/nfc/netlink.c
+int nfc_genl_fw_download_done(struct nfc...
+...
+struct sk_buff *msg;
+void *hdr;
+msg = nlmsg_new(NLMSG_DEFAULT_SIZE,
+GFP_KERNEL);
+if (!msg)
+return -ENOMEM;
+...
+Vulnerable function Patched function
+int nfc_genl_fw_download_done(struct nfc...
+...
+struct sk_buff *msg;
+void *hdr;
+msg = nlmsg_new(NLMSG_DEFAULT_SIZE, 
+GFP_ATOMIC);
+if (!msg)
+return -ENOMEM;
+...
+Similar-but-Patched
+Fig. 1. An example showing the subtle difference between a vulnerable
+function (CVE-2022-1975) and the patched version [9].
+for software maintainers to detect similar vulnerabilities in
+their codebases effectively.
+The code-clone-detection-based (clone-based) approaches
+are commonly used to detect similar vulnerabilities [4], [10]–
+[13]. Generally, these techniques extract various signatures
+from vulnerable code and match similar code snippets as
+potential vulnerabilities. However, due to the subtle differ-
+ences between vulnerable code and its corresponding patched
+versions [13], it is a challenge for clone-based approaches
+to differentiate them effectively (see Section IV-A for our
+experimental result). This often leads to the misidentification
+of such Similar-but-Patched (SBP) code as vulnerable, thus
+causing many false alarms. Figure 1 shows an example of
+SBP code in the Linux kernel [9] related to CVE-2022-
+1975 [14]. The vulnerability was simply fixed by altering an
+argument of the nlmsg_new function from GFP_KERNEL
+to GFP_ATOMIC). In this case, with only a single argument
+difference, the vulnerable function is closely similar to the
+patched version (SBP). Moreover, a piece of an SBP code
+could even exactly match a vulnerability. For example, if
+a vulnerability patch is reverted for various reasons (e.g.,
+obsolescence or substitution with a better patch [15]), the
+reverted code would become the same as the vulnerable code,
+but without maintaining its vulnerability since the vulnerability
+condition will not be triggered (see Figure 6). This poses a
+significant challenge for clone-based approaches that aim to
+determine vulnerability by only examining current code.
+arXiv:2412.20740v1  [cs.SE]  30 Dec 2024
+In practice, the inability to distinguish vulnerable and SBP
+code can lead to a large number of false alarms, requiring
+substantial human effort to manually verify the results, which
+is not always feasible and hinders the application of these
+approaches [16]. MVP [13], proposed by Xiao et al., designed
+a function-level signature scheme to distinguish a vulnerability
+and an SBP. However, the proposed signature scheme is
+programming language-specific and lacks generalizability. Fur-
+thermore, MVP cannot handle the reverted type SBP because
+its signature is identical to that of the vulnerability.
+In this study, we propose a programming language agnostic
+framework, FVF (Fixed Vulnerability Filter), to reduce false
+alarms in clone-based vulnerability detection by identifying
+and filtering the SBP code. The core idea behind FVF is
+to leverage code change histories to determine whether the
+detected potentially vulnerable code snippet has already been
+patched. FVF works as a post-processing step for existing
+vulnerability detection approaches. When a potentially vulner-
+able code snippet similar to a known vulnerability is detected,
+FVF queries the vulnerability feature database for a patch log,
+which records the code change history of the vulnerability fix.
+It then retrieves the function change log of the target code
+snippets. Following existing recurring vulnerability detection
+approaches focusing on detecting function-level vulnerabili-
+ties, FVF generates the change and patch logs at the function
+level. If the patch log is detected in the function change log, it
+indicates that the potentially vulnerable code snippet has been
+patched previously (known as an SBP code snippet).
+We evaluate the effectiveness of FVF in reducing false
+alarms (i.e., SBP) in real-world scenarios. We adopt nine major
+versions of two popular open-source projects, namely the
+Linux kernel [17] and Redis [18], to evaluate how FVF can im-
+prove existing clone-based vulnerability detection approaches.
+We employ four popular clone-based vulnerability detection
+approaches, ReDeBug [10], VUDDY [11], MVP [13], and
+implement a simple hash-based approach, as baseline vul-
+nerability detectors. The experimental results show that the
+overall False Alarm Rate (FAR) for these detectors is 76.2%,
+which is far from satisfactory and impractical. After applying
+FVF, the overall FAR is reduced to 26.6%, with a significant
+improvement rate of 49.6%.
+We further analyze where and why FVF makes false predic-
+tions, including false positives of FVF and false negatives, and
+we find no false positives and summarize 125 false negatives
+into two situations. Based on the findings, we conduct a
+qualitative study on the characteristics of filtered SBPs that
+confuse clone-based vulnerability detection approaches. We
+categorize 238 SBP code into three categories, which shed
+light on future research possibilities.
+To evaluate the generalizability and scalability of FVF,
+we apply FVF on 1,081 historically vulnerable and popular
+open-source software (OSS) projects written in C, C++, and
+Java programming languages. In total, we collect 6,824 SBP
+functions and construct a dataset. Using the dataset, we study
+the prevalence of the SBP code in the real world and observe
+that 40% of OSS projects studied contain at least one instance
+of the SBP code. The results confirm the prevalence of the SBP
+phenomenon, emphasizing the need to address the challenge.
+Besides clone-based vulnerability detection techniques,
+deep learning-based (DL-based) techniques have gained
+promising performance [19]–[21] in controlled lab environ-
+ments. However, prior studies [21], [22] reveal that DL-
+based approaches sometimes leverage spurious features that
+are unrelated to the vulnerabilities, resulting in inferior per-
+formance in real-world scenarios. Given the subtle differences
+between vulnerability and SBP, DL-based approaches may also
+fail to distinguish them, leading to a large number of false
+alarms. Unfortunately, only a limited number of studies have
+considered SBP code and existing datasets such as Devign [23]
+and Big-Vul [24] overlook the inclusion of SBP code. As
+a result, DL-based approaches failed to learn SBP patterns
+during training, and evaluations become misaligned with real-
+world data distributions. The impact of the SBP code on DL-
+based approaches is not well explored.
+Using the collected dataset, we evaluate the performance of
+state-of-the-art DL-based vulnerability detection approaches.
+We select two token-based approaches (LineVul [19] and
+VulBERTa [20]) and two graph-based approaches (Devign [23]
+and IVDetect [25]) for the study. We use these approaches to
+detect vulnerabilities on the SBP dataset to assess the impact of
+SBP on DL-based vulnerability detection approaches. The ex-
+perimental results show that these approaches perform poorly
+on the dataset. All these approaches have a false alarm rate
+of more than 62%. The token-based approaches mistakenly
+predict almost all SBP code as vulnerable, and the two graph-
+based approaches have a false alarm rate of 64.9% and 62.9%,
+respectively. The results demonstrate the inability of these
+approaches to distinguish SBP from real vulnerabilities, thus
+emphasizing the discriminative effectiveness of our dataset.
+Our dataset can help developers make a more realistic evalu-
+ation of existing vulnerability detection tools and also paves
+the way for further exploration of real-world SBP scenarios.
+Our contributions are summarized as follows:
+• To the best of our knowledge, we are the first to system-
+atically study the phenomenon of SBP and its impact on
+vulnerability detection. We find that while SBP code is
+prevalent in real-world scenarios, clone-based and DL-
+based vulnerability detection approaches are incapable of
+distinguishing SBP code, leading to a large number of
+false alarms in practice.
+• We propose an effective framework, FVF, to identify SBP
+and help clone-based vulnerability detection approaches
+reduce false alarms. Experimental results show that FVF
+can significantly reduce false alarms of popular clone-
+based approaches such as VUDDY [11] and ReDe-
+Bug [10].
+• We construct a real-world SBP dataset consisting of
+6,824 SBP functions in three programming languages
+from 1,081 real-world projects using FVF, which can
+contribute to a more realistic evaluation of vulnerability
+detection tools. Our replication package can be accessed
+using the link [26].
+The remainder of the paper is organized as follows: Section
+II describes the overview and design of our proposed frame-
+work. Section III and Section IV discuss the evaluation steps
+and results of FVF. In Section V, we discuss other features of
+FVF, such as programming language agnostic, and the impact
+of SBP code on promising deep learning-based approaches.
+In Section VI, we discuss the threats to the validity of our
+approach. Section VII summarizes related work in the field.
+We conclude the paper in Section VIII.
+II. FVF: T HE PROPOSED APPROACH
+The goal of FVF is to enhance existing clone-based vulner-
+ability detectors by reducing false alarms caused by already
+patched vulnerabilities (i.e., SBP). The core idea is to take the
+code changes that fix historical vulnerabilities as a reference,
+to check whether the detected vulnerable code has been
+fixed in the past. In this section, we first present the overall
+framework and our design choices of FVF, followed by the
+details of each component.
+A. Overall Framework
+Following the existing recurring vulnerability detection ap-
+proaches that focus on detecting function-level vulnerabilities,
+FVF also identifies SBP at the function level. The overall
+FVF framework, as shown in Figure 2, consists of four
+key components: ❶ Function Change Log Generator , ❷
+Vulnerability Patch Log Finder , ❸ Vulnerability Feature
+Database, and ❹ Fix Behavior Matcher .
+The vulnerability detector identifies vulnerabilities in the
+target repository and produces the detected potentially vul-
+nerable functions (“Matched Function” in Figure 2) to the
+Function Change Log Generator to generate a function
+change log. Simultaneously, the detector produces the matched
+vulnerable function (“Vuln. Function” in Figure 2) to the
+Vulnerability Patch Log Finder , which queries the Vulner-
+ability Feature Database to retrieve the patch logs. Finally,
+the Fix Behavior Matcher examines the function change log
+for the presence of fix behaviors indicated in the patch logs.
+If the same fix behavior is detected, the potentially vulnerable
+function is considered to have been previously fixed and is
+non-vulnerable (i.e., a false alarm). Otherwise, it remains
+potentially vulnerable and requires further review.
+B. Vulnerability Detector
+The Vulnerability Detector aims to detect recurring vulner-
+abilities in the target project. When analyzing a target code
+repository, the detector produces two types of information:
+the matched function (“Matched Function”) and the known
+vulnerable function (“Vuln. Function”). The matched func-
+tion represents the potentially vulnerable function detected in
+the target code repository. The detector outputs the location
+(including the name, parameter definitions, and return value)
+of the matched function. The vulnerable function refers to
+known vulnerable code that matches the detected potentially
+vulnerable function. By requiring only the vulnerable functions
+and the matched similar functions, FVF supports diverse types
+of recurring vulnerability detectors, varying from string match-
+ing methods like ReDeBug [10], signature-based methods like
+VUDDY [11], to more advanced slice-based techniques such
+as MVP [13] and TRACER [30]. This design ensures FVF’s
+versatility and broad applicability. After detection, the matched
+and vulnerable functions are passed to the Function Change
+Log Generator and Vulnerability Patch Log Finder, respec-
+tively.
+C. Function Change Log Generator
+Given the matched function from the detector, the Function
+Change Log Generator retrieves the change history of the
+function in the version control system to build a function
+change log . A function change log is a sequence of code
+changes, denoted as ⟨fc1, fc2, ..., fcm⟩, where fc i is a line-
+level code change on the function. The Function Change Log
+Generator first utilizes the git log command [31] with the file
+path and function name as parameters to obtain the change
+history of the function. Then all the change histories are
+concatenated in chronological order to generate the function
+change log.
+As retrieving the history in a large codebase can be very
+costly and slow down the whole process, we set a retrieval
+window to limit how far back in the version history we should
+look for changes. We consider the original vulnerability fix
+date to be the earliest date we should retrieve, as a cloned
+vulnerability is unlikely to be fixed earlier than the original
+one recorded in CVE. Additionally, we empirically set a
+threshold of 50 to limit the number of retrieval operations. This
+threshold is a configurable option, and we discuss efficiency
+and performance under different thresholds in Section V-D.
+In practice, we find the retrieved history may be truncated
+in specific cases when the matched function is renamed
+or moved. Hence, we retrieve file-level change histories as
+a supplement. Specifically, when the function-level retrieval
+stops before reaching the window size threshold, we further
+retrieve the file change history and extract all modifications to
+the function.
+D. Vulnerability Patch Log Finder and Feature Database (DB)
+The Vulnerability Patch Log Finder retrieves the appropriate
+patch log for the vulnerable function. It first gets the necessary
+information (e.g., the signatures and line numbers) about the
+vulnerable functions from the vulnerability detector. Then, it
+queries the Vulnerability Feature Database with CVE ID and
+vulnerable function signature for the patch log.
+A patch log records all the fix actions, represented as a
+sequence of line-level code diffs concatenated from a se-
+ries of patches on the function, chronologically. Figure 3
+shows an example of generating a patch log for the function
+tun_set_iff and the vulnerability CVE-2018-7191 [27]. If
+multiple fixes have been applied to the same function, the last
+post-fix version is considered the fully fixed version. Thus, the
+patch log records each patch diff chronologically from the first
+patch to the last patch, making it naturally support multi-patch
+scenarios.

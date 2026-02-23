@@ -1,0 +1,312 @@
+PS3: Precise Patch Presence Test based on
+Semantic Symbolic Signature
+Qi Zhan
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+qizhan@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Zhiyang Li
+Zhejiang University
+Hangzhou, China
+misakalzy@zju.edu.cn
+Xin Xia
+Software Engineering Application
+Technology Lab, Huawei
+China
+xin.xia@acm.org
+David Lo
+Singapore Management University
+Singapore
+davidlo@smu.edu.sg
+Shanping Li
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+shan@zju.edu.cn
+ABSTRACT
+During software development, vulnerabilities have posed a signifi-
+cant threat to users. Patches are the most effective way to combat
+vulnerabilities. In a large-scale software system, testing the pres-
+ence of a security patch in every affected binary is crucial to ensure
+system security. Identifying whether a binary has been patched for
+a known vulnerability is challenging, as there may only be small
+differences between patched and vulnerable versions. Existing ap-
+proaches mainly focus on detecting patches that are compiled in
+the same compiler options. However, it is common for developers to
+compile programs with very different compiler options in different
+situations, which causes inaccuracy for existing methods. In this
+paper, we propose a new approach named PS3, referring to precise
+patch presence test based on semantic-level symbolic signature. PS3
+exploits symbolic emulation to extract signatures that are stable
+under different compiler options. Then PS3 can precisely test the
+presence of the patch by comparing the signatures between the
+reference and the target at semantic level.
+To evaluate the effectiveness of our approach, we constructed a
+dataset consisting of 3,631 (CVE, binary) pairs of 62 recent CVEs
+in four C/C++ projects. The experimental results show that PS3
+achieves scores of 0.82, 0.97, and 0.89 in terms of precision, recall,
+and F1 score, respectively. PS3 outperforms the state-of-the-art
+baselines by improving 33% in terms of F1 score and remains stable
+in different compiler options.
+∗Corresponding Author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0217-4/24/04. . . $15.00
+https://doi.org/10.1145/3597503.3639134
+CCS CONCEPTS
+•Security and privacy → Software security engineering.
+KEYWORDS
+Patch presence test, Binary analysis, Software security
+ACM Reference Format:
+Qi Zhan, Xing Hu, Zhiyang Li, Xin Xia, David Lo, and Shanping Li. 2024.
+PS3: Precise Patch Presence Test based on Semantic Symbolic Signature. In
+2024 IEEE/ACM 46th International Conference on Software Engineering (ICSE
+’24), April 14–20, 2024, Lisbon, Portugal. ACM, New York, NY, USA, 12 pages.
+https://doi.org/10.1145/3597503.3639134
+1 INTRODUCTION
+Software vulnerabilities are security issues that can cause software
+systems to be attacked or abused by malicious users. Vulnerabilities
+may allow hackers or malware to invade the system and steal
+sensitive information, or allow attackers to remotely control the
+system and perform malicious operations [
+26]. The number of
+newly discovered vulnerabilities has increased rapidly in recent
+years, according to CVE data [14].
+Applying patches is one of the most effective ways to combat
+vulnerabilities and improve system security [1]. Software develop-
+ers continuously release patches to fix known vulnerabilities. In a
+large-scale software system, there may be thousands of binary files,
+which may be different versions and developed by various vendors
+or developers. Therefore, it is essential to ensure that these binary
+files have been patched for the corresponding vulnerabilities. The
+process to ensure this is referred to “patch presence test”.
+The concept of the patch presence test was first introduced by
+Zhang et al. [37] in 2018 to distinguish it from conventional vulner-
+ability searching for binaries or binary function matching. We can
+formalize the concept of patch presence test by describing its input
+and output. The input consists of three parts: (1) information about
+a particular patch, usually a patch file that describes the code modi-
+fication. (2) The source code or the reference binaries of the project.
+The reference binaries typically include a binary compiled from
+a vulnerable version of the project and another binary compiled
+
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal Qi Zhan, Xing Hu, Zhiyang Li, Xin Xia, David Lo, and Shanping Li
+from the patched version. (3) The target binary to be tested. The
+output of the patch presence test is a binary decision on whether
+the specific patch is present in the target binary or not.
+Determining whether a given binary file has been patched for a
+corresponding vulnerability is challenging. The semantic gap be-
+tween the source code and the binary makes it difficult to directly
+correlate modifications in the source code with changes in the as-
+sembly code [37]. Additionally, patches are usually small and subtle.
+Li et al. [25] show that up to 50% of security patches only modify
+less than 7 lines of code. The traditional methods of matching bi-
+nary functions are no longer effective in detecting the existence of
+patches due to the small differences present between the vulnerable
+and patched functions.
+Many works have been proposed [ 23, 33, 35–37] to automate
+patch presence test. These approaches can be divided into two
+groups: similarity-based and signature-based. Similarity-based ap-
+proaches [23, 35, 36] extract information from reference binaries,
+then measure similarity to the target binary and decide the pres-
+ence of patches based on similarity between two reference to target.
+Signature-based approaches [33, 37] extract signatures from mod-
+ification and attempt to verify their existence in the target. Both
+the two types of approach rely heavily on syntactic information.
+However, binaries compiled with different options can be quite
+different at syntax level [
+7]. As a result, existing methods are
+only effective when reference binaries are compiled with the
+same compiler options as target binaries, making it difficult
+to test the binaries when the options are different.
+In addition, compiler flags or optimization levels cannot be easily
+extracted from a compiled binary [30]. Existing approaches usually
+resort to tools such as BinDiff [38] to identify reference binaries
+most similar to the target binary [37] or compiling all binaries with
+the same compiler options in experiments. Generating the reference
+binary most similar to the target takes a long time. Jiang et al. [23]
+noted that the use of BinDiff [38] took six minutes in an end-to-end
+test. Efficiency is limited in large-scale software systems with
+thousands of binaries to test.
+To address these problems, we propose PS3, with the aim of
+testing the target binary precisely when the compiler options differ.
+The differences that represent the semantic information of the patch
+are stable in all downstream binaries, making them useful in the
+patch presence test. To capture semantic information in assembly
+code, we need to understand its context. To compare signatures
+precisely, we are required to check the equivalence at a semantic
+level rather than a syntax level. Following the intuition above, PS3
+extracts the semantic signatures based on symbolic emulation and
+matches them at a semantic level. The main idea of our approach is
+two-fold:
+❶ In signature extraction, we use symbolic emulation to emulate
+the entire affected function and collect side effects (e.g., store data
+in memory) in a symbolic environment. From function entry, we
+execute the code in a symbolic environment and collect effects.
+Then we obtain four types of signatures from the effects of affected
+functions.
+❷ In signature matching, we compare the signature extracted
+from the target binary with references. We utilize a theorem prover
+to prove the equivalence of two signatures that differ in syntax but
+are equal at semantic level. PS3 is capable of precisely testing the
+target binary with respect to the compiler options by matching the
+semantic level signatures.
+The binaries in the existing dataset are always compiled with the
+same compiler options [36], which cannot reflect the performance
+of the approaches when the compiler option differs. To fill this gap,
+we construct a dataset consisting of 3,631 (CVE, binary) pairs on
+62 CVEs of four popular C/C++ projects. A test in our dataset is
+to check if a specific patch exists in a specific binary. We compile
+the binaries with combinations of different optimization levels and
+different compilers in the experimental phase.
+Experimental results show that our approach outperforms state-
+of-the-art approaches by 0.22 in terms of the F1 score. We also
+evaluate the results of our approach compared to BinXray [36] for
+every combination of compiler and optimization level. The findings
+of our study establish the reliability and accuracy of our approach,
+indicating that PS3 is capable of accurately capturing semantic
+signatures and successfully matching them with target binaries.
+Contributions: In summary, the main contributions of this
+paper can be summarized as follows:
+• We proposePS3, a signature-matching-based approach, which
+can precisely and efficiently test the presence of patch in
+target binaries by symbolic emulation.
+• We construct a dataset comprising 62 CVEs and correspond-
+ing binaries compiled with various compiler options from
+four popular C/C++ projects, resulting in a total of 3,631
+(CVE, binary) pairs.
+• We systematically evaluate our approach on the dataset, and
+the results demonstrate its effectiveness in patch presence
+test with high accuracy.
+The remainder of the paper is organized as follows. Section 2
+presents the motivating example of our study. Sections 3 describe
+the design and implementation of the framework. Section 4 and Sec-
+tion 5 discuss the evaluation steps and results of PS3. In Section 6,
+we discuss the threats to validity of our approach and provide a
+case study of some representative patches. Section 7 summarizes
+the research related to the field. We conclude the paper and discuss
+the future work in Section 8.
+2 MOTIV ATING EXAMPLE
+In this section, we walk through a motivating example to illustrate
+our intuition. Figure 1 shows the testing process of the security
+patch for CVE-2020-22019 [ 11], a vulnerability in FFmpeg. The
+modification in the source code introduces a condition to check if
+the value in w or v is less than 3, where w is the second parameter
+of the function ff_vmafmotion_init and h is the third parameter.
+To test the presence of the patch, one straightforward idea is to
+find out what the binary code is compiled from the added condition
+and directly compare the extracted assembly code or similar pattern
+against the target binary. The above line of source code might be
+compiled to cmpl $0x2, 0x14(%rsp); jle 0x1ab3b3. However,
+matching the assembly code alone would not be helpful, as the
+concrete addresses and registers can vary across different binaries.
+For example, the target binary may useebx or ebp as registers other
+than saving the value to stack. Additionally, the compare and jump
+pattern is very common in binaries, which can lead to many false
+positives if directly matched.
+PS3: Precise Patch Presence Test based on Semantic Symbolic Signature ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+1 @@ -238,6 +238,9 @@ int ff_vmafmotion_init
+(VMAFMotionData *s, int w, int h,,!
+2 int i;
+3 const AVPixFmtDescriptor *desc =
+av_pix_fmt_desc_get(fmt);,!
+4
+5 +i f ( w < 3 | | h < 3 )
+6 +r e t u r n A V E R R O R ( E I N V A L ) ;
+7 +
+8 s->width = w;
+9 s->height = h;
+10 s->stride = FFALIGN(w * sizeof(uint16_t), 32);
+1
+Ta r g e t
+movl%edx, %ebpmovl%esi, %ebx
+cmpl$0x3,%ebxjl0x60ab9acmpl$0x3, %ebpjl0x60ab9a
+Matchint wint h%esi%edx%ebx%ebp
+Not(R(w) ≤ 2)Not(R(h) ≤ 2)
+Signature
+↦%esi↦%edx
+↧↧↧↧
+↦↦int w   int h
+movl   %esi, 0x14(%rsp)movl   %edx, 0x10(%rsp)cmpl   $0x2, 0x14(%rsp)jle0x3ff75e                  cmpl   $0x2, 0x10(%rsp)jg0x3ff768 sp+ 10sp+ 14
+… …Not(R(h) <3)Not(R(w)<3)…
+Figure 1: Motivating example
+The above straightforward idea does not work well, as direct
+mapping of the source code to binary and matching cannot capture
+the semantic change of the patch. This limitation arises from reg-
+ister allocation and the absence of contextual information. From
+the assembly code cmpl $0x2, 0x14(%rsp); jle 0x1ab3b3 , we
+know nothing about what the value pointed stands for in the cur-
+rent context. The requirement about context reminds us that we
+can track the whole dataflow in a symbolic environment from the
+function entry point. To detect the status of the target binary after
+extracting the symbolic signatures, it suffices to test whether the
+signatures equivalent to w < 3 and h < 3 exist in the function.
+Based on the idea mentioned above, we proceed with the follow-
+ing steps.
+Extraction. We leverage symbolic emulation instead of concrete
+executing to track the changes in registers and memory relative
+to the function parameter and initial memory environment. After
+that, we extract signatures from the effects of the corresponding as-
+sembly code. In the prologue of the function shown in Figure 1, the
+register represents the second parameter of the function saved to
+stack with offset 0x14. The code cmpl $0x2, 0x14(%rsp) , which
+corresponds to condition w < 3 in the source code, can be traced
+back to the parameter w. The code cmpl $0x2, 0x10(%rsp) can be
+traced back to h in the same way. As a result, we obtain the signa-
+tures Not(R(w) <= 2) and Not(R(h) <= 2) , where Not denotes
+not jumping the branch. The signatures remain constant in differ-
+ent binaries because the order of parameter passing is consistent
+with typical compiler behavior. Therefore, we can utilize them to
+precisely test the target binary.
+Matching. Once the signature is generated, we perform the
+same symbolic emulation on the target binary function directly to
+collect effects. Since we cannot map the assembly code back to the
+source code in the target binary, all effects collecting in emulation
+are considered as potentially matched signatures. The remaining
+problem is how to match the effects collected from the target binary
+with the signatures. The signature Not(R(h) < 3) does not appear
+to be exactly equivalent to Not(R(h) <= 2) extracted from the
+target binary, but is semantically equal when R(h) is an integer.
+With the use of a theorem prover, we are able to ensure that the
+two expressions are equal at the semantic level. By matching the
+two expressions, we decide that the target binary is patched.
+3 PROPOSED APPROACH
+3.1 Overall Framework
+The overall framework of PS3 is illustrated in Figure 2. For sim-
+plicity, we assume that the patch modifies only one function. In
+practice, we classify the binary as vulnerable if one affected function
+is identified as vulnerable. The main components of our approach
+include a symbolic emulator that emulates the function and gen-
+erates side effects, a signature extractor responsible for extracting
+defined signatures from the effects, and a matching engine that
+determines the presence or absence of the patch by comparing the
+signatures.
+3.1.1 Symbolic Emulator. The emulator serves as the core of our
+approach. We first compile the source code into two reference
+binaries (that is, one vulnerable version and one patched version)
+with debug information and parse the difference file to extract
+the code modifications. Then, we utilize the debug information to
+identify which lines of reference binary code are deleted or added
+due to modifications in the source code. During the extraction phase,
+we perform symbolic emulation on the control flow graph of the
+binary function. For reference binaries, it is necessary to trace only
+the effects corresponding to the modified code, i.e., red curves for
+deleted code and green curves for added code in Figure 2. For the
+target binary, we need to collect the complete set of signatures in
+every possible affected function, i.e. gray curves since we cannot
+map the binary code back to the source code by debug information.

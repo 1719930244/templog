@@ -1,0 +1,126 @@
+Automating TODO-missed Methods Detection and Patching
+ZHIPENG GAO,Shanghai Institute for Advanced Study of Zhejiang University, Shanghai, China
+YANQI SU,Australian National University, Canberra, Australia
+XING HU,Zhejiang University, Hangzhou, China
+XIN XIA,Huawei, Hangzhou, China
+TODO comments are widely used by developers to remind themselves or others about incomplete tasks. In
+otherwords,TODOcommentsareusuallyassociatedwithtemporaryorsuboptimalsolutions.Inpractice,all
+theequivalentsuboptimalimplementationsshouldbeupdated(e.g.,addingTODOs)simultaneously.However,
+due to various reasons (e.g., time constraints or carelessness), developers may forget or even are unaware of
+adding TODO comments to all necessary places, which results in theTODO-missed methods. These “hidden”
+suboptimal implementations inTODO-missed methodsmay hurt the software quality and maintainability in
+the long-term. Therefore, in this article, we propose the novel task ofTODO-missed methodsdetection and
+patching and develop a novel model, namely TODO-comment Patcher(TDPatcher), to automatically patch
+TODO comments to theTODO-missed methodsin software projects. Our model has two main stages: offline
+learning and online inference. During the offline learning stage, TDPatcher employs the GraphCodeBERT
+and contrastive learning for encoding the TODO comment (natural language) and its suboptimal implemen-
+tation(codefragment)intovectorrepresentations.Fortheonlineinferencestage,wecanidentifythe TODO-
+missed methodsand further determine their patching position by leveraging the offline trained model. We
+built our dataset by collectingTODO-introduced methodsfrom the top-10,000 Python GitHub repositories
+and evaluated TDPatcher on them. Extensive experimental results show the promising performance of our
+model over a set of benchmarks. We further conduct an in-the-wild evaluation that successfully detects 26
+TODO-missed methodsfrom 50 GitHub repositories.
+CCS Concepts: •Software and its engineering→ Software evolution;Maintaining software;
+Additional Key Words and Phrases: TODO comment, SATD, technical debt, software inconsistency, con-
+trastive learning
+ACM Reference Format:
+Zhipeng Gao, Yanqi Su, Xing Hu, and Xin Xia. 2024. Automating TODO-missed Methods Detec-
+tion and Patching. ACM Trans. Softw. Eng. Methodol. 34, 1, Article 2 (December 2024), 28 pages.
+https://doi.org/10.1145/3700793
+ThisresearchissupportedbytheStarryNightScienceFundofZhejiangUniversityShanghaiInstituteforAdvancedStudy,
+Grant No. SN-ZJU-SIAS-001. This research is partially supported by the Shanghai Sailing Program (23YF1446900) and the
+National Science Foundation of China (No. 62202341). This research is partially supported by the Ningbo Natural Science
+Foundation (No. 2023J292).
+Authors’ Contact Information: Zhipeng Gao, Shanghai Institute for Advanced Study of Zhejiang University, Shanghai,
+China; e-mail: zhipeng.gao@xju.edu.cn; Yanqi Su, Australian National University, Canberra, Australia; e-mail: Yanqi.Su@
+anu.edu.au; Xing Hu (Corresponding author), Zhejiang University, Hangzhou, China;e-mail:xinghu@zju.edu.cn; Xin Xia,
+Huawei, Hangzhou, China; e-mail: xin.xia@acm.org.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be
+honored.Abstractingwithcreditispermitted.Tocopyotherwise,orrepublish,topostonserversortoredistributetolists,
+requires prior specific permission and/or a fee. Request permissions frompermissions@acm.org.
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM 1049-331X/2024/12-ART2
+https://doi.org/10.1145/3700793
+ACM Trans. Softw. Eng. Methodol., Vol. 34, No. 1, Article 2. Publication date: December 2024.
+
+2:2 Z. Gao et al.
+1 Introduction
+TODO comments are widely used by developers to describe valuable code changes that can im-
+provesoftwarequalityandmaintenance.Inotherwords,theTODOcommentspinpointthecurrent
+suboptimal solutions that developers should pay attention to in future development. For example,
+a ss h o w ni nE x a m p l e1o fF i g u r e1, when a developer implemented thesave_workbook method,
+they added a TODO comment (Line 456,TODO: replace with path transformation functions)t or e -
+mindthemselvesorotherdevelopersforindicatingthetemporarypathimplementations(i.e.,Line
+457).Ideally,onceaTODOcommentisaddedforamethod,allthemethodswithequivalentsubop-
+timalimplementationsshouldbeupdated(i.e.,addingthesameTODOcomment)correspondingly.
+Example 2 in Figure1 shows such a situation, the methodget_fullname contains similar subop-
+timalimplementations(i.e.,Line493)asmethod save_workbook.Therefore,thedevelopersadded
+a TODO comment to the above two methods simultaneously in one commit. However, due to
+the complexity of the ever-increasing software systems (e.g., hundreds of files with thousands of
+methods) and frequent refactoring of the source code (e.g., taking over code from others), devel-
+opersmayforgetorevenareunawareofsuchsuboptimalimplementationssomewhereelseinthe
+project, resulting inTODO-missed methods.
+Inourwork,thedefinitionof TODO-missedmethod isasfollows:Givenamethodpair ⟨m1, m2⟩
+that has equivalent suboptimal implementationsI,i fm1 was added with a TODO commentT to
+indicate I but m2 was not, then we then definem2 as aTODO-missed methodand m1 as aTODO-
+introduced method. Methods with proper TODO comments can help developers understand the
+source code context and prevent introducing mistakes when touching unfamiliar code. On the
+contrary, theTODO-missed methodsmiss the TODO comment specification, resulting in the sub-
+optimalimplementationsbeingignored (fora long time)or nevergetting revisitedunlesscausing
+anydamages.Taketheabovemethodsasanexample:IftheTODOcommentisnotspecifiedclearly
+in get_fullname, then the developers can easily forget this unfinished task, and the problem is
+even worsenedas software constantlyevolves and developers frequentlyjoin and leave the devel-
+opment team. It is thus helpful to notify developers ofTODO-missed methodsin software projects
+before any unwanted side effects are caused.
+Inthisarticle,weaimtoidentify TODO-missedmethods whennewTODOcommentsareadded.
+Manually checkingTODO-missed methodsis a time-consuming and error-prone process, this is
+especiallytrueforlargesoftwareprojects,usuallywithhundredsoffilesandthousandsoflinesof
+code.Itwouldcostagreatamountofeffortifdevelopersinspectallmethodslinebylinetoidentify
+TODO-missed methods. Therefore, it is beneficial and desirable to have a tool for automating the
+checking ofTODO-missed methodsin practice. To perform this task, the following two key issues
+need to be handled properly:
+(1) TODO-missed methods detection. Identifying TODO-missed methods first requires under-
+standing the semantics of the TODO comment and its suboptimal implementation and the
+relationship between them. The comment and source code are of different types (i.e., free-
+form natural languages and formal programming languages), which causes naturally a gap
+betweenthem.AsshowninFigure 1examples,TODOcommentsandtheirsuboptimalimple-
+mentations are semantically related but lexically isolated. As a result, it is a non-trivial task
+to determine whether a method should include a particular TODO comment or not. There-
+fore, an effective tool for detectingTODO-missed methodsrequires capturing the semantic
+mapping and implicit connections between the TODO comment and its corresponding sub-
+optimal implementation(s).
+(2) TODO-missedmethods patching.Aftera TODO-missedmethod isdetected,ournextstepaims
+tolocatetheexactsuboptimalpositions(e.g.,thesourcecodelines)thattheTODOcomment
+ACM Trans. Softw. Eng. Methodol., Vol. 34, No. 1, Article 2. Publication date: December 2024.
+Code Snippet Recommendation from Stack Overflow Posts 2:3
+Fig. 1. Examples of TODO-introduced methods.
+should be patched to, namelyTODO-missed methodspatching. Patching TODO comments
+to the right location is also a non-trivial task with respect to the following reasons: It is
+verydifficult,ifnotpossible,todeterminewhereaTODOcommentshouldbeaddedbyjust
+reading the method source code. For example, as shown in Example 2 in Figure1, multiple
+statements within get_fullname method are associated with “path” actions, one cannot
+easily claim which code line is connected to the TODO comment. A more intuitive and
+reliablewayistotakethe TODO-introducedmethod asareferenceandchecktheequivalent
+suboptimal positions by pairwise comparison.
+To alleviate the above issues and help developers better maintain TODO comments, in this
+work, we propose a novel framework named (TODO-comment Patcher (TDPatcher ) to
+automatically patch the TODO comments to theTODO-missed methods. The main idea of our
+approach is twofold: (i)Code Embeddings: Code patterns (e.g., the suboptimal implementations),
+as well as code documentation (e.g., TODO comments), can be automatically encoded into
+contextualized semantic vectors via the techniques adapted from the large-scale pre-trained
+models (e.g.,GraphCodeBERT).(ii) Contrastive Learning:Learningsemantic representationfor an
+individual method alone is not sufficient, it is necessary to explore the correlations and implicit
+differences between theTODO-introduced methodsand TODO-missed methods. In this work, we
+adopt the contrastive learning strategy to teach the model to pull positive samples together (i.e.,
+methods with equivalent suboptimal implementations) while simultaneously pushing negative
+samples (i.e., irrelevant methods) apart.
+TDPatcherconsistsoftwostages:offlinelearningandonlineinference.Duringofflinelearning,
+we collectTODO-introduced methods(a method that newly adds TODO comment) from the Top-
+10,000 Python GitHub repositories. We then automatically establish⟨anchor,positive ,neдative⟩
+triplet training samples in terms of whether theTODO-introduced method can be paired. TD-
+Patcher first employs the GraphCodeBERT [19] model to embedanchor,positive ,a n dneдative
+samples into contextualized vectors, respectively. TDPatcher then applies contrastive learning
+strategy [13, 21] to further learn the discriminative vector representations. The goal of our
+ACM Trans. Softw. Eng. Methodol., Vol. 34, No. 1, Article 2. Publication date: December 2024.

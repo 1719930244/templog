@@ -1,0 +1,329 @@
+MUT: Human-in-the-Loop Unit Test Migration
+Yi Gao
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+gaoyi01@zju.edu.cn
+Xing Hu∗
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+xinghu@zju.edu.cn
+Tongtong Xu
+Huawei
+Hangzhou, China
+xutongtong9@huawei.com
+Xin Xia
+Huawei
+Hangzhou, China
+xin.xia@acm.org
+David Lo
+School of Computing and Information
+Systems, Singapore Management
+University
+Hangzhou, China
+davidlo@smu.edu.sg
+Xiaohu Yang
+The State Key Laboratory of
+Blockchain and Data Security,
+Zhejiang University
+Hangzhou, China
+yangxh@zju.edu.cn
+ABSTRACT
+Test migration, which enables the reuse of test cases crafted with
+knowledge and creativity by testers across various platforms and
+programming languages, has exhibited effectiveness in mobile app
+testing. However, unit test migration at the source code level has
+not garnered adequate attention and exploration. In this paper,
+we propose a novel cross-language and cross-platform test migra-
+tion methodology, named MUT, which consists of four modules:
+code mapping, test case filtering, test case translation, and test case
+adaptation. MUT initially calculates code mappings to establish
+associations between source and target projects, and identifies suit-
+able unit tests for migration from the source project. Then, MUT’s
+code translation component generates a syntax tree by parsing the
+code to be migrated and progressively converts each node in the
+tree, ultima tely generating the target tests, which are compiled
+and executed in the target project. Moreover, we develop a web
+tool to assist developers in test migration. The effectiveness of our
+approach has been validated on five prevalent functional domain
+projects within the open-source community. We migrate a total of
+550 unit tests and submitted pull requests to augment test code in
+the target projects on GitHub. By the time of this paper submis-
+sion, 253 of these tests have already been merged into the projects
+(including 197 unit tests in the Luliyucoordinate-LeetCode project
+and 56 unit tests in the Rangerlee-HtmlParser project). Through
+running these tests, we identify 5 bugs, and 2 functional defects,
+and submitted corresponding issues to the project. The evaluation
+substantiates that MUT’s test migration is both viable and beneficial
+across programming languages and different projects.
+∗Corresponding Author
+Permission to make digital or hard copies of all or part of this work for personal or
+classroom use is granted without fee provided that copies are not made or distributed
+for profit or commercial advantage and that copies bear this notice and the full citation
+on the first page. Copyrights for components of this work owned by others than the
+author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific permission
+and/or a fee. Request permissions from permissions@acm.org.
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+ACM ISBN 979-8-4007-0217-4/24/04. . . $15.00
+https://doi.org/10.1145/3597503.3639124
+ACM Reference Format:
+Yi Gao, Xing Hu, Tongtong Xu, Xin Xia, David Lo, and Xiaohu Yang. 2024.
+MUT: Human-in-the-Loop Unit Test Migration. In 2024 IEEE/ACM 46th
+International Conference on Software Engineering (ICSE ’24), April 14–20,
+2024, Lisbon, Portugal. ACM, New York, NY, USA, 12 pages. https://doi.
+org/10.1145/3597503.3639124
+1 INTRODUCTION
+During software development, developers often spend considerable
+time and effort manually writing unit test cases. To facilitate the
+testing process, many approaches are proposed to generate unit test
+cases automatically, such as EvoSuite [33] and Randoop [42]. These
+tools exploit random generation, genetic algorithms, and dynamic
+symbolic execution to generate test cases.
+Existing studies mainly focus on generating unit test cases for
+Java and Python programming language [31, 33, 42, 44, 52]. How-
+ever, generating test cases for C++ programs has not received much
+attention. Although Fuzz testing tools [34, 38, 57] are proposed to
+generate test inputs for C++ programs, generating unit test cases
+for them is challenging due to i) difficulty in tool development. Due
+to the high complexity and low-level nature of the C++ language,
+which involves handling numerous low-level concepts and tech-
+nologies such as dynamic memory allocation and pointer arithmetic,
+developing unit test case generation tools for C++ is challenging,
+and ii) difficulty in generating effective test cases. As conventional
+reliance on random testing methods can produce randomized test
+data and logic that may lack real-world significance, thus limiting
+their effectiveness.
+In modern software development, many software products with
+the same functionality are written in different programming lan-
+guages for different platforms, such as Android phones have UI,
+WI-FI, and Bluetooth functions written in Java language, while
+OpenHarmony phones have the same functions, but they are im-
+plemented in C/C++ language. Inspired by the success in code
+migration [48], we argue that unit test cases can be migrated from
+an existing similar donor software with high-quality unit test cases.
+To achieve this objective, we propose a migration technique
+aimed at generating new test cases from another programming
+language. By defining mapping rules between Java and C++ code
+and syntax, we can translate existing test cases written in Java
+
+ICSE ’24, April 14–20, 2024, Lisbon, Portugal Yi Gao, Xing Hu, Tongtong Xu, Xin Xia, David Lo, and Xiaohu Yang
+into C++ test cases, eliminating the need to create test cases from
+scratch. Furthermore, by leveraging the active open-source ecosys-
+tem and abundant test case resources available in Java, we migrate
+previously developed and validated test cases that were manually
+designed. These test cases possess explicit meanings in their test
+data and logic. Specifically, for the target migration project, we
+utilize the search function of the GitHub open-source community
+to identify projects with the same topic as the target migration
+project, implemented in Java and ranked high in terms of stars.
+These identified projects serve as candidate projects from which we
+extract the test cases eligible for migration. Moreover, the migrated
+C++ unit test code retains functional consistency with the original
+Java unit test code, ensuring that it continues to examine the same
+logic and behavior. As a result, this approach enables more effec-
+tive identification of potential issues. Compared to generating unit
+test cases from scratch, migrating techniques can automatically
+translate original test cases into equivalent test cases of target code,
+so as to reduce the cost of testing and ensure the correctness and
+maintainability of migrated code.
+To facilitate the generation of high-quality C++ test cases, we
+propose a test migration tool MUT, which targets the scope where
+two applications are different but functionally similar. The high-
+level intuition is that test cases, namely test bodies, and assertions,
+are simpler compared with general source codes, thus it is more
+feasible to conduct code migration. Existing studies [41] have made
+the first attempt to migrate UI tests from a source Android app to
+automatically generate equivalent tests for a target Android app.
+However, the task of migrating unit test cases between different
+programming languages has not gained much attention in previous
+research. Making such a tool for migrating unit test cases is a non-
+trivial task, considering the following challenges:
+• Establishing code mapping relationships. To facilitate the migra-
+tion of unit test cases between two projects implemented in
+different languages, we need to find similar production code snip-
+pets and establish a set of mappings between their code snippets,
+including classes, methods, and fields.
+• Migrating unit tests. Once the code mapping relationships are es-
+tablished, we next need to identify the unit tests in Java projects
+that can be migrated. These migratable unit tests are then trans-
+lated into the equivalent C++ unit tests in the target project.
+To address the first challenge, MUT designs a code mapping
+method to identify functionally similar code snippet pairs between
+source and target projects. Subsequently, it establishes mapping
+rules for classes, methods, and fields. To address the second chal-
+lenge, MUT identifies migratable unit tests in the source project by
+analyzing the invocation relationship between test methods and
+focal methods. Subsequently, based on the code mapping relation-
+ships obtained in the previous step, MUT translates the migratable
+Java unit tests to C++ unit tests by employing a set of code trans-
+lation and replacement components based on Backus-Naur Form
+(BNF) rules [30]. BNF parsing guarantees the feasibility and high
+quality of code translation, as it captures the syntactic structure and
+semantic information of the source project comprehensively. We
+have devised a complete rule translation and replacement engine to
+handle each rule type in BNF flexibly and achieve source-to-target
+language translation of source code.
+MUT can be easily integrated into the human test process to
+assist developers in understanding and writing their final-version
+test cases. To boost the efficient use of MUT, we develop a web
+interface that displays pertinent pieces of information during test
+migration including API matching relations, pre-migration test
+cases, and post-migration test cases. Developers can easily under-
+stand the reason that MUT generates the post-migration codes,
+and correspondingly confirm, revise, or reject the migration result
+at this time. We carefully design a comparison study to evaluate
+the usefulness of MUT in helping developers and find our users
+are satisfied with MUT in helping them efficiently write test cases.
+We successfully migrated 550 test cases across 10 projects in five
+categories. By compiling and running these tests, we detected a
+total of 7 issues in the projects.
+In summary, the main contributions of this paper include:
+• We propose MUT, to facilitate cross-language, cross-platform test
+case migration and enhance test coverage, and minimize manual
+labor. The tool is available on our website 1.
+• We develop a web interface to assist testers in examining pre-
+and post-migration code details, improving the ease of adapting
+migrated test cases.
+• Experiments with 15 open-source projects (including Jsoup, Joda-
+Time, Commons-lang, etc), show the effectiveness and practi-
+cality of the MUT tool. In total, we detect 7 vulnerabilities and
+merge 253 unit tests.
+2 PRELIMINARIES
+In this section, we illustrate how a developer can potentially boost
+his test process by referring to a similar project, then we depict
+how a developer actually boosts his test process by integrating with
+MUT. Finally, we provide the definition of our test migration.
+2.1 Motivation
+During software development, developers often write different soft-
+ware products with different programming languages. For example,
+Jsoup [14] is a top HTML parsing project written in Java with 10.1k
+stars on GitHub, and Mylogin-Htmlparser [ 20] is a lightweight
+HTML parsing project developed in C++, which is similar to Jsoup.
+We find that Jsoup has high-quality unit test cases while Mylogin-
+Htmlparser does not have sufficient tests.
+As Figure 1 illustrates, the test methodfindsCharsetInMalfor-
+medMeta is a unit test within the Jsoup, it is utilized to validate
+the accurate parsing of meta elements and the retrieval of the
+charset attribute value from an HTML document. This unit test
+employs the parse method to parse HTML elements, the select
+method to select HTML tags from the parsing result, then the attr
+method to retrieve specific attribute values from the tags. All of
+these APIs, which implement fundamental HTML manipulation
+functionalities, are available in the Mylogin-Htmlparser. However,
+Mylogin-Htmlparser is not provided with any test cases to check
+the correctness of its functionality.
+With our tool. Our tool MUT aims to facilitate the reuse of unit
+tests from source projects and generate tests for target projects. It
+works by taking two projects with similar functionalities as input.
+The usage scenario of MUT is as follows:
+1https://github.com/testmigrator/mut
+MUT: Human-in-the-Loop Unit Test Migration ICSE ’24, April 14–20, 2024, Lisbon, Portugal
+(a) Source test from Jsoup
+1 @Test public void f i n d s C h a r s e t I n M a l f o r m e d M e t a () {
+2 String h = " < meta http - equiv = Content - Type content =
+text / html ; charset = gb2312 > " ;
+3 // example cited for reason of html5 's < meta
+charset > element
+4 Document doc = Jsoup . parse ( h ) ;
+5 assertEquals ( " gb2312 " , doc . select ( " meta " ) . attr ("
+charset " ) ) ;
+6 }
+(b) Migrated test by MUT
+1 void f i n d s C h a r s e t I n M a l f o r m e d M e t a () {
+2 string h = " < meta http - equiv = Content - Type content =
+text / html ; charset = gb2312 > " ;
+3 node doc = parser . parse ( h ) ;
+4 ASSERT_EQ ( " gb2312 " , doc - > select ( " meta " ) -> attr ( "
+charset " ) ) ;
+5 }
+(c) Migrated test in Mylogin-Htmlparser
+1 TEST ( test , f i n d s C h a r s e t I n M a l f o r m e d M e t a ) {
+2 string h = " < meta http - equiv = Content - Type content =
+text / html ; charset = gb2312 > " ;
+3 parser parser ;
+4 node doc = parser.parse(h);
+5 ASSERT_EQ("gb2312", doc->select("meta")->get_attr("charset"));
+6 }
+Figure 1: An example of unit test migration from Jsoup to
+Mylogin-Htmlparser.
+MUT facilitates developers in generating unit tests and supports
+the C++ language. For instance, when developing a lightweight
+HTML parser module, developers can find well-known projects
+with similar functionalities in the open-source community. MUT
+migrates function-related tests from these projects to the current
+development project, thereby generating unit test code. Although
+the migrated unit tests generated by MUT may only be partially
+correct, they still reduce the effort required for developers to write
+unit tests from scratch. Therefore, MUT helps developers improve
+the efficiency of writing unit tests.
+2.2 Task Definition
+This work primarily focuses on the migration of unit tests. The
+task can be formalized as follows: (1) Given the source code of
+two projects, 𝑠 and 𝑠′, the goal is to find a function 𝑓 such that
+𝑓 (𝑠, 𝑠′) = 𝑟. We refer to 𝑠, 𝑠′, and 𝑟 as the production code snippets
+of the original project, the production code snippets of the target
+project, and the code mapping rules, respectively. We calculate the
+code similarity between the two projects to obtain 𝑓 . (2) Given 𝑟
+and the unit tests of the source project, 𝑥, the objective is to find a
+function 𝑔 such that 𝑔(𝑟, 𝑥 ) = 𝑦. We refer to 𝑥 and 𝑦 as the original
+unit test and the target unit test, respectively. We utilize a code
+translation approach to obtain 𝑔.
+3 PROPOSED APPROACH
+Figure 2 illustrates the overall framework of our approach. The
+migration process mainly has four steps:
+Step ❶ Code mapping. This step aims to find the corresponding
+production code snippet 𝐶𝑠 with the same functionalities in the
+source projects given code 𝐶𝑡 in the target projects.
+Step ❷ Test case filtering. This step aims to find the unit test
+case 𝑇𝑠 of code snippets 𝐶𝑠 in the source project. These unit test
+cases are candidates to be migrated.
+Step ❸ Test case translation. This step translates the test cases in
+the source projects into those in the target projects. Specifically, the
+test cases in the source projects are written in Java programming
+language with JUnit [15] test framework. These test cases will be
+translated into the C++ programming language and executed using
+the most popular test framework in C++, GTest [9].
+Step ❹ Migrated test case adaptation. After the translation pro-
+cess, the generated test cases may not be used directly. Thus, we
+should adapt them to facilitate compilation and execution within
+the target project.
+3.1 Code Mapping
+As illustrated in Figure 2, during the Code Mapping stage, MUT
+identifies potential code mapping relationships between the two
+projects and concludes them into code mapping rules.
+3.1.1 Code Data Extraction. During the code data extraction stage,
+MUT extracts basic code information (e.g., class names, method
+names, method parameters, return types, and documentation) from
+both the source project and the target project. We use ANTLR [1]
+to facilitate the extraction process of code written in different pro-
+gramming languages. ANTLR provides a straightforward syntax
+rule language, commonly utilized for parsing tasks in various pro-
+gramming languages. The extracted information is used to find
+code mapping relationships between two projects, which serve as
+the basis for migrating test cases from the source project to the
+target project.
+3.1.2 Preprocessing. Due to the significant differences in code
+styles between different programming languages, we then prepro-
+cess the extracted code information to mitigate the impact of code
+style variations. Specifically, naming styles for class names and
+method names often follow composite forms, such as camel case
+or snake case. We split them into word sequences, for example,
+startObject and start_object are split into 𝑠𝑡𝑎𝑟𝑡, 𝑜𝑏 𝑗𝑒𝑐𝑡 . Then,
+we convert them into lowercase and eliminate irrelevant stop words
+(such as a, an, and the). Furthermore, each word is transformed
+into its stem form, for instance, equals is transformed to equal. For
+example, the method name selectElement is preprocessed into
+select and element, class name HtmlParse is preprocessed into html
+and parse, respectively.
+3.1.3 API Mapping. An API [2] represents the fundamental unit
+for implementing functionality in a system module, and each pub-
+lic method within a class is defined as an API. Different software
+projects might include code modules with similar or identical func-
+tionality, but the code implementation logic, style, and syntax of
+each API can vary significantly, particularly in cross-language and
+cross-platform contexts. We design a series of strategies to reveal

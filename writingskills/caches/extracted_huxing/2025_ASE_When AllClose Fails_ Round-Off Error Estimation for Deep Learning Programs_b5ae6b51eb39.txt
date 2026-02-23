@@ -1,0 +1,308 @@
+When AllClose Fails: Round-Off Error Estimation
+for Deep Learning Programs
+Qi Zhan∗, Xing Hu∗‡ Yuanyi Lin†, Tongtong Xu†, Xin Xia∗, Shanping Li∗
+∗The State Key Laboratory of Blockchain and Data Security, Zhejiang University, Hangzhou, China
+†Huawei, Hangzhou, China
+∗{qizhan, xinghu, shan}@zju.edu.cn, xin.xia@acm.org
+†{linyuanyi2, xutongtong9}@huawei.com
+Abstract—Deep learning programs are continually enhanced
+for improved performance through the use of kernel-level
+optimizations, parallel training, and low-precision arithmetic.
+These optimizations provide different implementations that are
+mathematically equivalent. Round-off error in floating-point
+computations can lead to differences in the outputs of these
+implementations, even when the mathematical equivalence holds.
+When the outputs of customized and reference implementations
+exceed the tolerance thresholds, it is difficult for developers to
+distinguish between acceptable round-off errors and implemen-
+tation bugs. This paper proposes an approach calledRENDER to
+classify the numerical errors between two implementations based
+on estimating the maximum round-off error.RENDER combines
+dynamic interval arithmetic and round-off error analysis to
+compute scalable and tight output bounds. We demonstrate the
+effectiveness of our method on real-world issues by comparing it
+with the state-of-the-art tool, SATIRE and a High-Precision Re-
+execution baseline. Experimental results show that our approach
+identifies at least 25% more errors and achieves an average
+speedup of 19× compared to SATIRE, enabling developers to
+debug and optimize implementations more efficiently.
+Index Terms—Round-off error analysis, Deep learning pro-
+grams, Interval arithmetic
+I. I NTRODUCTION
+Deep learning (DL) has become a cornerstone of modern
+computing, powering various applications, including computer
+vision [1], natural language processing [2], and code genera-
+tion [3]. The rapid growth of DL has also brought a new need
+to optimize the performance and efficiency of DL programs
+to handle increasingly large models.
+To accelerate training and inference in deep learning, devel-
+opers propose various methods. (1) Kernel and neural network-
+level optimizations [4], [5]. Developers continuously improve
+algorithms such as tiling and kernel fusion to fully utilize GPU
+resources. (2) Distributed and parallel training [6]. To accom-
+modate larger models, developers employ distributed training
+methods such as data parallelism [7], model parallelism [8]
+to scale training on multiple GPUs or machines. (3) Trade
+precision for performance by employing low-precision arith-
+metic such as FP16 [9] or even FP8 [10]. Conceptually, these
+approaches implement a mathematically equivalent program
+with different optimizations.
+Since these multiple implementations are equivalent in
+mathematics, comparing their outputs to validate correctness is
+‡Corresponding Author
+a: [0.92, 0.42, 2.64]b: [0.18, 0.55, 0.92]c: [0.92, 0.42, 2.64]
+InputDeveloperdef fma(d_ptr, a_ptr, b_ptr, c_ptr):range = program.id* SIZEa, b, c= load(a_ptr, range), load↵(b_ptr, range), load(c_ptr, range)d = a * b + cstore(d_ptr, d_val, range)
+Developerdef matmul(c_ptr, a_ptr, b_ptr):range = program.id* SIZE + …x, y,  = load(x_ptr), load(y_ptr), z       = dot(x, y)……
+allclose(atol=1e-4)Referencetorch.add(torch.multiply)
+Referencetorch.matmul
+d: [1.0120, 0.4074, 9.3983]Output
+d: [1.0121, 0.4075, 9.3984] Output
+ True
+c: [[1.3137,0.9027],[1.3990, 0.9156]]Output
+c: [[1.3134,0.9027],[1.3990, 0.9158]]Output Falsea: [[0.73, 0.68, 0.36],[0.78, 0.91, 0.18]]b: [[0.58, 0.35],[0.88, 0.56],[0.81, 0.74]]
+Input
+allclose(atol=1e-4)
+a)
+b)
+Fig. 1: Motivation of the “allclose” problem when comparing
+two implementations with a given input.
+common practice. However, exact output matches are typically
+impossible in deep learning programs because floating-point
+computations are inherently imprecise due to finite-precision
+representation and round-off errors. These errors can accumu-
+late and propagate through computations, potentially resulting
+in significant differences in the final outputs. Compared with
+traditional numerical computing, low-precision floating-point
+arithmetic is widely used in deep learning programs, which
+amplifies the impact of rounding errors further.
+To address this, developers usually examine the outputs by
+absolute tolerances (atol) and relative tolerances (rtol). For
+instance, PyTorch provides a torch.allclosefunction,
+which determines whether two tensors are approximately equal
+by ensuring each pair of elements satisfies the condition:
+|input − reference| ≤ atol + |rtol × reference|. The specific
+values of atol and rtol are usually determined empirically or
+based on the datatype of the tensors.
+As shown in Fig. 1a), the developer compares the output
+from fused multiply-add kernel with the reference implemen-
+tation in PyTorch and believes the kernel is correct when
+allclose passes. The problem arises when allclose
+fails, as shown in Fig. 1b). The developer writes cus-
+tomized matrix multiplication and compares it with PyTorch’s
+matmul, and it turns out that the two implementations pro-
+duce different results that exceed the given tolerance. It is
+challenging to identify the root cause in this case.
+91
+2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)
+2643-1572/25/$31.00 ©2025 IEEE
+DOI 10.1109/ASE63991.2025.00016
+The major concern of developers is whether they should
+refine the implementation further or safely ignore the error and
+continue developing. Therefore, the error and corresponding
+resolution can be classified into two types:
+1) Type-I: Acceptable Round-off error, which is inevitable
+in floating-point computations. The error can be mitigated
+by tuning the numerical precision of certain variables. After
+balancing the trade-off between performance and precision,
+the developer can increase the numerical precision or adjust
+the atol and rtol to make the allclosepass.
+2) Type-II: Implementation bug, which should be fixed by
+developers. This error may arise from incorrect algorithms,
+numerically unstable implementations, or faulty compiler
+optimizations. Developers should refine the implementation
+until the mismatch is resolved.
+Compared to crashes or obvious results mismatches, debug-
+ging and analyzing the root cause of floating-point programs
+is notoriously challenging due to round-off errors. Developers
+must analyze the errors carefully and compare the intermediate
+step-by-step results, which is time-consuming and error-prone.
+The two implementations may adopt fundamentally different
+DL frameworks and algorithms, making it difficult to compare
+the intermediate results. Furthermore, the source code of the
+reference implementation is sometimes unavailable, as in the
+case of libraries such as cuBLAS, making it impossible to
+obtain the intermediate results.
+The difficulty in identifying the root cause of errors can
+cause developer confusion and may even obscure real bugs.
+When facing output differences of a customized matrix mul-
+tiplication kerneltl.dot()in Triton [11] with matmulin
+PyTorch [12], the developer remarked in the issue1:
+“Are there some bugs in tl.dot() or my test code?
+This precision error shouldn’t be unacceptable.”
+Another example is a long-standing implementation bug in the
+gradient accumulation computation of Hugging Face Trans-
+formers training [13]. Gradient accumulation is commonly
+used to simulate larger batch sizes when memory constraints
+prevent training with large batches. A developer found that
+the training loss varied with batch size, which was initially
+misattributed to round-off error in 2021. The problem was
+eventually identified as an implementation error in gradient
+accumulation, which had persisted for three years before being
+fixed in 2024 [14]. This case illustrates that such implemen-
+tation bugs can be subtle to diagnose and wrongly blamed on
+round-off errors.
+The above examples illustrate the importance of classifying
+the two types of errors for developers. We formulate the
+problem as follows:
+Problem:Given a reference program and a target program,
+the output by the two programs differs for a given input.
+How can we determine whether the error is Type-I (round-
+off error) or Type-II (bug)?
+1https://github.com/triton-lang/triton/issues/2843
+Our Solution. To solve this problem, we propose a novel
+approach called RENDER, referred to Round-Off Error Esti-
+matioN for Deep LEarning ProgRams. RENDER estimates a
+round-off error bound rigorously for the target program and
+classifies the error into two types. The idea is illustrated in
+Fig. 2. Given a target program and the output (black dot),
+our approach estimates both the lower and upper bounds of
+the output. If the reference output falls within the bounds, we
+consider the error to be due to round-off error and classify
+it as Type-I ( green dot ). Developers can safely ignore the
+differences and adjust atol and rtol. Otherwise, we conclude
+that the error is due to implementation or compiler bugs and
+classify it as Type-II (red dot ). Developers can further refine
+the implementations.
+lower bound
+upper bound
+target
+Type-I
+Type-II
+Fig. 2: The proposed method estimates the error bound for the
+target program.
+Challenges: Compared to traditional programs, new chal-
+lenges arise when traditional round-off error estimation ap-
+proaches are applied to DL programs directly. (1) The com-
+putation involves a large number of operations, which requires
+a scalable and efficient approach to estimate the error. (2) The
+low-level implementation of operations is not fully transparent,
+such as the matrix multiplication details, making it difficult to
+estimate the bound accurately. To address these challenges,
+RENDER estimates the maximum floating-point round-off er-
+ror dynamically based on the following key ideas:
+❶ Combine Interval Arithmetic and Error Analysis:As
+computations in deep learning programs are typically large-
+scale, we adopt a fast interval arithmetic-based approach to
+estimate the interval of the output tensor for each operation. To
+estimate the round-off error for non-transparent operations, we
+combine the error analysis with the lower and upper bounds,
+which ensures the error bound is sound regardless of the low-
+level implementation.
+❷ Dynamic Analysis:While conventional error analysis is
+typically static, the concrete input in our problems offers an
+opportunity to estimate errors dynamically. We rerun the target
+program and estimate the interval of each tensor during its
+execution. This allows us to avoid unnecessary overestimation
+for operations such as max, min, and conditional statements.
+❸ From Neural Network to Kernel-Level Bounds: A DL
+program is typically a neural network composed of multiple
+kernels. Our approach focuses on kernel-level estimation first
+and automatically reduces the problem of the whole neural
+network to a series of kernel estimations, which simplifies the
+overall analysis and makes it scalable to large and complex
+deep learning programs.
+92
+We implement R ENDER based on Triton [11] and Py-
+Torch [12]. To evaluate our approach, we collect a dataset
+from real-world issues about precision errors in the deep
+learning community. There are 20 kernel-level test cases in
+total, 16 of which are Type-I and 4 of which are Type-II. We
+consider SATIRE [15], a state-of-the-art approach for comput-
+ing rigorous rounding error bounds in large-scale programs
+and a High-Precision Re-execution baselines. Compared to
+baselines, our approach can successfully classify errors in 8
+and 5 more cases, respectively. Among the successful cases,
+our approach always provides a tighter error bound compared
+with SATIRE. Furthermore, we evaluated our method on 7
+real-world issues in neural networks and successfully analyzed
+6 cases. Following the analysis, we submitted 5 feedback
+reports to the communities, with 2 already acknowledged by
+the developers. These results demonstrate the practical utility
+of our approach in addressing precision-related issues.
+Contributions: Our contributions are as follows:
+• To the best of our knowledge, this is the first work to
+classify the type of numerical error in the context of
+DL programs and provide a solution to the problem by
+estimating the maximum round-off error.
+• We propose an approach to estimate the floating-point
+round-off error for a single kernel and show how to
+reduce the whole deep learning program to kernel levels.
+• We evaluate our approach on a collection of DL pro-
+grams derived from real-world issues and demonstrate its
+effectiveness and efficiency.
+The rest of the paper is organized as follows. Section II
+presents the necessary background about floating-point num-
+bers and error analysis. Section III describes our approach
+in detail. Section IV presents the experimental setup and
+evaluation. Section V provides a case study and discusses the
+results and limitations of our approach. Section VI discusses
+related work. Finally, Section VII concludes the paper.
+II. P RELIMINARIES
+This section presents the necessary background on floating-
+point representations, error models, and how to use interval
+arithmetic to estimate the error.
+A. Floating-point Representation
+Floating-point numbers approximate real numbers and can
+represent only a finite subset of the continuous real number
+space. According to the IEEE 754 standard [16], a floating-
+point number is composed of three components: the sign (s),
+the exponent (e), and the significand (m), and the value of the
+number is given by:
+(−1)s × 2e−bias × 1.m,
+where the bias is a constant that depends on the floating-point
+format. Table I illustrates the bit allocation of these com-
+ponents in half-, single-, and double-precision floating-point
+formats. In addition to the common types mentioned above,
+there are also many low-precision floating-point formats, such
+TABLE I: IEEE 754 Floating-Point Formats.
+Format Sign Exponent Significand Machine Epsilon
+Half 1 5 10 9.77 ×10−4
+Single 1 8 23 1.19 ×10−7
+Double 1 11 52 2.22 ×10−16
+as bfloat16 (BF16) [17], TensorFloat32 (TF32) [18], FP8 [10],
+which are used widely in deep learning.
+The finite number of bits used to represent real numbers
+inevitably introduces inaccuracies. The nearest representable
+value may differ from the exact mathematical result by up to
+half a unit in the last place (ULP), and this difference is known
+as round-off error. IEEE 754 defines several rounding modes,
+and we mainly focus on the downward rounding mode, which
+rounds the result toward negative infinity, and the upward
+rounding mode, which rounds toward positive infinity. These
+modes ensure that the computed value is always less than or
+equal (in downward rounding) or greater than or equal (in
+upward rounding) to the exact result.
+B. Error Model
+As round-off error is inherently inaccurate in floating-point
+computations, it is essential to measure this error. Let fl (·)
+represent the result of an operation performed in floating-point
+arithmetic. The relative error can be expressed as:
+Errrel =
+
+fl(x) − x
+x
+ ,
+which quantifies how far the floating-point result is from the
+exact value. According to the standard error model in the
+textbook [19], we assume the following:
+fl(x op y) = (x op y)(1 +δ), δ ≤ |u|,
+where machine epsilon u is the upper bound on the relative
+error [20]. The machine epsilon values for different floating-
+point formats are provided in Table I.
+This error model not only helps estimate the error of a
+single operation but also enables us to understand how errors
+propagate in multi-step computations. For example, consider
+a summation ofn floating-point numbersx1, x2, . . . , xn, each
+with an error bounded by u. The error bound for the sum of
+these numbers, as discussed in [19], can be expressed as:
+∆ ≤ (n − 1)u
+nX
+i=1
+|xi| + O(u2). (1)
+This equation reveals that the relative error of the summation
+is primarily bounded by(n−1)u times the sum of the absolute
+values of the input numbers. It is also worth noting that
+this error bound holds regardless of the order in which the
+summation is performed, which is particularly useful for DL
+programs where the summation order is not fixed.
+93

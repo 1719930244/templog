@@ -1,0 +1,133 @@
+59
+The Lost World: Characterizing and Detecting Undiscovered
+Test Smells
+YANMING YANG,Department of Computer Science and Technology, Zhejiang University, China
+XING HU,School of Software Technology, Zhejiang University, China
+XIN XIA,Software Engineering Application Technology Lab, Huawei, China
+XIAOHU YANG,Department of Computer Science and Technology, Zhejiang University, China
+Testsmellreferstopoorprogramminganddesignpracticesintestingandwidelyspreadsthroughoutsoftware
+projects. Considering test smells have negative impacts on the comprehension and maintenance of test code
+and even make code-under-test more defect-prone, it thus has great importance in mining, detecting, and
+refactoring them. Since Deursen et al. introduced the definition of “test smell”, several studies worked on
+discovering new test smells from test specifications and software practitioners’ experience. Indeed, many
+bad testing practices are “observed” by software developers during creating test scripts rather than through
+academicresearchandarewidelydiscussedinthesoftwareengineeringcommunity(e.g.,StackOverflow)[ 70,
+94]. However, no prior studies explored new bad testing practices from software practitioners’ discussions,
+formally defined them as new test smell types, and analyzed their characteristics, which plays a bad role for
+developersinknowingthesebadpracticesandavoidingusingthemduringtestcodedevelopment.Therefore,
+we pick up those challenges and act by working on systematic methods to explore new test smell types
+from one of the most mainstream developers’ Q&A platforms, i.e., Stack Overflow. We further investigate
+the harmfulness of new test smells and analyze possible solutions for eliminating them. We find that some
+test smells make it hard for developers to fix failed test cases and trace their failing reasons. To exacerbate
+matters, we have identified two types of test smells that pose a risk to the accuracy of test cases. Next, we
+developadetectortodetecttestsmellsfromsoftware.Thedetectoriscomposedofsixdetectionmethodsfor
+differentsmelltypes.Thesedetectionmethodsarebothwrappedwithasetofsyntacticrulesbasedonthecode
+patterns extracted from different test smells and developers’ code styles. We manually construct a test smell
+datasetfromsevenpopularJavaprojectsandevaluatetheeffectivenessofourdetectoronit.Theexperimental
+results show that our detector achieves high performance in precision, recall, and F1 score. Then, we utilize
+our detector to detect smells from 919 real-world Java projects to explore whether the six test smells are
+prevalentinpractice.Weobservethatthesetestsmellsarewidelyspreadin722outof919Javaprojects,which
+demonstratesthattheyareprevalentinreal-worldprojects.Finally,tovalidatetheusefulnessoftestsmellsin
+practice,wesubmit56issuereportsto53real-worldprojectswithdifferentsmells.Ourissuereportsachieve
+76.4% acceptance by conducting sentiment analysis on developers’ replies. These evaluations confirm the
+effectivenessofourdetectorandtheprevalenceandpracticalityofnewtestsmelltypesonreal-worldprojects.
+CCS Concepts: •Software and its engineering→Software maintenance tools;
+This research is supported by the Fundamental Research Funds for the Central Universities (No. 226-2022-00064) and the
+National Natural Science Foundation of China (No. 62141222).
+Authors’addresses:Y.YangandX.Yang,DepartmentofComputerScienceandTechnology,ZhejiangUniversity,Hangzhou,
+Zhejiang,310027,China;e-mails:yanmingyang@zju.edu.cn,yangxh@zju.edu.cn;X.Hu(Correspondingauthor),Schoolof
+Software Technology, Zhejiang University, Ningbo, Zhejiang, 315048, China; e-mail: xinghu@zju.edu.cn; X. Xia, Software
+Engineering Application Technology Lab, Huawei, Hangzhou, Zhejiang, 310007, China; e-mail: xin.xia@acm.org.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee
+provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and
+the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be
+honored.Abstractingwithcreditispermitted.Tocopyotherwise,orrepublish,topostonserversortoredistributetolists,
+requires prior specific permission and/or a fee. Request permissions frompermissions@acm.org.
+© 2024 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+1049-331X/2024/03-ART59 $15.00
+https://doi.org/10.1145/3631973
+ACM Trans. Softw. Eng. Methodol., Vol. 33, No. 3, Article 59. Publication date: March 2024.
+
+59:2 Y. Yang et al.
+Additional Key Words and Phrases: Test smell, mining software repositories, test smell detection, empirical
+study
+ACM Reference format:
+Yanming Yang, Xing Hu, Xin Xia, and Xiaohu Yang. 2024. The Lost World: Characterizing and Detecting
+Undiscovered Test Smells.ACM Trans. Softw. Eng. Methodol.33, 3, Article 59 (March 2024), 32 pages.
+https://doi.org/10.1145/3631973
+1 INTRODUCTION
+Test code, as an important part of the software, can compete with production code in size [74].
+Theratiobetweenproductioncodeandtestcodecouldbeanywherebetween1:1and1:3[ 74].Just
+like code smells in production code, test code also exists in many bad programming and design
+practices [56]. Van Deursen et al. [99] defined these bad testing practices astest smells. Similar to
+code smells, test smells make it harder for developers to maintain and comprehend test code and
+even may lower the effectiveness and correctness of test code [57]. Recent studies also demon-
+strated that test smells hamper the quality and maintainability of production code [97]. Here, we
+provide a descriptive illustration of the impact of a test smell on software quality by presenting a
+real-worldtestsmell[ 1].Figure 1presentsabugreportofapopularprojectcalled kestra1 withover
+3.6kstars.Thisbugreportelucidatestheissueofinconsistentandunreliabletestresultsattributed
+to the presence of the flaky test, a specific test smell type. Subsequently, developers initiate a pull
+request to address this issue by removing the flaky test. Considering the negative impacts of test
+smells, it is of great importance to explore potential test smells in order to stop developers from
+producing smelly test scripts.
+SinceVanDeursenetal.[ 99]introducedthedefinitionof“testsmell”in2001,onlynineformally-
+published literatures [69] proposed new test smells based on the test specifications in the testing
+framework[84,100]anddevelopers’andresearchers’experiences[ 99].Indeed,mostofthebadtest-
+ingpracticesandproblemsare“observed”bypractitionerswhoareactivelydevelopingtestscripts
+and are communicated by them via the grey literature and discussions (e.g., blog sources and in-
+dustryconferencetalks)[ 69]ratherthanviaacademicresearch.Sofar,softwarepractitionershave
+noticedmanycontroversialprogrammingpracticesintestcodealongwiththedevelopmentoftest-
+ingtechniques.ManyofthesepracticeshaveevenraisedhotspotdiscussionsontheQ&Aplatform,
+suchasStackOverflow.However,sincenoacademicstudiespresentthesenewtestsmelltypesby
+mining software practitioners’ discussions, such potential test smells without formal definitions
+arenotacknowledgedandfurtherresearchedbyacademiaaswellasnotstandardizedintheindus-
+try. It leads to the majority of software practitioners not having access to recognize the existence
+ofpotentialtestsmellsandstillapplyingbadtestingpracticestoproducelow-qualitytestscripts.
+To fill the gap, we considerStack Overflow (SO)– one of the largest and most famous dis-
+cussionplatformsfor softwarepractitioners–as thedatasourceandconductsystematicresearch
+to (1) explore potential test smell types from SO posts that discuss controversial testing practices
+and provide formal definitions for them, and then (2) curate a detector to identify them from soft-
+ware. Morespecifically,toexcavatenewtestsmells,wefirstdesignasearchstrategytocollectthe
+postsdiscussingthecontroversialtestingpractices.Then,we classifyandanalyze thevotingpref-
+erence of answers in collected posts to determine potential test smells. Finally, we summarize six
+new test smells, including one project-level, two statement-level, and three method-level smells.
+Furthermore, for each smell type, we provide a clear definition and investigate its harmfulness
+to software quality. Empirical evidence shows that some test smells violate the design principles
+1https://github.com/kestra-io/kestra
+ACM Trans. Softw. Eng. Methodol., Vol. 33, No. 3, Article 59. Publication date: March 2024.
+The Lost World: Characterizing and Detecting Undiscovered Test Smells 59:3
+Fig. 1. An example of a real-world test smell.
+of the test framework and some even prevent developers from finding the cause of failure once
+a test case fails. Hence, we provide possible solutions to eliminate them to reduce the negative
+impacts on software quality. Next, we develop a detector to identify the six test smells from soft-
+wareprojects.Toachievethis,wefirstextractcodepatternsofdifferentsmellsbycheckingsample
+codeinSOpostsandGitHubprojects.Wethentransformthetestcodefordetectioninto Abstract
+SyntaxTrees(ASTs) ,and,foreachsmell,designcorrespondingsyntacticrulesofASTsbasedon
+the summarized code pattern as its detection method.
+Toevaluatethecorrectnessofourdetector,wemanuallylabel1,200testsmellsfromsevenpop-
+ular projects with more than 1.5k stars. Experimental results illustrate that our detector achieves
+100% detection precision, 98% recall, and 99% F1-score, outperforming the baseline approaches.
+Some rare errors may happen during detection due to complex program logic and unusual code
+structures/styles in test code. To assess their prevalence in the real world, we detect each type
+of test smell from 919 real-world Java projects. The results show that these six test smells are de-
+tected from 722 projects and two out of six test smells widely exist in over 500 projects, which
+notonlyverifiestheirprevalencebutalsoindicatesthatcorrespondingbadpracticesarestillused
+by developers to create test scripts until now. Moreover, to explore the usefulness of test smells
+in practice, we randomly select ten smelly projects for each smell type and submit issue reports
+to report the corresponding test smells to developers. Finally, a total of 56 issue reports were sub-
+mitted (one test smell type occurs in only six projects). As a result, we received 34 replies with 26
+positive ones, achieving 76.4% acceptance. Among positive replies, many developers agree with
+us and even adopt our suggestions to refactor their smelly test scripts [18]. For example, a devel-
+oper who works for the “spring-integration” project directly refactors smelly test code based on
+our issue report [2] in Figure2.
+In summary, this paper makes the following contributions:
+(1) Tothebestofourknowledge,wearethefirsttounearthnewtestsmelltypesfromsoftware
+practitioners’discussionsandformallydefinethemforservingfurtherresearchinacademia
+and specification development in the industry.
+(2) We investigate the harmfulness of proposed test smells and analyze possible refactoring
+solutions to address them.
+(3) We develop a test smell detector by extracting code patterns of the six new test smells as
+well as designing corresponding detection methods based on summarized code patterns.
+(4) We evaluate the effectiveness of our detector and the prevalence and usefulness of the pro-
+posed test smell on 919 real-world Java projects.
+ACM Trans. Softw. Eng. Methodol., Vol. 33, No. 3, Article 59. Publication date: March 2024.
