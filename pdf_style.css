@@ -1,0 +1,106 @@
+@page {
+  size: A4;
+  margin: 2.5cm 2cm;
+}
+
+body {
+  font-family: "Noto Serif CJK SC", "Noto Sans CJK SC", serif;
+  font-size: 11pt;
+  line-height: 1.8;
+  color: #1a1a1a;
+}
+
+h1 {
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-size: 22pt;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.3em;
+  color: #111;
+}
+
+h2 {
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-size: 15pt;
+  font-weight: 700;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 0.3em;
+  margin-top: 1.8em;
+  color: #2c3e50;
+}
+
+h3 {
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-size: 12.5pt;
+  font-weight: 600;
+  margin-top: 1.4em;
+  color: #34495e;
+}
+
+blockquote {
+  border-left: 4px solid #3498db;
+  padding: 0.4em 1em;
+  margin: 1em 0;
+  background: #f0f7ff;
+  color: #2c3e50;
+  font-style: normal;
+}
+
+code {
+  font-family: "Source Code Pro", "Noto Sans Mono CJK SC", monospace;
+  font-size: 0.9em;
+  background: #f5f5f5;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+}
+
+pre {
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0.8em 1em;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 10pt;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-weight: 600;
+  padding: 0.6em 0.8em;
+  text-align: left;
+}
+
+td {
+  padding: 0.5em 0.8em;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+strong {
+  color: #2c3e50;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2em 0;
+}
+
+ul, ol {
+  padding-left: 1.5em;
+}
+
+li {
+  margin-bottom: 0.3em;
+}
