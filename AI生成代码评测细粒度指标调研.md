@@ -1,6 +1,6 @@
 # AI 生成代码评测细粒度指标调研
 
-> **版本**: v2.0 | **日期**: 2026-02-24 | **定位**: 面向 AI Coding 产品（AI IDE、代码助手、Coding Agent）的代码类评测指标体系梳理
+> **版本**: v2.2 | **日期**: 2026-02-24 | **定位**: 面向 AI Coding 产品（AI IDE、代码助手、Coding Agent）的代码类评测指标体系梳理
 
 ---
 
@@ -131,6 +131,17 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **意义**：对于生产环境部署，一致性比峰值性能更重要。高一致性意味着模型输出可预测，低一致性意味着"运气成分"大。
 
+### 3.4 数据污染鲁棒性
+
+**定义**：在排除训练数据泄漏后的真实性能。
+
+**评测方法**：
+- 时间戳过滤：只使用模型训练截止日期之后的数据 [LiveCodeBench, Jain et al., 2024]
+- 数据去重：检测评测集与训练集的重叠
+- 动态生成：评测集持续更新，避免被"刷榜"
+
+**工业实践**：头部产品使用"黄金数据集"（Golden Dataset），排除所有可能的污染源，并以 15% 的周更新率动态刷新评测集。
+
 ---
 
 ## 四、安全性与合规 (Security & Compliance)
@@ -143,19 +154,13 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **计算**：含漏洞的生成样本数 / 总生成样本数 × 100%
 
-**评测方法**：使用 SAST 工具（Semgrep、Bandit、CodeQL）扫描生成代码，按 CWE 分类统计。
+**评测方法**：使用 SAST 工具（Semgrep、Bandit、CodeQL）扫描生成代码，按 CWE 分类统计。区分被动评测（给定任务后检查输出）和主动评测（AI 在补全/建议场景中是否主动引入不安全模式，CyberSecEval 2 的新维度）。
 
 **参考基准**：
 - CyberSecEval 2 (Bhatt et al., 2024, Meta)：多维度安全评测
 - SecurityEval (Siddiq & Santos, 2022)：安全编码基准数据集
 
-### 4.2 不安全代码建议率 (Insecure Code Suggestion Rate)
-
-**定义**：AI 主动建议的代码片段中包含安全漏洞的比例。
-
-CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（给定任务后检查输出），4.2 是"主动评测"（AI 在补全/建议场景中是否会主动引入不安全模式）。
-
-### 4.3 Prompt Injection Resilience（抗提示词注入能力）
+### 4.2 Prompt Injection Resilience（抗提示词注入能力）
 
 **定义**：在对抗性提示注入（如恶意代码注释、误导性 docstring）下，模型仍能生成安全代码的能力。
 
@@ -163,7 +168,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 - "Can Adversarial Code Comments Fool AI Security Reviewers" (2602.16741, Feb 2026)：通过注释注入攻击 LLM 代码分析
 - "Prompt Poisoning Code" (2510.22944, Oct 2025)：研究提示词投毒对代码缺陷引入率的影响
 
-### 4.4 安全编码标准合规率
+### 4.3 安全编码标准合规率
 
 **定义**：生成代码符合特定安全编码标准的比例。
 
@@ -173,7 +178,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 - CVE-Factory (2602.03012, Feb 2026)：将安全漏洞发现做成 Agent 级任务
 - "Security and Quality in LLM-Generated Code: Multi-Language Analysis" (2502.01853, Feb 2025)
 
-### 4.5 许可证合规与价值观对齐 (License Compliance & Constitutional Compliance)
+### 4.4 许可证合规与价值观对齐 (License Compliance & Constitutional Compliance)
 
 **许可证合规**：AI 生成代码可能包含与受限许可证（如 GPL、AGPL）关联的代码片段，引发法律风险。
 
@@ -190,9 +195,9 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 ---
 
-## 五、运行时效率 (Runtime Efficiency)
+## 五、效率与成本 (Efficiency & Cost)
 
-> 核心问题：生成的代码跑得快不快、资源消耗合不合理？
+> 核心问题：生成的代码跑得快不快？生成过程本身的成本是否合理？
 
 ### 5.1 时间效率
 
@@ -211,6 +216,8 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 **EffiBench-X** (Qing et al., 2505.13004, May 2025) 将评测扩展到 Python、C++、Java、JavaScript、Ruby、Go 六种语言，发现即使最优 LLM（Qwen3-32B）平均也仅达到人类效率的约 62%，且语言间差异显著。
 
+**效率比分级参考**：ER = 生成代码运行时间 / 最优解运行时间。ER ≤ 1.5 为优秀，1.5 < ER ≤ 5 为可接受，ER > 5 需要优化，ER = ∞ 为超时。
+
 ### 5.2 高性能计算场景的效率评测
 
 **定义**：针对 CUDA kernel、数值计算、系统级代码等 HPC 场景，以实测 GFLOPS、加速比（speedup ratio）或运行时间缩减比例作为效率指标。
@@ -223,21 +230,26 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 目前 HPC 场景尚无类似 EffiBench 的标准化基准，各研究自定义评测协议，统一框架仍是开放问题。
 
-### 5.3 效率比 (Efficiency Ratio)
+### 5.3 生成成本与交互效率
 
-**定义**：生成代码运行时间 / 最优解运行时间。
+| 指标 | 定义 | 计算 |
+|------|------|------|
+| **Cost-per-Task** | 完成单个任务的总成本 | token 消耗 × 单价 |
+| **Token-to-Solution Efficiency** | 解决同一问题所需的 token 数 | 对比不同模型/Agent |
+| **步骤效率** | 完成任务的交互轮数 | Agent 场景 |
+| **Wall-clock Time** | 从提交到完成的实际耗时 | 端到端 |
 
-**分级**：
-- ER ≤ 1.5：优秀（接近最优）
-- 1.5 < ER ≤ 5：可接受
-- ER > 5：需要优化
-- ER = ∞：超时/无法运行
+**成本-质量帕累托前沿**：在给定成本预算下能达到的最高质量。[Cost-Aware Model Selection, 2602.06370, Feb 2026] 提出了多目标优化框架。
+
+**步骤效率最新研究**：
+- EGSS (2602.05242, Feb 2026)：基于熵引导的逐步扩展策略
+- SWE-Replay (2601.22129, Jan 2026)：高效的 test-time scaling
 
 ---
 
-## 六、上下文融合与环境适配 (Context Integration & Environment Adaptation)
+## 六、上下文适配与泛化能力 (Context Adaptation & Generalization)
 
-> 核心问题：生成代码能否融入已有代码库和工具链？
+> 核心问题：生成代码能否融入已有代码库，并在不同语言、领域间保持稳定表现？
 
 ### 6.1 架构契合度
 
@@ -267,13 +279,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 **工业意义**：ToB 场景中，企业往往有大量私有 SDK 和内部 API。模型能否在少量示例下快速适配，直接决定了产品在企业场景的可用性。
 
----
-
-## 七、泛化性 (Generalization)
-
-> 核心问题：模型在不同语言、不同领域的表现是否稳定？
-
-### 7.1 跨语言泛化
+### 6.4 跨语言泛化
 
 **定义**：模型在主流语言（Python/JS/Java）与长尾语言（VB/COBOL/Fortran/Lua）之间的性能差距。
 
@@ -285,7 +291,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 - MultiPL-E (Cassano et al., 2023)：HumanEval 翻译到 18+ 语言
 - HumanEval-X (Zheng et al., 2023)：6 语言对齐评测
 
-### 7.2 跨领域泛化
+### 6.5 跨领域泛化
 
 **评测维度**：通用代码 vs 领域特定代码的性能差距。
 
@@ -295,22 +301,11 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 - 智能合约：Agentic Pipeline for Smart Contract (2602.13808, Feb 2026)
 - 硬件描述：SimulatorCoder (2602.17169, Feb 2026)
 
-### 7.3 数据污染鲁棒性
-
-**定义**：在排除训练数据泄漏后的真实性能。
-
-**评测方法**：
-- 时间戳过滤：只使用模型训练截止日期之后的数据 [LiveCodeBench, Jain et al., 2024]
-- 数据去重：检测评测集与训练集的重叠
-- 动态生成：评测集持续更新，避免被"刷榜"
-
-**工业实践**：头部产品使用"黄金数据集"（Golden Dataset），排除所有可能的污染源，并以 15% 的周更新率动态刷新评测集。
-
 ---
 
-## 八、补丁与编辑指标（修复/编辑场景）
+## 七、补丁与编辑指标（修复/编辑场景）
 
-### 8.1 补丁最小性与过度修复
+### 7.1 补丁最小性与过度修复
 
 **核心论文**："Evaluating Software Development Agents: Patch Patterns, Code Quality, and Issue Complexity in Real-World GitHub Scenarios" (Chen & Jiang, 2410.12468, SANER 2025)。该研究分析了 10 个顶级 Agent 在 SWE-Bench Verified 的 500 个真实 GitHub issue 上生成的 4,892 个补丁。
 
@@ -321,11 +316,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 - 相反，Gru (5.67 行) 和 Amazon-Q-Dev (6.08 行) 比金标准补丁更精简
 - SWE-bench 的单元测试基于金标准补丁编写，当 Agent 修改了不同文件/函数但仍通过测试时，测试可能未覆盖 Agent 的实际改动，存在评测盲区
 
-### 8.2 补丁应用成功率
-
-**定义**：生成的 patch 能被 `git apply` 成功应用的比例。补丁格式错误、上下文不匹配等导致无法应用。这是一个纯工程指标，但在实际评测中常被忽视。
-
-### 8.3 State-Diff 评测
+### 7.2 State-Diff 评测
 
 **核心论文**："Agent-Diff: Benchmarking LLM Agents on Enterprise API Tasks via Code Execution with State-Diff-Based Evaluation" (Pysklo, Zhuravel & Watson, 2602.11224, Feb 2026)。
 
@@ -340,28 +331,9 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 ---
 
-## 九、生成成本与交互效率 (Generation Cost & Interaction Efficiency)
+## 八、意图对齐指标（需求→代码）
 
-### 9.1 生成侧成本
-
-| 指标 | 定义 | 计算 |
-|------|------|------|
-| **Cost-per-Task** | 完成单个任务的总成本 | token 消耗 × 单价 |
-| **Token-to-Solution Efficiency** | 解决同一问题所需的 token 数 | 对比不同模型/Agent |
-| **步骤效率** | 完成任务的交互轮数 | Agent 场景 |
-| **Wall-clock Time** | 从提交到完成的实际耗时 | 端到端 |
-
-**成本-质量帕累托前沿**：在给定成本预算下能达到的最高质量。[Cost-Aware Model Selection, 2602.06370, Feb 2026] 提出了多目标优化框架。
-
-**步骤效率最新研究**：
-- EGSS (2602.05242, Feb 2026)：基于熵引导的逐步扩展策略
-- SWE-Replay (2601.22129, Jan 2026)：高效的 test-time scaling
-
----
-
-## 十、意图对齐指标（需求→代码）
-
-### 10.1 指令遵循率 (Instruction Following Rate)
+### 8.1 指令遵循率 (Instruction Following Rate)
 
 **定义**：生成代码满足显式约束的比例。
 
@@ -371,7 +343,7 @@ CyberSecEval 2 的新维度。与 4.1 的区别在于：4.1 是"被动评测"（
 
 **参考基准**：BigCodeBench (Zhuo et al., 2024) 评测复杂指令下的约束满足能力。
 
-### 10.2 需求-代码对齐度 (SBC)
+### 8.2 需求-代码对齐度 (SBC)
 
 **核心论文**："Bridging LLM-Generated Code and Requirements: Reverse Generation Technique and SBC Metric for Developer Insights" (Ponnusamy, 2502.07835, Feb 2025)。
 
@@ -394,12 +366,6 @@ SBC = 0.7 × semantic_score + 0.1 × BLEU + 0.2 × completeness
 **权重设计理由**：语义相似度权重最高（0.7）因为它直接衡量意图对齐；完整性（0.2）惩罚功能遗漏和幻觉但不主导评分；BLEU（0.1）可靠性较低但提供互补信号。
 
 **实验结果**：在 90 个需求（覆盖 UI/React/Angular、数据层/SQL、业务逻辑/.NET/Node.js/Spring Boot）上评测 Codellama 13B、Qwen2.5-Coder 14B、Deepseek Coder 6.7B、Codestral 22B 四个模型。SBC > 0.55 表示逆向生成需求质量较高，SBC > 0.65 表示语义高度接近。`missing_elements` 字段揭示被遗漏的需求组件，`extra_elements` 揭示幻觉内容。
-
-### 10.3 功能点覆盖率
-
-**定义**：需求中的功能点被生成代码实现的比例。
-
-**与 pass@k 的区别**：pass@k 只测"能不能跑通测试"，功能点覆盖测"需求中的功能做没做全"。一个通过所有测试但只实现了 60% 功能点的代码，pass@1=1 但功能点覆盖率=0.6。
 
 ---
 
@@ -444,28 +410,24 @@ SBC = 0.7 × semantic_score + 0.1 × BLEU + 0.2 × completeness
 30. He et al., 2026. "Anchored Decoding: Provably Reducing Copyright Risk for Any Language Model". arXiv:2602.07120
 31. Jiang et al., 2025. "Large Language Model Unlearning for Source Code (PROD)" (AAAI 2026). arXiv:2506.17125
 
-### 运行时效率
+### 效率与成本
 32. Huang et al., 2024. "EffiBench: Benchmarking the Efficiency of Automatically Generated Code" (NeurIPS 2024 D&B). arXiv:2402.02037
 33. Qing et al., 2025. "EffiBench-X: Multi-Language Efficiency Benchmark". arXiv:2505.13004
 34. Ou et al., 2026. "MaxCode: Max-Reward RL for Code Optimization". arXiv:2601.05475
 35. Mikasa et al., 2026. "Improving HPC Code Generation Capability of LLMs via Online RL with Real-Machine Benchmark Rewards". arXiv:2602.12049
 36. Rahman et al., 2025. "MARCO: Multi-Agent Framework for HPC Code Optimization". arXiv:2505.03906
+42. "Cost-Aware Model Selection for Text Classification", Feb 2026. arXiv:2602.06370
+43. "EGSS: Entropy-guided Stepwise Scaling for Reliable SE", Feb 2026. arXiv:2602.05242
+44. "SWE-Replay: Efficient Test-Time Scaling for SE Agents", Jan 2026. arXiv:2601.22129
 
-### 上下文融合与仓库级
+### 上下文适配与泛化
 37. "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful?", Feb 2026. arXiv:2602.11988
-
-### 泛化性与多语言
 38. Cassano et al., 2023. "MultiPL-E: A Scalable and Polyglot Approach to Benchmarks". arXiv:2208.08227
 39. Zheng et al., 2023. "CodeGeeX: A Pre-Trained Model with Multilingual Benchmarking on HumanEval-X"
 
 ### 补丁与编辑
 40. Chen & Jiang, 2024. "Evaluating Software Development Agents: Patch Patterns, Code Quality, and Issue Complexity" (SANER 2025). arXiv:2410.12468
 41. Pysklo, Zhuravel & Watson, 2026. "Agent-Diff: Benchmarking LLM Agents on Enterprise API Tasks via State-Diff-Based Evaluation". arXiv:2602.11224
-
-### 成本效率
-42. "Cost-Aware Model Selection for Text Classification", Feb 2026. arXiv:2602.06370
-43. "EGSS: Entropy-guided Stepwise Scaling for Reliable SE", Feb 2026. arXiv:2602.05242
-44. "SWE-Replay: Efficient Test-Time Scaling for SE Agents", Jan 2026. arXiv:2601.22129
 
 ### Agentic Coding 与前沿
 45. "SWE-bench Mobile: Can LLMs Develop Industry-Level Mobile Applications?", Feb 2026. arXiv:2602.09540
@@ -479,5 +441,5 @@ SBC = 0.7 × semantic_score + 0.1 × BLEU + 0.2 × completeness
 ---
 
 **报告生成日期**: 2026 年 2 月 24 日
-**版本**: v2.0
+**版本**: v2.2
 **适用范围**: AI Coding 产品评测、学术研究评测体系设计、企业内部 AI 编程工具选型
