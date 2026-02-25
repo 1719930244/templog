@@ -27,15 +27,35 @@ for para in doc.paragraphs:
 for para in doc.paragraphs:
     if "CCF A类 会议 第一作者 一篇" in para.text:
         para.clear()
-        r = para.add_run("1、CCF A类 期刊 第一作者 发表一篇（TOSEM 2026）")
+        r = para.add_run("1、CCF A类 期刊 第一作者 发表两篇（TOSEM 2025, 2026）")
         r.font.size = Pt(12)
         break
 
 for para in doc.paragraphs:
     if "专利 学生一作 一篇" in para.text:
         para.clear()
-        r = para.add_run("2、CCF A类 期刊 第二作者 发表两篇（TOSEM 2025）")
+        r = para.add_run("2、CCF A类 期刊/会议 第二作者 发表三篇（TOSEM 2025/2026, Internetware 2024）")
         r.font.size = Pt(12)
+        # 在此段落后插入第3条：其他共同作者
+        from docx.oxml.ns import qn
+        new_para = copy.deepcopy(para._element)
+        para._element.addnext(new_para)
+        new_p = para._element.getnext()
+        # 清空并写入新内容
+        for child in list(new_p):
+            if child.tag.endswith('}r'):
+                new_p.remove(child)
+        from docx.oxml import OxmlElement
+        r_elem = OxmlElement('w:r')
+        rPr = OxmlElement('w:rPr')
+        sz = OxmlElement('w:sz')
+        sz.set(qn('w:val'), '24')  # 12pt = 24 half-points
+        rPr.append(sz)
+        r_elem.append(rPr)
+        t_elem = OxmlElement('w:t')
+        t_elem.text = "3、CCF A类 期刊/会议 其他共同作者 发表四篇（TOSEM 2025×2, ASE 2025, EMNLP 2024）"
+        r_elem.append(t_elem)
+        new_p.append(r_elem)
         break
 
 # ============================================================
