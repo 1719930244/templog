@@ -197,11 +197,10 @@ w.add_heading("2  国内外研究现状")
 w.add_heading("2.1  研究趋势", level=2)
 w.add_body(
     "本章采用系统性文献综述方法，对JIT缺陷预测领域的研究进展进行全景分析。"
-    "我们分别在DBLP学术数据库和OpenAlex开放学术索引库中使用表1所示的检索词进行文献收集，"
+    "我们在DBLP学术数据库中使用表1所示的检索词进行文献收集，"
     "检索范围覆盖2014年至2025年2月期间发表的学术论文。"
-    "在DBLP中经过多关键词去重和相关性筛选共获得149篇计算机科学领域论文，"
-    "在OpenAlex中通过标题精确匹配共检索到202篇相关文献。"
-    "Zhao等人[30]在ACM Computing Surveys上发表的系统综述也梳理了67篇JIT-SDP研究论文，"
+    "经过多关键词去重和相关性筛选，共获得149篇计算机科学领域相关论文。"
+    "Zhao等人[30]在ACM Computing Surveys上发表的系统综述梳理了67篇JIT-SDP研究论文，"
     "进一步印证了该领域的研究活跃度。")
 
 # 文献检索关键词说明
@@ -212,16 +211,15 @@ w.add_body(
 
 # 插入柱状图
 w.add_image(os.path.join(FIGS_DIR, "survey-chart.png"), width=Inches(5),
-            caption="图 5  JIT缺陷预测相关论文发表数量趋势（2014-2025）")
+            caption="图 5  DBLP收录JIT缺陷预测相关论文数量趋势（2014-2025）")
 
 w.add_body(
     "如图5所示，JIT缺陷预测领域的研究呈现显著的阶段性发展特征。"
     "2014-2016年为萌芽期，年发文量不超过3篇，以Kamei等人[26]的奠基工作为核心。"
-    "2017-2018年为起步期，年发文量增长至7-9篇，effort-aware和集成学习方法开始出现。"
-    "2019-2020年为加速期，深度学习技术的引入推动年发文量增长至13-16篇，"
+    "2017-2018年为起步期，年发文量增长至7篇左右，effort-aware和集成学习方法开始出现。"
+    "2019-2020年为加速期，深度学习技术的引入推动年发文量达到10篇，"
     "代表性工作包括DeepJIT[28]和CC2Vec[9]等端到端学习方法。"
-    "2021年至今为爆发期，OpenAlex数据显示年发文量从25篇持续增长至2024年的38篇，"
-    "DBLP数据在2024年也达到峰值28篇。"
+    "2021年至今为爆发期，年发文量稳定在20篇以上，2024年达到峰值28篇。"
     "这一阶段的增长主要得益于代码预训练模型的广泛应用，"
     "如CodeBERT[15]、UniXcoder[20]等模型为JIT缺陷预测提供了更强大的代码理解能力，"
     "同时多任务学习、可解释性和大语言模型在JIT-SDP中的应用成为新的研究热点。"
@@ -387,21 +385,46 @@ w.add_body(
 
 w.add_heading("4.2  基于参数高效微调的大语言模型应用", level=2)
 w.add_body(
-    "当前实验结果表明，直接使用大语言模型进行JIT-DP和JIT-DL任务的效果不佳。"
-    "我们计划应用参数高效微调方法（如LoRA、Adapter等）来利用大语言模型的强大代码理解能力，"
-    "并结合本文提出的多任务学习框架来提升大语言模型在缺陷预测任务上的性能。")
+    "当前实验结果表明，直接使用大语言模型进行JIT-DP和JIT-DL任务的效果不佳，"
+    "这与大语言模型在代码理解任务上的强大能力形成了反差。"
+    "我们分析其原因在于：JIT缺陷预测任务需要模型精确捕获代码变更中的细微缺陷模式，"
+    "而通用大语言模型缺乏针对此类任务的专门训练。"
+    "Hu等人[31]提出的LoRA方法通过低秩分解实现了高效的参数微调，"
+    "仅需训练不到1%的参数即可达到全量微调的效果。"
+    "我们计划将LoRA应用于DeepSeek-Coder[32]等代码大语言模型，"
+    "结合本文提出的多任务学习框架和两阶段训练策略，"
+    "在保留大语言模型代码理解能力的同时，使其适应JIT缺陷预测的特定需求。"
+    "具体而言，我们将在第一阶段使用LoRA微调大语言模型学习缺陷表示，"
+    "第二阶段在多任务学习框架下同时优化JIT-DP和JIT-DL，"
+    "探索大语言模型在缺陷预测任务上的性能上界。")
 
 w.add_heading("4.3  更有效的缺陷代码表示学习策略", level=2)
 w.add_body(
-    "当前的缺陷代码表示学习采用简单的二分类训练方式。"
-    "我们计划探索更有效的学习策略，例如使用对比学习[23]来选择更合适的行级别数据，"
-    "构建更具区分性的缺陷代码表示空间，从而进一步提升模型对缺陷模式的识别能力。")
+    "当前的缺陷代码表示学习采用简单的二分类训练方式，"
+    "未能充分利用缺陷代码与正常代码之间的结构化关系。"
+    "对比学习[23]通过拉近正样本对、推远负样本对来构建更具区分性的表示空间，"
+    "已在计算机视觉和自然语言处理领域取得了显著成效。"
+    "在软件工程领域，Jain等人[33]将对比学习应用于代码克隆检测，"
+    "证明了其在代码表示学习中的有效性。"
+    "我们计划设计面向缺陷检测的对比学习框架：将同一提交的缺陷代码行作为正样本对，"
+    "将缺陷代码与功能相似但无缺陷的代码作为难负例，"
+    "通过InfoNCE[34]损失函数训练模型学习更精确的缺陷边界。"
+    "此外，我们将探索课程学习策略，按照缺陷的严重程度和检测难度逐步增加训练样本的复杂度，"
+    "帮助模型从简单的缺陷模式逐步过渡到复杂的缺陷模式。")
 
 w.add_heading("4.4  集成更多相关任务", level=2)
 w.add_body(
-    "缺陷预测和定位与程序修复等任务密切相关。"
-    "我们计划将程序修复[24]等相关任务集成到多任务学习框架中，"
-    "使模型不仅能够检测和定位缺陷，还能提供修复建议，形成更完整的缺陷处理流水线。")
+    "缺陷预测和定位与程序修复、代码审查等任务密切相关，"
+    "这些任务之间存在天然的信息互补关系。"
+    "Ni等人[24]的研究表明，将缺陷预测、分类和修复统一到一个框架中可以相互促进。"
+    "Tufano等人[35]提出的基于神经机器翻译的程序修复方法证明了深度学习在自动修复中的可行性。"
+    "我们计划将程序修复任务集成到JIT-MTL的多任务学习框架中，"
+    "形成\"预测-定位-修复\"的完整缺陷处理流水线。"
+    "具体而言，在检测到缺陷代码行后，利用共享的代码表示生成修复补丁候选，"
+    "并通过补丁正确性验证[36]筛选高质量的修复方案。"
+    "此外，我们还计划引入代码审查意见生成任务，"
+    "使模型能够为检测到的缺陷提供自然语言解释，帮助开发者理解缺陷原因，"
+    "从而提升缺陷检测工具在实际开发流程中的可用性和接受度。")
 
 # PART_G
 
@@ -442,6 +465,12 @@ references = [
     "[28] Hoang T, et al. DeepJIT: An end-to-end deep learning framework for just-in-time defect prediction. MSR, 2019: 34-45.",
     "[29] Huang Q, et al. Revisiting the practical use of automated software fault localization techniques. ISSRE, 2019: 1-12.",
     "[30] Zhao Y, Damevski K, Chen H. A systematic survey of just-in-time software defect prediction. ACM Computing Surveys, 2023, 55(10): 1-30.",
+    "[31] Hu E J, et al. LoRA: Low-rank adaptation of large language models. ICLR, 2022: 1-26.",
+    "[32] Zhu Q, et al. DeepSeek-Coder: When the large language model meets programming. arXiv:2401.14196, 2024.",
+    "[33] Jain P, et al. Contrastive code representation learning. EMNLP, 2021: 5954-5971.",
+    "[34] Oord A, Li Y, Vinyals O. Representation learning with contrastive predictive coding. arXiv:1807.03748, 2018.",
+    "[35] Tufano M, et al. An empirical study on learning bug-fixing patches in the wild via neural machine translation. ACM TOSEM, 2019, 28(4): 1-29.",
+    "[36] Wang S, et al. Automated patch correctness assessment: How far are we? ASE, 2020: 968-980.",
 ]
 
 for ref in references:
