@@ -53,9 +53,26 @@ for para in doc.paragraphs:
         rPr.append(sz)
         r_elem.append(rPr)
         t_elem = OxmlElement('w:t')
-        t_elem.text = "3、CCF A类 期刊/会议 其他共同作者 发表四篇（TOSEM 2025×2, ASE 2025, EMNLP 2024）"
+        t_elem.text = "3、CCF A类 期刊 其他共同作者 发表两篇（TOSEM 2025×2）"
         r_elem.append(t_elem)
         new_p.append(r_elem)
+        # 插入第4条：CCF B类
+        new_para2 = copy.deepcopy(para._element)
+        new_p.addnext(new_para2)
+        new_p2 = new_p.getnext()
+        for child in list(new_p2):
+            if child.tag.endswith('}r'):
+                new_p2.remove(child)
+        r_elem2 = OxmlElement('w:r')
+        rPr2 = OxmlElement('w:rPr')
+        sz2 = OxmlElement('w:sz')
+        sz2.set(qn('w:val'), '24')
+        rPr2.append(sz2)
+        r_elem2.append(rPr2)
+        t_elem2 = OxmlElement('w:t')
+        t_elem2.text = "4、CCF B类 会议 其他共同作者 发表两篇（ASE 2025, EMNLP 2024）"
+        r_elem2.append(t_elem2)
+        new_p2.append(r_elem2)
         break
 
 # ============================================================
