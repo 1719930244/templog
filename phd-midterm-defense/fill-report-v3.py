@@ -34,7 +34,7 @@ for para in doc.paragraphs:
 for para in doc.paragraphs:
     if "专利 学生一作 一篇" in para.text:
         para.clear()
-        r = para.add_run("2、CCF A类 期刊/会议 第二作者 发表三篇（TOSEM 2025/2026, Internetware 2024）")
+        r = para.add_run("2、CCF A类 期刊 第二作者 发表两篇（TOSEM 2025, 2026）")
         r.font.size = Pt(12)
         # 在此段落后插入第3条：其他共同作者
         from docx.oxml.ns import qn
