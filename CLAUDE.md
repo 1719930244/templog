@@ -30,9 +30,3 @@ templog/
 cd /home/szw/github/templog
 npx md-to-pdf 260224-ai-code-eval-metrics-survey.md --stylesheet pdf_style.css
 ```
-
-## 写作分析流程
-
-流程: 收集论文列表 → 获取 PDF → 提取文本 → 信号提取 → 汇总输出 → AI 深度分析
-
-依赖: Python + pypdf, OpenAlex API, arXiv API
