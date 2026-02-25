@@ -199,8 +199,10 @@ w.add_body(
     "本章采用系统性文献综述方法，对JIT缺陷预测领域的研究进展进行全景分析。"
     "我们分别在DBLP学术数据库和OpenAlex开放学术索引库中使用表1所示的检索词进行文献收集，"
     "检索范围覆盖2014年至2025年2月期间发表的学术论文。"
-    "在DBLP中经过去重和相关性筛选共获得149篇计算机科学领域论文，"
-    "在OpenAlex中共检索到458篇覆盖更广泛学科的相关文献。")
+    "在DBLP中经过多关键词去重和相关性筛选共获得149篇计算机科学领域论文，"
+    "在OpenAlex中通过标题精确匹配共检索到202篇相关文献。"
+    "Zhao等人[30]在ACM Computing Surveys上发表的系统综述也梳理了67篇JIT-SDP研究论文，"
+    "进一步印证了该领域的研究活跃度。")
 
 # 文献检索关键词说明
 w.add_body(
@@ -213,15 +215,16 @@ w.add_image(os.path.join(FIGS_DIR, "survey-chart.png"), width=Inches(5),
             caption="图 5  JIT缺陷预测相关论文发表数量趋势（2014-2025）")
 
 w.add_body(
-    "如图5所示，JIT缺陷预测领域的研究呈现显著的三阶段发展特征。"
-    "2014-2017年为起步探索期，DBLP年均发文量不超过3篇，研究主要集中在传统特征工程方法。"
-    "2018-2020年为快速增长期，深度学习技术的引入推动研究快速发展，"
-    "OpenAlex数据显示年发文量从22篇增长至49篇，"
+    "如图5所示，JIT缺陷预测领域的研究呈现显著的阶段性发展特征。"
+    "2014-2016年为萌芽期，年发文量不超过3篇，以Kamei等人[26]的奠基工作为核心。"
+    "2017-2018年为起步期，年发文量增长至7-9篇，effort-aware和集成学习方法开始出现。"
+    "2019-2020年为加速期，深度学习技术的引入推动年发文量增长至13-16篇，"
     "代表性工作包括DeepJIT[28]和CC2Vec[9]等端到端学习方法。"
-    "2021年至今为成熟爆发期，OpenAlex数据在2022年达到峰值100篇，"
-    "DBLP数据在2024年达到峰值28篇。"
+    "2021年至今为爆发期，OpenAlex数据显示年发文量从25篇持续增长至2024年的38篇，"
+    "DBLP数据在2024年也达到峰值28篇。"
     "这一阶段的增长主要得益于代码预训练模型的广泛应用，"
-    "如CodeBERT[15]、UniXcoder[20]等模型为JIT缺陷预测提供了更强大的代码理解能力。"
+    "如CodeBERT[15]、UniXcoder[20]等模型为JIT缺陷预测提供了更强大的代码理解能力，"
+    "同时多任务学习、可解释性和大语言模型在JIT-SDP中的应用成为新的研究热点。"
     "论文发表的主要场所包括ICSE、FSE、ASE、MSR等软件工程核心会议，"
     "以及TSE、EMSE、JSS、TOSEM等高水平期刊。")
 
@@ -438,6 +441,7 @@ references = [
     "[27] Zeng Z, et al. Deep just-in-time defect localization. IEEE TSE, 2022, 48(12): 5068-5083.",
     "[28] Hoang T, et al. DeepJIT: An end-to-end deep learning framework for just-in-time defect prediction. MSR, 2019: 34-45.",
     "[29] Huang Q, et al. Revisiting the practical use of automated software fault localization techniques. ISSRE, 2019: 1-12.",
+    "[30] Zhao Y, Damevski K, Chen H. A systematic survey of just-in-time software defect prediction. ACM Computing Surveys, 2023, 55(10): 1-30.",
 ]
 
 for ref in references:
