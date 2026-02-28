@@ -1,6 +1,6 @@
 # AI 生成代码评测细粒度指标调研
 
-> **版本**: v2.3 | **日期**: 2026-02-25 | **定位**: 面向 AI Coding 产品（AI IDE、代码助手、Coding Agent）的代码类评测指标体系梳理
+> **版本**: v3.0 | **日期**: 2026-02-26 | **定位**: 面向 AI Coding 产品（AI IDE、代码助手、Coding Agent）的代码类评测指标体系梳理
 
 ---
 
@@ -18,7 +18,25 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **pass@t（多轮尝试）**：考虑模型在获得错误反馈后重试的能力，衡量"迭代修正"而非"一次生成"。
 
-**自演进 pass@k (EvoCodeBench)**：EvoCodeBench (Zhang et al., 2602.10171, Feb 2026) 评测 LLM 驱动的自演进编码系统。其核心机制是：Agent 从初始代码草稿出发，在固定 3 轮迭代预算内反思当前方案、识别失败模式（未处理的边界条件、逻辑错误、次优复杂度），提出针对性修改并重新提交在线评测。评测基于 LeetCode 的 3,822 道题目，覆盖 Python、C++、Java、Go、Kotlin 五种语言。除 pass rate 外，EvoCodeBench 引入了人类参照指标：Average Runtime Beats (%) 和 Average Memory Beats (%)，即生成代码在运行时间和内存使用上超过多少比例的人类提交。这使得即使 pass rate 饱和，效率维度仍能区分模型能力。实验结果显示 GPT-5.2 在多数语言上 pass rate 达 84-91%，但 Claude-4.5-sonnet 的 TLE 率高达 36-42%，表明功能正确但效率不足；DeepSeek-v3.2 在长尾语言 Kotlin 上 pass rate 骤降至 7%，揭示了跨语言泛化的脆弱性。
+**自演进 pass@k (EvoCodeBench)**：EvoCodeBench (Zhang et al., 2602.10171, KDD 2026) 评测 LLM 驱动的自演进编码系统。评测基于 LeetCode 的 3,822 道题目（评测子集 100 题），覆盖 Python、C++、Java、Go、Kotlin 五种语言。除 pass rate 外，EvoCodeBench 引入了人类参照指标：Average Runtime Beats (%) 和 Average Memory Beats (%)，即生成代码在运行时间和内存使用上超过多少比例的人类提交（由 LeetCode 平台直接报告每个 AC 提交在同语言同题目人类提交中的百分位，取所有 AC 题目的均值）。这使得即使 pass rate 饱和，效率维度仍能区分模型能力。
+
+<span style="color:red">**3 轮迭代预算的具体机制**：</span>
+
+<span style="color:red">**初始提交（与 vanilla agent 相同）**：(1) 构造 prompt：问题描述 + 语言特定的 starter template；(2) 模型推理：单次前向传播，启用推理模式，最大 65,536 output tokens；(3) 确定性代码提取：从模型结构化响应的 `reasoning` + `code` 字段中提取代码；(4) 提交至 LeetCode 在线评测系统，获取判定结果和诊断信息。</span>
+
+<span style="color:red">**自演进循环（最多 3 轮）**：</span>
+
+<span style="color:red">*Step 1 — 执行反馈分析*：检查 OJ 判定结果。若 Accepted 且 runtime beats 和 memory beats 均超过 65%，则提前终止。否则进入反思。</span>
+
+<span style="color:red">*Step 2 — 反思与修订*：根据判定结果分为两条路径：</span>
+<span style="color:red">- **Bugfix Reflection**（WA/CE/RE/TLE/MLE 时）：反思 prompt 包含 (a) 原始问题描述，(b) 上一轮提交的代码，(c) OJ 判定结果及错误详情（WA 时含失败测试用例的输入/期望输出，CE 时含编译错误信息），(d) 分析失败原因并提出修复的指令。模型输出结构化 JSON：`{analysis, improved_reasoning, improved_code}`</span>
+<span style="color:red">- **Optimization Reflection**（AC 但 beats < 65% 时）：提供当前运行时/内存统计和 beats 百分位，要求模型在保持正确性的前提下优化性能。输出格式相同</span>
+
+<span style="color:red">*Step 3 — 迭代与终止*：重复 Step 1-2，终止条件为：(1) AC 且双 beats 均 > 65%；(2) 达到 3 轮上限；(3) 模型无法生成有效反思响应。Agent 始终保留跨所有轮次的最优提交（优先 AC，其次最高 runtime beats）。</span>
+
+<span style="color:red">**关键设计约束**：仅解决方案代码变化，问题规格、prompt 模式、评测接口和模型参数在整个过程中固定不变，从而隔离推理时自演进的效果。反馈来自真实代码执行（LeetCode OJ），而非模拟，Agent 接收实际判定（AC/WA/TLE/MLE/CE/RE）、通过的测试用例数（如 "passed 85/87"）以及 AC 时的运行时间（ms）、内存（MB）和百分位 beats。</span>
+
+实验结果显示 GPT-5.2 在多数语言上 pass rate 达 84-91%，但 Claude-4.5-sonnet 的 TLE 率高达 36-42%，表明功能正确但效率不足；DeepSeek-v3.2 在长尾语言 Kotlin 上 pass rate 骤降至 7%，揭示了跨语言泛化的脆弱性。<span style="color:red">自演进 agent（以 gemini-3-flash-preview 为例）相比 vanilla 单次生成，pass rate 提升 10.1%-26.7%，编译型语言收益最大（C++ 达 99/100，Java 98/100），运行时间下降 7.8%-46.4%。</span>
 
 ### 1.3 执行正确性与部分正确性
 
@@ -37,6 +55,35 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 **计算方式**：对生成代码运行项目配置的 Linter（ESLint、Pylint、RuboCop 等），统计 warning + error 数量，除以代码行数（千行）。
 
 **适用场景**：所有代码生成任务，尤其是仓库级生成和代码补全。
+
+<span style="color:red">**主流 Linter/静态分析工具一览**：</span>
+
+<span style="color:red">
+
+| 工具 | 语言 | 规则类别 | 规则数 | 开源 | AI 评测常用 |
+|------|------|---------|--------|------|------------|
+| Pylint | Python | 风格/缺陷/重构 | 400+ | ✓ | ✓ |
+| Ruff | Python | 风格/缺陷/安全（集成 Flake8+Bandit 等） | 800+ | ✓ | 新兴 |
+| Flake8 | Python | 风格/复杂度 | 100+ | ✓ | ✓ |
+| Bandit | Python | 安全 | 40+ | ✓ | ✓ |
+| ESLint | JS/TS | 风格/缺陷/最佳实践 | 300+ | ✓ | ✓ |
+| Biome | JS/TS/JSON | 风格/缺陷 | 200+ | ✓ | 新兴 |
+| Checkstyle | Java | 风格/命名/Javadoc | 200+ | ✓ | ✓ |
+| PMD | Java/多语言 | 缺陷/设计/性能 | 400+ | ✓ | ✓ |
+| SpotBugs | Java | 缺陷/安全/性能 | 400+ | ✓ | |
+| Error Prone | Java | 编译期缺陷检测 | 500+ | ✓ | |
+| cppcheck | C/C++ | 缺陷/未定义行为 | 300+ | ✓ | |
+| clang-tidy | C/C++ | 风格/现代化/缺陷 | 300+ | ✓ | |
+| golangci-lint | Go | 元 Linter（聚合 50+ linter） | 1000+ | ✓ | |
+| clippy | Rust | 风格/正确性/性能 | 700+ | ✓ | |
+| RuboCop | Ruby | 风格/安全/性能 | 400+ | ✓ | |
+| SonarQube | 30+ 语言 | 缺陷/漏洞/异味/复杂度/重复 | 5000+ | 社区版 | ✓ |
+| Semgrep | 30+ 语言 | 安全/缺陷（模式匹配，自定义规则） | 自定义 | OSS | ✓ |
+| CodeQL | 8 语言 | 语义安全分析（查询式） | 2000+ | 查询开源 | ✓ |
+
+实证研究中最常用的组合：Pylint + SonarQube（代码质量评估）和 Bandit + Semgrep + CodeQL（安全漏洞检测）。
+
+</span>
 
 ### 2.2 复杂度指标
 
@@ -62,6 +109,27 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **LLM-as-Judge 可读性评估**：使用强模型（如 GPT-4、Claude）对生成代码的可读性进行 1-5 分评分。优势是能捕捉难以规则化的可读性因素，局限是评分一致性和可复现性。
 
+<span style="color:red">**可读性量化方法体系**：</span>
+
+<span style="color:red">**Buse & Weimer (2010, IEEE TSE)**：基于 25 个结构特征训练逻辑回归模型，120 名标注者对 100 个 Java 片段评分。核心特征包括：行长度、标识符平均长度、最大缩进深度、注释密度（注释行/总行数）、空行比例、字符熵、关键字密度、运算符密度等。输出为 [0,1] 概率分数，准确率约 80%，优于单个人类标注者的平均水平。</span>
+
+<span style="color:red">**Scalabrino et al. (2017-2018)**：扩展 Buse-Weimer 模型，加入文本/语言学特征：标识符语义性（WordNet 覆盖率）、注释 Flesch-Kincaid 可读性指数、命名规范一致性。在 600 个代码片段、5,000+ 标注者上验证，组合模型优于纯结构特征模型，但没有单一指标能独立捕捉代码可理解性。</span>
+
+<span style="color:red">**工程实践阈值**（综合 PEP 8、Google Style Guide、SonarQube 默认规则）：</span>
+
+<span style="color:red">
+
+| 可读性维度 | 推荐阈值 | 说明 |
+|-----------|---------|------|
+| 行长度 | ≤ 80-120 字符 | PEP 8 推荐 79，Google Java 100 |
+| 函数体长度 | ≤ 30-50 行 | SonarQube 默认阈值 |
+| 标识符长度 | 3-25 字符 | 过短无语义，过长降低扫描效率 |
+| 注释密度 | 15%-30% | 过低缺乏解释，过高干扰阅读 |
+| 嵌套深度 | ≤ 4 层 | AI 生成代码常超标 |
+| 函数参数数 | ≤ 5 个 | 超过建议封装为对象 |
+
+</span>
+
 ### 2.4 代码异味密度
 
 **定义**：AI 生成代码中的代码异味数 / KLOC。
@@ -74,6 +142,14 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 **实证研究**：
 - "AI builds, We Analyze" (2601.16839, Jan 2026)：对 AI 生成的构建代码进行质量分析
 - "Comparing Human and LLM Generated Code" (2501.16857, Jan 2025)：人写 vs AI 生成代码的异味对比
+
+<span style="color:red">**实证研究量化结论**：</span>
+
+<span style="color:red">- **(2510.03029, Oct 2025)**：对比 Gemini Pro、ChatGPT、Codex、Falcon 生成的 Java 代码与专业参考实现。LLM 代码异味平均增加 63.34%，其中实现异味（含重复代码、长方法等）增加 73.35%，设计异味增加 21.42%。按模型分：Falcon 表现最好（增加 42.28%），Gemini Pro 62.07%，ChatGPT 和 Codex 更高。任务复杂度越高，异味增幅越大</span>
+<span style="color:red">- **(2601.16839, Jan 2026)**：AI 生成的构建代码中发现 364 个可维护性/安全相关构建异味。AI Agent 在重构时难以消除预存异味，输入代码质量与 AI 能力同等重要</span>
+<span style="color:red">- **(2511.15817, Nov 2025)**：提出 PSC（Propensity Smelly Score），利用下一 token 概率估计模型生成特定异味的倾向。发现 prompt 设计和模型架构对异味倾向起决定性作用，通过 prompt 工程可降低异味发生率</span>
+<span style="color:red">- **(2508.21634, ISSRE 2025)**：50 万+ Python/Java 样本，AI 代码整体更简单但更具重复性，更易出现未使用构造和硬编码调试残留</span>
+<span style="color:red">- **综合结论**：约 60.9% 的 AI 生成代码单元包含至少一个异味（ENIAC 2024）；LLM 特有代码异味影响 60.50% 的被分析系统（2512.18020, Dec 2025）</span>
 
 ### 2.5 代码重复率
 
@@ -91,8 +167,48 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 - **编码标准符合度**：Licorish et al. (2501.16857, Jan 2025) 使用 Pylint 评分衡量 Python 代码对 PEP 8 标准的遵循程度，发现人写代码的编码标准评分高于 GPT-4 生成代码
 - **Halstead 指标一致性**：Clark et al. (2024, IEEE ICoSSE) 使用 7 项 Halstead 复杂度指标评估 625 个 ChatGPT 生成的 Python 代码样本的质量一致性，发现 ChatGPT 在迭代提示和不同版本间保持了较稳定的质量水平
+
+<span style="color:red">**Halstead 复杂度指标体系** (Halstead, 1977)：基于四个基础度量：n1（不同运算符数）、n2（不同操作数数）、N1（运算符总出现次数）、N2（操作数总出现次数）。运算符包括关键字（`if`、`while`、`return`）、算术/逻辑符号（`+`、`-`、`==`）、分隔符和函数调用；操作数包括变量、常量和字面量。</span>
+
+<span style="color:red">
+
+| 指标 | 符号 | 公式 | 含义 |
+|------|------|------|------|
+| 程序词汇量 | n | n = n1 + n2 | 不同符号总数 |
+| 程序长度 | N | N = N1 + N2 | 符号总出现次数 |
+| 估算程序长度 | N̂ | N̂ = n1·log₂(n1) + n2·log₂(n2) | 仅从词汇量估算的长度 |
+| 程序体积 | V | V = N·log₂(n) | 信息量（bit），表示程序的信息内容 |
+| 难度 | D | D = (n1/2)·(N2/n2) | 理解/编写难度，值越高越易出错 |
+| 工作量 | E | E = D·V | 开发或理解程序所需的心智努力 |
+| 实现时间 | T | T = E/18（秒） | 基于 Stroud 数（18 次心智辨别/秒）的时间估算 |
+
+附加派生指标：预期缺陷数 B = V/3000（或 B = E^(2/3)/3000）。Halstead 指标纯结构化（无需执行），适合自动化评测流水线。Difficulty 和 Effort 指标对比较 AI 与人写代码的可维护性尤为有用。
+
+</span>
 - **异味倾向评分 (Propensity Smelly Score, PSC)**：(2511.15817, Nov 2025) 提出的概率性指标，估计模型生成特定类型代码异味的倾向。研究发现 prompt 设计和模型架构选择对风格质量起决定性作用
 - **多维工程质量评估**：RTLBench (Fang et al., 2025, ICCD) 提出覆盖语法正确性、功能性、Lint 合规、可读性和风格一致性的多维评测框架，采用 LLM-as-Judge 机制评估主观质量维度
+
+<span style="color:red">**RTLBench 五维评测设计**：RTLBench 针对 RTL（寄存器传输级）代码提出的评测框架具体包括：(1) 语法正确性：编译工具（Icarus Verilog/Verilator）自动检查，二值判定；(2) 功能正确性：仿真测试台验证，pass@k 度量；(3) Lint 合规：静态分析工具（Verilator --lint-only, SpyGlass）检查编码标准、竞争条件、隐含锁存器等；(4) 可读性：LLM-as-Judge，按 1-5 分评分量表评估命名规范、注释质量、模块化程度；(5) 风格一致性：LLM-as-Judge，对比生成代码与项目参考代码的风格偏离度。LLM-as-Judge 机制的具体实现：强模型（如 GPT-4）接收评分量表（rubric）和待评代码，输出数值分数和文本理由。部分框架采用成对比较（pairwise comparison）替代绝对评分以减少偏差。</span>
+
+<span style="color:red">
+
+### 2.7 代码自然性 (Code Naturalness)
+
+**定义**：代码符合统计语言模型预期的程度，即代码的"可预测性"。自然性越高，代码越符合开发者社区的惯用模式。
+
+**理论基础**：Hindle et al. (2012, ICSE) 的开创性研究发现，源代码比自然语言更具重复性和可预测性。Java 代码的交叉熵约 2.5-3.5 bits/token，而英语文本约 7-8 bits/token。
+
+**量化方式**：
+
+- **交叉熵**：H(c) = -(1/N) · ∑ᵢ log₂ P(tᵢ | t₁...tᵢ₋₁)，其中 tᵢ 为第 i 个 token，P 为语言模型给出的条件概率。值越低，代码越"自然"
+- **困惑度**：PP = 2^{H(c)}，值越低代码越符合统计模式。可使用传统 n-gram 模型或现代 Transformer 模型计算
+- **局部自然性**：对代码的每一行或每个语句计算局部交叉熵，识别"不自然"的代码片段（可能是 bug 或非惯用写法）
+
+**AI 代码的双刃剑效应**：LLM 生成代码天然具有高自然性（训练于大规模代码语料），但统计上"自然"的代码可能语义不正确或过于泛化。近期研究观察到 AI 反复优化代码时出现"熵衰减"（entropy decay）现象，即代码趋向于统计上最常见的模式而非最优解。自然性与可读性相关但不等价：自然性衡量模式符合度，可读性还依赖命名、注释、结构等因素。
+
+**评测意义**：自然性可作为代码质量的辅助信号。异常低的自然性可能暗示非惯用写法或潜在缺陷；异常高的自然性可能暗示过度泛化或"模板化"生成。
+
+</span>
 
 ---
 
@@ -108,7 +224,19 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **工业意义**：这是衡量 AI 代码生成在大规模场景下可靠性的核心指标。单函数的 pass@k 可能很高，但当模型连续生成数千行代码时，累积缺陷率才是真正的风险度量。模拟了大规模代码库合并时的质量风险。
 
-**参考基线**：传统软件工程中，成熟项目的缺陷密度约 0.1-1.0 缺陷/KLOC（生产环境）。AI 生成代码的这一指标目前缺乏系统性基准。
+**参考基线**：<span style="color:red">传统软件工程中缺陷密度的经典数据来源：
+
+| 来源 | 场景 | 缺陷/KLOC |
+|------|------|-----------|
+| 行业平均（开发阶段） | 测试前 | 15-50 |
+| 行业平均（发布后） | 商业软件 | 1-25 |
+| McConnell: Microsoft Apps | 发布后 | ~0.5 |
+| Coverity Scan | 开源高质量项目 | ~0.68-1.0 |
+| Capers Jones: CMMI Level 5 | 发布后 | 0.5-1.0 |
+| McConnell: Cleanroom | 发布后 | ~0.1 |
+| CMU SEI: TSP | 发布后 | 0.06-0.4 |
+
+"0.1-1.0 缺陷/KLOC"范围的下界来自 Cleanroom/TSP 最佳实践（McConnell, "Code Complete", 2004, Chapter 20），上界来自 Coverity Scan 开源项目基准和 Capers Jones CMMI Level 5 数据（Jones, "Applied Software Measurement", 2008）。AI 生成代码目前缺乏系统性基准，但初步研究表明 AI 代码逻辑错误率约高出人写代码 30%，且 AI 代码的缺陷画像与人写代码截然不同（更多未使用构造和硬编码残留，更少结构复杂度问题）。</span>
 
 ### 3.2 回归安全性 (P2P 保持率)
 
@@ -124,6 +252,14 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 
 **计算方式**：
 - 功能一致性：多次生成的代码是否都通过相同的测试用例集合
+
+<span style="color:red">**功能一致性形式化定义**：设对同一 prompt 生成 m 次代码 {c₁, c₂, ..., cₘ}，测试用例集 T = {t₁, t₂, ..., tₙ}，定义通过矩阵 R ∈ {0,1}^{m×n}，其中 R_{ij} = 1 当且仅当 cᵢ 通过 tⱼ。</span>
+
+<span style="color:red">- 单测试一致性：Agreement(tⱼ) = max(∑ᵢ R_{ij}, m - ∑ᵢ R_{ij}) / m</span>
+<span style="color:red">- 功能一致性分数：FC = (1/n) · ∑ⱼ Agreement(tⱼ)</span>
+<span style="color:red">- FC = 1 表示所有生成结果在每个测试上行为完全一致（全通过或全失败）；FC 接近 0.5 表示行为高度随机</span>
+<span style="color:red">- 等价度量：Fleiss' κ 系数，将 m 次生成视为 m 个评分者对 n 个测试的二值评分，κ > 0.8 表示高一致性，κ < 0.4 表示低一致性</span>
+
 - 文本一致性：多次生成结果之间的编辑相似度均值
 - 方差度量：pass@k 在多次独立实验中的标准差
 
@@ -163,6 +299,35 @@ pass@k 由 Chen et al. (2021) 在 HumanEval 中提出，无偏估计公式为 `p
 **定义**：生成代码符合特定安全编码标准的比例。
 
 **标准覆盖**：MISRA（嵌入式）、OWASP Top 10（Web）、CWE Top 25（通用）。
+
+<span style="color:red">**各标准详述**：</span>
+
+<span style="color:red">**MISRA C:2023**：175 条准则（指令 + 规则），分为 Mandatory（必须遵守）、Required（应当遵守，偏差需正式文档）、Advisory（建议遵守）三级，以及 Decidable（工具可自动判定）和 Undecidable（需人工审查）两类。覆盖类型安全、指针使用、内存管理、并发等 15+ 主题。合规报告形式：违规数/KLOC + 正式偏差文档（Deviation Record）。</span>
+
+<span style="color:red">**OWASP Top 10 (2021 版)**：</span>
+
+<span style="color:red">
+
+| 编号 | 类别 | 说明 |
+|------|------|------|
+| A01 | 访问控制失效 | 权限绕过、越权访问 |
+| A02 | 加密失败 | 敏感数据明文传输/存储 |
+| A03 | 注入 | SQL/NoSQL/OS/LDAP 注入 |
+| A04 | 不安全设计（新增） | 架构层面的安全缺陷 |
+| A05 | 安全配置错误 | 默认配置、不必要的功能启用 |
+| A06 | 易受攻击和过时组件 | 已知漏洞的依赖 |
+| A07 | 认证失败 | 弱密码、会话管理缺陷 |
+| A08 | 软件与数据完整性失败（新增） | 不安全的反序列化、CI/CD 完整性 |
+| A09 | 安全日志与监控失败 | 缺乏审计追踪 |
+| A10 | 服务端请求伪造 SSRF（新增） | 未验证的服务端 URL 请求 |
+
+</span>
+
+<span style="color:red">**CWE Top 25 (2024 版)**：前 5 为 CWE-79（XSS）、CWE-787（越界写）、CWE-89（SQL 注入）、CWE-352（CSRF，上升 5 位）、CWE-22（路径遍历）。最大变动：CWE-94（代码注入）上升 12 位。</span>
+
+<span style="color:red">**CERT 安全编码标准**：SEI CERT C 包含 116 条规则，Java 包含 168 条规则，按主题分类（IDS 输入验证/DCL 声明/EXP 表达式/INT 整数/STR 字符串/MEM 内存/FIO 文件 I/O 等），设 L1/L2/L3 三级优先级。其中 46 条 C 规则已标准化为 ISO/IEC TS 17961。</span>
+
+<span style="color:red">**合规率计算**：(通过的规则检查数 / 适用规则总数) × 100%。可按严重级别加权：Critical 权重 3、Major 权重 2、Minor 权重 1。呈现形式通常为分类合规率雷达图或违规热力图（按 CWE 类别聚合）。</span>
 
 **最新进展**：
 - CVE-Factory (2602.03012, Feb 2026)：将安全漏洞发现做成 Agent 级任务
@@ -379,8 +544,21 @@ SBC = 0.7 × semantic_score + 0.1 × BLEU + 0.2 × completeness
 48. Ponnusamy, 2025. "Bridging LLM-Generated Code and Requirements: Reverse Generation Technique and SBC Metric". arXiv:2502.07835
 49. "From What to How: Bridging User Requirements with Software Development", Feb 2026. arXiv:2602.13611
 
+<span style="color:red">
+
+### v3.0 新增参考文献
+50. Halstead, 1977. "Elements of Software Science". Elsevier
+51. McConnell, 2004. "Code Complete" (2nd ed.), Chapter 20: The Software-Quality Landscape. Microsoft Press
+52. Jones, 2008. "Applied Software Measurement" (3rd ed.). McGraw-Hill
+53. Buse & Weimer, 2010. "Learning a Metric for Code Readability". IEEE TSE, 36(4):546-558
+54. Hindle et al., 2012. "On the Naturalness of Software". ICSE 2012. DOI:10.1109/ICSE.2012.6227135
+55. Scalabrino et al., 2018. "A Comprehensive Model for Code Readability". JSS, 145:240-259
+56. "LLM-Specific Code Smells: A Taxonomy and Empirical Study", Dec 2025. arXiv:2512.18020
+
+</span>
+
 ---
 
-**报告生成日期**: 2026 年 2 月 24 日
-**版本**: v2.3
+**报告生成日期**: 2026 年 2 月 26 日
+**版本**: v3.0
 **适用范围**: AI Coding 产品评测、学术研究评测体系设计、企业内部 AI 编程工具选型
