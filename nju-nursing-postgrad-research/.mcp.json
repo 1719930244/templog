@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "HTTP_PROXY": "http://127.0.0.1:7890",
+        "HTTPS_PROXY": "http://127.0.0.1:7890"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "@mendable/firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "待填写-访问 https://firecrawl.dev/ 注册获取",
+        "HTTP_PROXY": "http://127.0.0.1:7890",
+        "HTTPS_PROXY": "http://127.0.0.1:7890"
+      }
+    }
+  }
+}
