@@ -1,0 +1,3 @@
+# Copy and fill these env vars before calling workspace-mcp CLI.
+export GOOGLE_OAUTH_CLIENT_ID="YOUR_CLIENT_ID"
+export GOOGLE_OAUTH_CLIENT_SECRET="YOUR_CLIENT_SECRET"

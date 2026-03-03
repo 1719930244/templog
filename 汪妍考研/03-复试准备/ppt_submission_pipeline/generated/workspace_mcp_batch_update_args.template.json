@@ -1,0 +1,1410 @@
+{
+  "user_google_email": "YOUR_GOOGLE_EMAIL",
+  "presentation_id": "REPLACE_WITH_PRESENTATION_ID",
+  "requests": [
+    {
+      "createSlide": {
+        "objectId": "s01",
+        "insertionIndex": 0,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s01_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s01",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s01_title",
+        "insertionIndex": 0,
+        "text": "基于时效性激励理论的护理干预在经尿道前列腺热蒸汽消融术患者的应用效果研究"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s01_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s01_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s01",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s01_body",
+        "insertionIndex": 0,
+        "text": "投稿论文汇报（复试版）\n汇报人：汪妍\n单位：南京大学医学院附属鼓楼医院 泌尿外科"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s01_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s01_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s02",
+        "insertionIndex": 1,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s02_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s02",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s02_title",
+        "insertionIndex": 0,
+        "text": "研究问题与临床痛点"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s02_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s02_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s02",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s02_body",
+        "insertionIndex": 0,
+        "text": "BPH患者术后常见问题：疼痛、焦虑、控尿困难、依从性不足。\nRezum疗效确切，但术后护理质量决定恢复速度与体验。\n传统护理难以覆盖关键时点的行为激励与心理支持。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s02_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s02_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s03",
+        "insertionIndex": 2,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s03_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s03",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s03_title",
+        "insertionIndex": 0,
+        "text": "研究目的与核心假设"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s03_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s03_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s03",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s03_body",
+        "insertionIndex": 0,
+        "text": "研究目的：**基于时效性激励理论实施护理干预，探讨其在经尿道前列腺热蒸汽消融术患者中的应用效果。**\n核心假设：在关键时点给予精准激励，可改善症状与心理状态。\n关键词："
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s03_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s03_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s04",
+        "insertionIndex": 3,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s04_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s04",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s04_title",
+        "insertionIndex": 0,
+        "text": "研究设计与样本"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s04_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s04_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s04",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s04_body",
+        "insertionIndex": 0,
+        "text": "研究类型：随机对照研究（单中心），总样本 n=100。\n分组：观察组 50 例；对照组 50 例。\n观察指标：IPSS、控尿能力、VAS、SAS/SDS、满意度、依从性。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s04_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s04_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s05",
+        "insertionIndex": 4,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s05_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s05",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s05_title",
+        "insertionIndex": 0,
+        "text": "干预方案：时效性激励护理"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s05_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s05_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s05",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s05_body",
+        "insertionIndex": 0,
+        "text": "对照组：常规围术期护理。\n观察组：常规护理 + 需要激励 + 利益激励 + 情感激励 + 榜样激励。\n关键节点覆盖：术前-术后早期-居家恢复期。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s05_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s05_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s06",
+        "insertionIndex": 5,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s06_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s06",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s06_title",
+        "insertionIndex": 0,
+        "text": "主要结果总览"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s06_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s06_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s06",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s06_body",
+        "insertionIndex": 0,
+        "text": "结果摘要：**术前两组患者IPSS评分、控尿能力、负性心态评分（SAS、SDS）、及VAS评分比较差异均无统计学意义（*P*＞0.05）。术后1个月，观察组IPSS评分和SAS、SDS评分…\n术后1个月：IPSS、SAS、SDS差异显著（文中报道 P<0.001）。\n术后1日/1周：VAS显著下降（文中报道 P<0.001）。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s06_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s06_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s07",
+        "insertionIndex": 6,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s07_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s07",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s07_title",
+        "insertionIndex": 0,
+        "text": "关键数值：疼痛与满意度"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s07_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s07_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s07",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s07_body",
+        "insertionIndex": 0,
+        "text": "VAS（对照组，术后当天/第1天/第1周）：5.24±2.66 / 4.77±2.45 / 3.12±1.03\nVAS（观察组，术后当天/第1天/第1周）：3.15±2.02 / 3.23±1.33 / 1.16±0.66\n护理总满意度：观察组 100% vs 对照组 84%。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s07_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s07_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s08",
+        "insertionIndex": 7,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s08_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s08",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s08_title",
+        "insertionIndex": 0,
+        "text": "依从性与行为改变"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s08_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s08_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s08",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s08_body",
+        "insertionIndex": 0,
+        "text": "观察组在情绪管理、饮食控制、戒烟戒酒、及时用药、功能锻炼方面均优于对照组。\n提示干预不仅改善短期症状，也改善长期行为执行。\n临床意义：可复制到其他术后康复路径管理场景。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s08_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s08_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s09",
+        "insertionIndex": 8,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s09_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s09",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s09_title",
+        "insertionIndex": 0,
+        "text": "机制解释与临床价值"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s09_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s09_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s09",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s09_body",
+        "insertionIndex": 0,
+        "text": "机制层面：关键时机激励提升患者自我效能与康复参与度。\n护理价值：改善症状 + 缓解负性情绪 + 提升满意度与依从性。\n管理价值：形成标准化、可执行、可评估的护理闭环。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s09_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s09_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s10",
+        "insertionIndex": 9,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s10_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s10",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s10_title",
+        "insertionIndex": 0,
+        "text": "研究局限与改进方向"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s10_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s10_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s10",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s10_body",
+        "insertionIndex": 0,
+        "text": "局限：单中心、样本量中等、随访时间较短。\n后续：多中心扩大样本，延长随访，强化量表与客观指标联动。\n计划：在硕士阶段延展到肿瘤护理与长期症状管理场景。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s10_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s10_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s11",
+        "insertionIndex": 10,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s11_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s11",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s11_title",
+        "insertionIndex": 0,
+        "text": "复试可能提问与应答"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s11_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s11_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s11",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s11_body",
+        "insertionIndex": 0,
+        "text": "Q1：为什么选择时效性激励理论？\nA1：它直接面向“关键时点行为改变”，契合术后康复需求。\nQ2：如何控制偏倚？\nA2：随机分组、统一评估时点、量表与客观指标结合。\nQ3：如何与未来导师方向衔接？\nA3：将该干预框架迁移到肿瘤患者症状管理与心理支持。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s11_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s11_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    },
+    {
+      "createSlide": {
+        "objectId": "s12",
+        "insertionIndex": 11,
+        "slideLayoutReference": {
+          "predefinedLayout": "BLANK"
+        }
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s12_title",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s12",
+          "size": {
+            "height": {
+              "magnitude": 56,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 22,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s12_title",
+        "insertionIndex": 0,
+        "text": "结论与致谢"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s12_title",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 30,
+            "unit": "PT"
+          },
+          "bold": true
+        },
+        "fields": "fontFamily,fontSize,bold"
+      }
+    },
+    {
+      "createShape": {
+        "objectId": "s12_body",
+        "shapeType": "TEXT_BOX",
+        "elementProperties": {
+          "pageObjectId": "s12",
+          "size": {
+            "height": {
+              "magnitude": 400,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 640,
+              "unit": "PT"
+            }
+          },
+          "transform": {
+            "scaleX": 1,
+            "scaleY": 1,
+            "translateX": 40,
+            "translateY": 92,
+            "unit": "PT"
+          }
+        }
+      }
+    },
+    {
+      "insertText": {
+        "objectId": "s12_body",
+        "insertionIndex": 0,
+        "text": "结论：**基于时效性激励理论的护理干预对行经尿道前列腺热蒸汽消融术患者的前列腺症状与焦虑情绪均产生显著改善作用，时效性激励护理在提升患者依从性，改善术后排尿情况及提高护理满意度具有积极…\n核心贡献：提出可执行的术后激励护理路径。\n感谢各位老师指正。"
+      }
+    },
+    {
+      "updateTextStyle": {
+        "objectId": "s12_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "style": {
+          "fontFamily": "Arial",
+          "fontSize": {
+            "magnitude": 18,
+            "unit": "PT"
+          }
+        },
+        "fields": "fontFamily,fontSize"
+      }
+    },
+    {
+      "createParagraphBullets": {
+        "objectId": "s12_body",
+        "textRange": {
+          "type": "ALL"
+        },
+        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+      }
+    }
+  ]
+}
