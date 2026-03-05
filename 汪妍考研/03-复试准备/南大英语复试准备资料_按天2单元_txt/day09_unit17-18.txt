@@ -1,0 +1,356 @@
+Day 09 | Unit 17-18
+
+Unit 17
+
+【原文】
+Wound Care
+1. Interpret the term: wound;
+2. State the process of wound he aling;
+3. Identify factors that influence wound he aling;
+4. Describe the basic wound caring methods.
+
+【翻译】
+伤口护理1.解释术语：伤口； 2.阐述伤口愈合的过程； 3.识别影响伤口愈合的因素； 4.描述基本的伤口护理方法。
+
+【原文】
+The skin encloses the body structures and the body fluids, which protect the inner body from external assault. When skin barrier is pierced,
+the in flamm atory process of the individual's immune response① is enacted to getrid of the foreign material, if possible, and to prepare the injured bodyarea for healing. This injured bodyarea, whether internal or external, is called a wound. Wounds are often described according to how they are acquired:
+incised, contused,
+
+【翻译】
+皮肤包围身体结构和体液，保护内部身体免受外部攻击。当皮肤屏障被刺穿时，制定DIVI DUAL免疫反应①的'inf lam成熟过程，以尽可能去除异物，并准备受伤的身体区域进行愈合。这个受伤的身体区域，无论是内部还是外部，都被称为伤口。伤口通常根据其获取方式来描述：切开、咬合、
+
+abraded,
+
+【原文】
+punctured, or lacerated.②
+Wounds can also be furt her described according to the likelihood and degree of wound contamination. Clean wounds are uninfected wounds in which there is no inflammation and the respiratory, alimentary, genital,
+and urinary tracts are not entered. Clean wounds are mainly closed wounds; or, if necessary,
+they are drained with closed drainage. Clean-contaminated wounds③ are surgical wounds in which the respiratory, alimentary, genital, or urinary tracts havebeen entered. Such wounds reveal no evidence of infection. Contaminated wounds consist of open, fresh,
+accidental wounds. Some surgical wounds, i nvolvi ng a major break in sterile technique or a large amoun to f spillage from the gastroin testinal tract,
+are also called contaminated wounds.④ Contaminated wounds show evidence of inflammation. Dirty or infected wounds include old, accidental wounds con taining dead tissue and wounds with evidence of a clinical infection.
+Following injury, the process of healing takes place. Only certain tissues of the body are able to regenerate. Healing takes place by primary or secondary in tention. Primary intention healing ⑤ occurs when the tissue surfaces are or havebeen approximatey closed and there is least or no tissue loss; it is characterized by the formation of minimal granulation tissue and
+①
+②
+③
+④
+⑤
+
+【翻译】
+穿刺或撕裂。②伤口也可以根据伤口污染的可能性和程度进一步描述。干净的伤口是未感染的伤口，没有炎症，呼吸道、消化道、生殖道和泌尿道没有进入。干净的伤口主要是封闭的伤口；或者，如有必要，用封闭的引流管引流。Clean-contamina ted伤口③是已进入呼吸道、消化道、生殖道或泌尿道的手术伤口。这些伤口没有显示出感染的迹象。受污染的伤口由开放的、新鲜的、意外的伤口组成。一些手术伤口，如无菌技术的重大突破或胃肠道大量溢出，也被称为细小伤口。④受污染的伤口有炎症迹象。肮脏或受感染的伤口包括含有死亡组织的旧伤口和具有临床感染证据的伤口。受伤后，发生愈合过程。只有身体的某些组织能够再生。愈合在10分钟内主要或次要发生。原发性愈合⑤发生在组织表面近似闭合或已经闭合且组织损失最少或没有组织损伤时；其特征在于最小肉芽组织的形成和① ② ③ ④ ⑤
+
+机 体免疫 应答 产⽣的 炎症反 应。
+伤 ⼝通常 根据 它的形 成被描 述为: 切割 伤、 挫伤、 摩擦 伤、穿 刺伤, 或撕 裂伤。
+半 污染伤 ⼝。
+⼀ 些⽆菌 技术 不完备 或有⼤ 量胃 肠道溢 出物 的外科 伤⼝ 也被称 为污染 伤⼝ 。
+⼀ 期愈合 。
+
+65
+
+【原文】
+scarring. Primary intention healing includes reconstr uctive stage, and the mature stage ①.
+
+【翻译】
+瘢痕形成，主要意向愈合包括重建uc ti ve期，成熟期①。
+
+【原文】
+three stages:
+the defensive stage,
+Secondary in tention healing ②
+
+【翻译】
+三个阶段：防御阶段、次要意图治疗②
+
+the
+
+【原文】
+occurs when the wound is extensive and has large tissue loss. Secondary in tention healing differs from primary in tention healing in three ways: longer repair time; greater scar; and more prone to be infected.
+Both internal and external factors can affect wound healing, either positively or negatively. External factors include preoperative stays, preoperative preparation,
+
+【翻译】
+当伤口广泛且具有较大的组织丢失时发生。二次愈合与主要意图愈合在三方面有所不同：修复时间更长；疤痕更大；更容易被感染。内部和外部因素都会影响伤口愈合，无论是正面的还是负面的。外部因素包括术前住宿、术前准备、
+
+and
+
+【原文】
+in traoperative elements. Internal factors include vasculature, immune status, nutrition,
+obesity, and stress. Someways are recommended to control the external factors that affect wound healing, which include treating bacterial infections before surgery, shortening preoperative hospital stay, administering enteral or paren teral nutrition preoperatively to them alnourished clients if the surgery is not urgent, and bathing with an antimicrobial soap the night before surgery when clients having elective surgery ③.
+
+【翻译】
+内部因素包括血管系统、免疫状态、营养、肥胖和压力。建议采取一些方法来控制影响伤口愈合的外部因素，包括术前治疗细菌感染，缩短术前住院时间，如果手术不紧急，则在术前对营养不良的患者进行肠内或外周营养，当客户进行择期手术时，在手术前一晚使用抗菌肥皂沐浴③。
+
+【原文】
+Hairnear the operative site should not be removed unless absolutely necessary; If hair must be removed, it should be clipped or removed with a depilatory, rather than shaved.
+There are three main complications of wound healing:
+Hemorrhage. Some bleeding
+
+【翻译】
+除非绝对必要，否则不应去除手术部位附近的毛发；如果必须去除毛发，应使用脱毛器夹住或去除毛发，而不是剃掉毛发。伤口愈合的主要并发症有三个：出血。一些出血
+
+from a wound is normal
+
+【原文】
+in traoperatively
+
+【翻译】
+在手术中
+
+and
+
+【原文】
+postoperatively. Hemorrhage, however, is abnormal. It may be caused by a dislodged clot,
+a slippedligature, or erosion of a blood vessel.
+Dehiscence with possible evisceration. Dehiscence is the partial or total rupturing of a wound. Some factors can result in evisceration, including obesity, poornut rition, multiple trauma, failure of suturing, excessive coughing, vomiting, and dehiscence.
+Infection. Infection of a surgical wound may become apparent 2 to 11 days postoperatively. Drainage from a suspected infected wound should be cultured.
+Just as there are many types of wounds, there are manyways of caring for wounds. In general, there are four basic measures to take to accelerate the wounding healing.
+The Center for Disease Control ④
+recommends the following wound care practices for preventing wound infection. 1) Washhand before and after touching surgical wound. 2)
+Touch an open or fresh surgical wound only when wearing sterile gloves or using sterile forceps. After the wound is sealed, sterile gloves are no longer required. 3) Remove or change the dressing over open and closed wounds when it becomes wet. 4) Take a specimen of any drainage from the wound that is suspected of being infected. Send the specimen to the laboratory for culture and Gramstain ⑤.
+①
+②
+③
+④
+⑤
+
+【翻译】
+术后，但出血异常。这可能是由于血块脱落、韧带滑脱或血管糜烂引起的。开裂并可能内脏化。裂开是伤口的部分或全部破裂。一些因素可能导致内脏破裂，包括肥胖、营养不良、多发性创伤、缝合失败、过度咳嗽、呕吐和开裂。感染。手术伤口感染可能在术后2至11天变得明显。应培养疑似感染伤口的引流液。正如伤口有多种类型一样，护理伤口的方法也很多。一般来说，有四种基本措施可以加速伤口愈合。疾病预防控制中心④建议采取以下伤口护理措施来预防伤口感染。1 ）触摸手术伤口之前和之后洗手。2 ）仅在佩戴无菌手套或使用无菌钳时触摸开放式或新鲜的手术伤口。伤口密封后，不再需要无菌手套。3 ）当开口和闭合的伤口变湿时，取出或更换敷料。4 ）从伤口中取出任何怀疑被感染的引流液标本。将标本送实验室进行培养和革兰氏染色⑤。① ② ③ ④ ⑤
+
+组 织防御 期、 组织重 建期和 组织 成熟期 。
+⼆ 期愈合 。
+择 期⼿术 。
+疾 病控制 中⼼ 。
+⾰ 兰⽒染 ⾊。
+
+66
+
+【原文】
+Unit 17 Wound Care Promoting Healing and Preventing Complication. Adequate nutrition is crucial for wound healing. Clients unable to eat a diet that provide sufficient calories and nutrients for wound healing may require a central line for total parenteral nutrition or an en teral feeding tube①.
+Protein, vitamins, and tracemetals play a major role in the healing process. Prevention of stress on a wound, vomiting, abdominal distention, or strenuous coughing, is also important during the wound healing process. Vomiting is of tenp reven ted by w it hholding food and oral fluid until there is no nausea.②
+Abdominal distention often can be prevented by frequent position changes and ambulation. Ambulation improves respiration and blood circulation,
+helping the delivery of nutrients and oxygen to the wound area. Changing Dressings is another impor tantway to promote the healing of wounds. For the primary in tention wounds with minimal drainage and no tissue loss, sterile dry dressings are used. Surgical dressings are changed to prevent the growth of microorganisms therefore helping the surgical wounds healing.
+Monitoring Wound Drains:
+
+【翻译】
+Unit 17伤口护理促进愈合和预防并发症。充足的营养对伤口愈合至关重要。无法进食为伤口愈合提供足够卡路里和坚果的饮食的客户可能需要一条中心线来进行全肠外营养或输入喂食管①。蛋白质、维生素和微量金属在愈合过程中起着重要作用。在伤口愈合过程中，预防伤口压力、呕吐、腹胀或剧烈咳嗽也很重要。呕吐通常甚至通过不吃食物和口服液来预防，直到没有恶心为止。②腹部膨胀通常可以通过频繁的体位变化和移动来预防。Ambulation改善呼吸和血液循环，帮助将营养物质和氧气输送到伤口区域。更换敷料是促进伤口愈合的另一个重要方法。对于具有最小引流且无组织丢失的主要意图伤口，使用无菌干敷料。更换手术敷料以防止微生物生长，从而帮助手术伤口愈合。监控伤口排水管：
+
+【原文】
+Surgical drains are inserted to perm it the drainage of excessive serosangu ineous fluid and purulent material and to promote healing of underlying tissue.③
+These drains may be inserted and sutured through the incision line, but they are most commonly inserted through stab wounds several centimeters away from the incision line therefore the incision itself may be keptdry. In order to keep effective draining, holding the drain securely in place and assessing the amount and character of drainage, including odor,
+t hickness, and color, are necessary for nurses.
+
+【翻译】
+插入紧急引流管以使其成为eo us液体和化脓性物质中过量血清囊的引流管，并促进底层组织的愈合。③这些引流管可能通过切口线插入和缝合，但它们最常通过距离切口线几厘米的刺伤插入，因此切口本身可能保持干燥。为了保持有效的排水，护士必须将排水管牢固地固定到位，并评估排水的量和特性，包括气味、厚度和颜色。
+
+【原文】
+Daily Language
+1. What should I do for this wound?
+对这个伤⼝, 我该注意什么?
+2. Keep the dressing from wet. Takesome antibiotics, if necessary.
+保持敷料的⼲燥, 必要的时候⼝服⼀些抗⽣素。
+3. When shall I come to take the stitches out?
+我什么时候来拆线?
+4. Please come to me in seven days.
+请七天后来拆线。
+5. How were you injured?
+你是怎么受伤的?
+6. The wound is rat her large, so I'llstitch it.
+①
+②
+③
+
+【翻译】
+日常语言1.我该怎么处理这处伤口？ 对这个伤⼝ ， 我该注意什么 ？ 2.保持敷料不弄湿。如有必要，服用一些抗生素。保持敷料的⼲燥， 必要的时候⼝服⼀些抗⽣素。 3.我什么时候来拆线？ 我什么时候来拆线 ？ 4.请七天后来找我。请七天后来拆线。5.您是如何受伤的你是怎么受伤的？ 6.伤口比较大，我就缝'一下。① ② ③
+
+管 喂。
+通 过限制 ⻝物 和⽔的 摄⼊来 防⽌ 呕吐, 直到 病⼈没 有恶 ⼼为⽌ 。
+插 ⼊外科 引流 管将额 外的⾎ 性液 体以及 脓性 物质引 流出 来, 从 ⽽促进 深部 组织的 愈合 。
+
+67
+
+Unit 18
+
+【原文】
+Intubati on
+1. State the indications for intubation;
+2. Identify the types of intubation;
+3. State the complic ations of intubation.
+
+【翻译】
+Intubati on 1.说明插管的适应症； 2.识别插管类型； 3.阐述插管的并发症。
+
+【原文】
+In tubation is a very important step to set up effective ventilation for patients. Muscle relaxan ts are used to facilitate surgery thereby necessitates the use of mechanical ventilation.①
+Patients with a full stomach, protecting against aspiration of regurgitated gastric con tents,
+patients with prone position, making maintenance of the airway difficult, and patient in whom the airway cannot be satisf actorily maintained by any other technique may undergo in tubation.②
+During car diopul monary resuscitation,
+100% oxygen withou tleaks,
+in tubation allows: ventilation with suction clearance of inhaleddebris,
+and a route for the adm in istration of drugs.③
+A variety of equipments exist and which is chosen will be determined by the circumstances. Laryngoscope with a curved blade and f unctioni nglight ④
+device for in tubation. Tracheal tubes with working cuff ⑤
+is the essential are in a variety of sizes. The length is expressed in centimeters and the internal diameter in millimeters. They should be lightly lubricated. For males: 22～24 cm in length, 8. 0～9. 0 mm internal diameter; and for females: 20～22 cm in length, 7. 5～8. 5 mm in ternal diameter. Inflate the cuff by syringe once the tube is in place. The tube is connected to the anesthetic system or ventilator tubing by catheter mounts or' elbow' ⑥. And suction should be switched on and immediately handed in case the patien tvomits or regurgitates. In addition, a sem i-rigid in troducer⑦
+is to helpmould the tube to a particular shape; and the bandage or tape is to secure the tube.
+Oralint ubation requires abolition of the laryngeal ref lexes⑧ and appropriate monitoring
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+
+【翻译】
+在导管中是为患者设置有效通气的一个非常重要的步骤。肌肉松弛剂用于促进手术，因此需要使用我换气。①胃满的患者，防止反流性胃病帐篷抽吸，俯卧位患者，使气道维护困难，和通过任何其他技术空气方式不能满足主体的患者可以在tuba tion中进行。②在CAR diopul monary resuscita tion期间， 100 ％氧气无泄漏，管内允许：吸入碎屑的吸入间隙通气，以及给药途径。③有多种设备可供选择，具体取决于具体情况。Lary ngo瞄准镜，带有弯曲的刀片和功能正常的灯④用于插管的装置。带工作袖带的气管导管⑤是必不可少的，有各种尺寸。长度以厘米表示，内径以毫米表示。应轻轻润滑。男性：长22 ～ 24 cm ，内径8. 0 ～ 9. 0 mm ；女性：长20 ～ 22 cm ，内径7. 5 ～ 8.内径5毫米。试管到位后，用针筒给袖带充气。导管通过导管支架或"弯头" ⑥连接到麻醉系统或静脉扩张器管路。如果患者呕吐或反流，应打开并立即进行抽吸。另外，槽⑦中的半刚性是帮助将管子模制成特定的形状；绷带或胶带用于固定管子。口腔治疗需要消除喉反射⑧和适当监测① ② ③ ④ ⑤ ⑥ ⑦ ⑧
+
+如 果⼿术 使⽤ 了肌松 剂, 就 需要 对病⼈ 实施 机械通 ⽓。
+对处 于以 下三种 情况 的病⼈ 可能需 要插 管: 饱 ⻝的 病⼈, 为了 防⽌其 吸⼊ 返 流的 胃 内容 物; 处 于俯 卧 位⽽ 使
+通 ⽓困难 的病 ⼈; 使 ⽤其他 技术 ⽽不能 达到 满意通 ⽓效 果的病 ⼈。
+在进 ⾏⼼ 肺复苏 的过 程中, 插管可 以确 保以 100% 的纯 氧 进⾏ 密 闭通 ⽓, 吸 出误 吸 物。 插管 还 是 ⼀ 种给 药 的
+途 径。
+有 可靠光 源的 弯咽喉 镜 (作 者注: ⼉童 插管 可⽤直 镜⽚, ⽤光 导纤维 作为 光源更 为可 靠) 。
+⽓ 管导管 前端 的⽓囊 。
+导 管的接 ⼝或 肘形接 ⼝。
+具 可塑性 (有 ⼀定韧 性并具 备⼀ 定强度) 的 ⾦属丝 。
+终 ⽌病⼈ 的喉 反射。
+
+70
+
+【原文】
+Unit 18 Intubation of the patient. The patient should be positioned with the neckflexed and the headex tended at the atlantooccipital joint. This is the so-called' sniffing the morning air'position. The patient's mouth is fully opened by the index finger and thumb of the right hand in a scissors action ①. The laryngoscope is always held in the doctor'slefthand and the blade is in troduced in to the mouth along his right-handside of the tongue,
+
+【翻译】
+Unit 18患者插管。患者的位置应颈部弯曲，头部伸展在寰枕关节处。这就是所谓的"嗅清晨的空气"姿势。'右手食指和拇指在剪刀动作中完全张开患者口腔①。喉镜始终握在医生'的左手中，刀片沿着舌头的右侧导入口中，
+
+【原文】
+d isplacing it to the left ②.
+
+【翻译】
+将其向左移动②。
+
+The
+
+【原文】
+blade is advanced until the tiplies in the gap between the base of the tongue and the epiglottis.
+Force is applied i nt he direction in which the handle of the laryngoscope is pointing, ③
+
+【翻译】
+刀片向前推进，直到尖端位于舌头底部和会厌之间的间隙。将力施加在La RyNgo Scope的把手指向的方向上， ③
+
+the
+
+【原文】
+effort coming from the upper arm of the doctor not from the wrist, to lift the tongue and epiglottis to expose the larynx. A triangular opening can be seen,
+and the whitish colored true cords la teral.④
+with the apex an teriorT he tracheal tube is in troduced in to the right side of the mouth, advanced and seen to pass through the cords until the cuffliesjust below the cords.⑤
+The tube is then held firmly by the doctor's fingers of the right hand and the laryngoscope is carefully removed ⑥.
+
+【翻译】
+努力来自医生的上臂，而不是来自手腕，抬起舌头和会厌以暴露喉头。可以看到一个三角形的开口，白色的真绳外侧。④顶端为TERI或气管导管被引入口腔的右侧，向前推进并看到穿过绳索，直到袖带位于绳索正下方。⑤然后用右手医生'的手指牢牢握住试管，小心地取出喉镜⑥。
+
+【原文】
+The cuff is then inflated sufficiently to prevent leak during ventilation. Finally the position of the tube is confirmed by listen ingf or breath sounds in bothaxillae and then it is secured in place.⑦
+For nasotracheal in tubation, a well- lubricated tube is in troduced usually through the right nostril along the floor of the nose with the bevelpointing medially to avoid damage to the turbinates.⑧
+It is advanced in to the oropharynx, where it is usually visualized using a laryngoscope in the manner described above. It can be advanced directly in to the larynx by pushing on the proximal end.
+Hypoxia, trauma, and reflex activity are the common complications in intubation.
+Hypoxia happening during in tubation can deteriorate the impaired respiratory conditions.
+Measuring the carbon dioxide in expiredgas is the bestway to detect hypoxia in oesophageal in tubation; ⑨
+low carbon dioxide indicates oesophageal intubation. Less reliable signs are'burping' sounds as gasescapes, dim in ished breath sounds on auscultation, decreased chest
+10
+movement on ventil ation, and gurgling sounds over the epigastri um.疢
+Abnorm alanato my or airway pathology are the most common reasons for failed in tubation and inability to
+1
+ventilate.疢
+In factmany cases can be predictable at the preoperative assessment. Possible causes include the tube becoming kinked, disconnected, or inserted toofar, and passing into
+
+【翻译】
+然后将袖带充分充气，以防止在通气过程中泄漏。最后，通过聆听两个腋窝的呼吸声来确认管子的位置，然后将其固定到位。⑦对于插管中的鼻气管，通常沿着鼻子的地板通过右鼻孔引入润滑良好的管子，坡口指向内侧，以避免损坏肠道。⑧进入口咽，通常使用喉镜以上述方式可视化。它可以通过推动近端直接进入喉部。缺氧、创伤和反射活动是肠内常见的并发症。在输卵管期间发生的缺氧会恶化受损的呼吸状况。测量过期气体中的二氧化碳是检测管腔内食管缺氧的最佳方法； ⑨低二氧化碳表示食管插管。不太可靠的迹象是气体逃逸时的"打嗝"声音，听诊器上的清洗呼吸声暗淡，静脉内胸部10运动减少，以及外延胃腔上咯咯作响的声音。我或气道病理学疢异常是导管插管失败和无法1次通气的最常见原因。疢事实上，许多病例在术前评估时是可以预测的。可能的原因包括管子扭结、断开或插入太多
+
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+⑨
+疢
+10
+疢
+1
+
+以 剪⼑的 ⼿势 。
+沿 着病⼈ ⾆头 的右侧 将喉镜 前端 镜⽚插 ⼊病 ⼈⼝中, 将 ⾆头推 向左侧 。
+⽤ ⼒的⽅ 向为 喉镜把 ⼿指向 的⽅ 向。
+这 样可以 ⻅到 ⼀个三 ⻆形的 开⼝, 三⻆ 形顶 点向前, 两 侧为发 ⽩的声 带。
+⽓ 管导管 沿着 病⼈嘴 的右侧 插⼊, ⼀直 往前 通过声 带, 直到⽓ 囊刚好 进到 声带下 ⾯。
+⼩ ⼼地取 出喉 镜。
+最 后通过 在两 侧腋部 听呼吸 ⾳⽽ 确认⽓ 管导 管的位 置, 并加以 固定。
+进 ⾏⿐ - ⽓管 插管时, 将润 滑好 的导管 从右 ⿐孔沿 着⿐ 底插⼊ 。为避 免损 伤⿐甲, 应 将导管 的洞 斜⾯居 中。
+若 ⽓管导 管插 ⼊了⻝ 管, 最 好的 检测⽅ 法是 检测呼 末⼆ 氧化碳 。
+其他 ⼀些不 太可 靠的评 估⽅ 法 有: ⽓ 体 逸 出时 有 " 暖 ⽓" 声, 听 诊 时 呼 吸 ⾳减 弱, 机 械通 ⽓ 时 胸 廓 运 动 减
+弱, 并且 在上 腹部可 听到" 咕咕" 声。
+解 剖异常 或⽓ 道的病 理性改 变是 最常造 成插 管和通 ⽓失 败的原 因。
+
+71
+
+【原文】
+onemain bronchus. Severe bronchospasm and tension pneu mothorax ①
+will result in failed ventilation after intubation. And hypoxia is also induced by regurgitated gastric con tents which can cause blockage of the a irways directly or secondary to laryngeal spasm and bronchospasm.②
+Direct trauma occurs during laryngoscopy and insertion of the tube to lips, teeth,
+tongue, pharynx, larynx, trachea, nose, and nasopharynx during nasal intubation, which will cause soft tissue swelling or bleeding. Indirect trauma includes the injury to the mandible
+(dislocation), and the cervical spine and cord, especially where there is pre-existing degenerative disease ③ or trauma.
+Reflex activities during in tubation ④
+include three aspects. Firstly, hypertension and arrythmias occur in response to in tubation and may hurt patients with coronary artery disease,
+and aortic or in tracranial aneurysms. In patients a trisk, specific action is taken to atten uate the response,
+lignocai ne.⑤
+for example,
+pretreat ment with β -blockers,
+analgesics,
+or in travenous Secondly, vomiting is also caused by intubation. This may be stimulated when laryngoscopy is attempted in patients who are inadequately anesthetized. It is more frequent when there is material in the stomach. For example, in emergencies when the patient is not starved, in patients with in testinal obstruction ⑥,
+or when gastric emptying is delayed, as after opiate analgesics or following trauma. Finally, laryngeal spasm is a fatal complication.
+Stimulation of the epiglottis or larynx will result in adduction of the vocal cords⑦
+
+【翻译】
+1个主要支气管。严重的支气管痉挛和张力性气胸①将导致中风后通气失败。缺氧也是由反流的胃内容物引起的，可直接或继发于喉痉挛和支气管痉挛而导致气道堵塞。②喉镜检查和鼻腔浸泡期间将导管插入嘴唇、牙齿、舌头、咽部、喉部、气管、鼻子和鼻咽部时发生直接创伤，会导致软组织肿胀或出血。间接创伤包括下颌骨（脱位）以及颈椎和脊髓的损伤，特别是在已存在退行性疾病③或创伤的情况下。在tuba tion ④期间的反射活动包括三个方面。首先，高血压和心律失常发生在输卵管内，并可能伤害冠状动脉疾病患者，以及aor tic或颅内动脉瘤患者。在高危患者中，采取具体措施来减弱缓解，不含卡因。⑤例如，用β-受体阻滞剂、止痛药或静脉注射进行预处理。其次，呕吐也是由插管引起的。当麻醉不充分的患者尝试喉镜检查时，这可能会受到刺激。当胃中有物质时，这种情况更常见。例如，在患者未挨饿的紧急情况下，睾丸梗阻患者⑥ ，或胃排空延迟，如阿片类镇痛药后或创伤后。最后，喉痉挛是致命的并发症。会厌tis或喉的刺激将导致声带内收⑦
+
+which
+
+【原文】
+blocks the airway up and endangers the patient.
+
+【翻译】
+堵塞气道并危及患者。
+
+【原文】
+Daily Language
+1. I am so sorry to tell you that your husband's respiratory condition is not verygood.
+我很遗憾的告诉您, 您丈夫的呼吸状况不很好。
+2. His lungs cannot supply enough oxygen for his body so we must uset he ventilator for him. Now we are going to intubatehim.
+他的肺不能供给机体⾜够的氧⽓, 所以我 们必须 给他 ⽤呼吸 机。现 在我们 准备 给
+他插管。
+3. What is a ventilator for?
+呼吸机是做什么⽤的?
+4. To put it simple, the ventilator is used to supply oxygen and help the patient to exhale
+①
+②
+③
+④
+⑤
+⑥
+⑦
+
+【翻译】
+日常语言1.非常抱歉地告诉您，您丈夫'的呼吸状况不是很好。我很遗憾的告诉您， 您丈夫的呼吸状况不很好。 2.他的肺不能为他的身体提供足够的氧气，所以我们必须为他使用静脉倾斜器。现在我们要向他求婚他的肺不能供给机体⾜够的氧⽓， 所以我 们必须 给他 ⽤呼吸 机。现 在我们 准备 给 他插管。 3.呼吸机的用途是什么呼吸机是做什么⽤的？ ？ 4.简而言之，静脉扩张器用于供氧，帮助患者呼气① ② ③ ④ ⑤ ⑥ ⑦
+
+张 ⼒性⽓ 胸。
+反 流的胃 内容 物堵塞 ⽓道、 喉痉 挛或⽓ 管痉 挛也可 能引 发低氧 ⾎症。
+先 前存在 的退 ⾏性疾 病。
+插 管⽽引 起的 机体的 反射。
+对于 危重 的病⼈, 应 该采取 ⼀些特 殊的 措施来 减弱 病 ⼈的 反 射, 例 如 预先 给 β - 受 体阻 滞 剂, ⽌ 痛 剂或 静 脉
+使 ⽤利多 卡因 。
+肠 梗阻。
+声 带的内 收。
+
+72

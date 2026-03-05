@@ -1,0 +1,367 @@
+Day 11 | Unit 21-22
+
+Unit 21
+
+【原文】
+Nutrition
+1. State the kinds of essential nutrients for a person;
+2. State three kinds of diseases relevant to nutrition;
+3. Identify the meaning of nutrition.
+
+【翻译】
+Nutrition 1.说明发送营养素的种类； 2.阐述与坚果相关的三种疾病； 3.识别营养的含义。
+
+【原文】
+Nutrition is the sum of allt he in teractions between an organism and the food it consumes.① People require food or essential nutrients for the growth and maintenance of allbody tissues and the normal functioning of allbody processes. Nutrients are the organic and inorganic ingredien ts of foods and required for proper body functioning.②
+Providing structural material for body tissues, providing energy for body processes and movement, and regulating body processes are three basic functions of nutrients.
+An adequate food intake consists of a balance of essential nutrients: water,
+carbohydrates, proteins, fats, vitamins, and minerals. The most basic nutrient is water.
+Carbohydrates, fats, and proteins are the energy-providing nutrients. Foods differ in their nut ritive value, and no onefood provides all essential nutrients.
+The amount of energy that nutrients supply to the body is their caloricval ue③. A calorie is a unit in heat energy. A small calorie is the amount of heat required to raise the temperature of 1 g water 1℃.④ A large calorie (Calorie, kilocalorie) is the amount of heat required to raise the temperature of 1 kg water 1℃ and is the unitused in nutrition. The energy liberated from eachgram of carbohydrate or protein after it is metabolized is about 4
+kcal; ⑤
+from eachgram of fat, about 9 kcal. The average North American receives approximately 45% of energy from carbohydrates, 40% from fat, and 15% from protein. In mostot her parts of the world, people derivefar more energy from carbohydrates than from fats, or proteins.
+Carbohydrates are composed of carbon, hydrogen, and oxygen. There are two basic kinds of carbohydrates: glucose (simple carbohydrates) and starch (complex carbohydrates).
+Once in the cell, glucose is either used for immediate release of energy or stored in the form of
+①
+②
+③
+④
+⑤
+
+【翻译】
+营养是器官结构与其消耗的食物之间所有相互作用的总和。①人们需要食物或必需营养素来生长和维持所有身体组织以及所有身体过程的正常运作。营养素是食物的有机和无机成分，需要红色才能正常发挥身体功能。②为身体组织提供结构材料，为身体过程和运动提供能量，调节身体过程是营养素的三个基本功能。充足的食物摄入量包括必需营养素的平衡：水、碳水化合物、蛋白质、脂肪、维生素和矿物质。最基本的营养素是水。碳水化合物、脂肪和蛋白质是提供能量的营养素。食物的坚果价值各不相同，没有任何一种食物能提供所有必要的营养。营养素提供给身体的能量量是它们的卡路里值③。卡路里是热能的单位。小卡路里是升高1克水1 ℃的温度所需的热量。④大卡路里（卡路里、千卡路里）是将1kg水温升高1 ℃所需的热量，是用于营养的单位。代谢后每克碳水化合物或蛋白质释放的能量约为4千卡； ⑤每克脂肪释放的能量约为9千卡。北美人平均约45%的能量来自碳水化合物， 40%来自脂肪， 15%来自蛋白质。在世界上大多数其他地方，人们从碳水化合物中获得的能量远远超过从脂肪或蛋白质中获得的能量。碳水化合物由碳、氢和氧组成。碳水化合物有两种基本类型：葡萄糖（简单碳水化合物）和淀粉（复合碳水化合物）。一旦进入细胞，葡萄糖要么用于立即释放能量，要么以① ② ③ ④ ⑤的形式储存
+
+营 养是有 机体 与其消 耗的⻝ 物之 间相互 作⽤ 的总和 。
+营 养素是 指⻝ 物所含 的有机 和⽆ 机成分, 是 维持机 体的 各项功 能所必 需的 。
+卡 价。
+1 ⼩卡是 指可 以将 1 克⽔温 度升 ⾼ 1 摄 ⽒度所 需的 热量。
+每 1 克碳 ⽔化合 物或 蛋⽩质 代谢后 所释 放的能 量为 4 千卡 。
+
+82
+
+【原文】
+Unit 21 Nutrition glycogen. Although all cells of the body are capable of storingsome glycogen, certain cells
+(liver and muscle) can store large amounts. Glucagon from the alpha cells of the pancreas,
+and epinephrine from the adrenal medulla activate glycogenolysis. When the body'sstores of carbohydrates fall below normal, certain quantities of glucose are formed from protein and fat.
+Up to 60% of the amino acids of the body's protein can be converted in to glucose. During starvation, the body depletes first itsf at and later its protein reserves.① Glucose undergoes a series of reaction to produce energy for the body'svaried demands.
+Proteins are organic substances that upon hydrolysis or digestion yield amino acids.
+Proteins are composed of carbon, hydrogen, and oxygen, justlike carbohydrates, but protein also contains nitrogen. Every cell in the body contains some protein, and about 3/ 4 of bodysolids are proteins. Urine and bile are the onlybody substances normally lacking protein.
+Amino acids are categorized as essential or nonessen tial. Essential amino acids are those that cannot be manufact ured in the body and must be supplied.②
+
+【翻译】
+Unit 21 Nutrition glycogen.虽然身体的所有细胞都能够储存一些糖原，但某些细胞（肝脏和肌肉）可以储存大量糖原。来自胰腺α细胞的胰高血糖素和来自肾上腺髓质的肾上腺素激活糖原分解。当身体'的碳水化合物储备低于正常水平时，蛋白质和脂肪会形成一定量的葡萄糖。身体蛋白质中多达60%的氨基酸可以'转化为葡萄糖。在饥饿期间，身体首先释放脂肪，然后释放蛋白质储备。①葡萄糖经历一系列反应，为身体的各种需求产生能'量。蛋白质是在水解或消化时产生氨基酸的有机物质。蛋白质由碳、氢和氧组成，就像碳水化合物一样，但蛋白质也含有氮。体内的每个细胞都含有一些蛋白质，大约3/4的体内固体是蛋白质。尿液和胆汁是身体中唯一通常缺乏蛋白质的物质。氨基酸分为必需或非必需。必需氨基酸是那些不能在体内制造，必须供应的氨基酸。②
+
+【原文】
+Nonessen tial amino acids are those that the body can manufact ure. Positive nitrogen balance indicates nitrogen input exceeds output.③
+A state of positive nitrogen balance often exists under the following conditions: childhood and adolescence, pregnancy, and phases of physical exercise, when there are increases in muscle growth. Eating more protein than necessary does not result in an increase in positive nitrogen balance but can lead to weight gain. Negative nitrogen balance exists when nitrogen output exceeds intake. This state usually occurs when a person consumes a diet inadequate in essential amino acids and calories or exposed to unusual stress, for example, trauma.
+Fats are groups of organic substances (fats, oils, waxes, and related compounds) that are greasy and insoluble in water but soluble in alcohol or et her. These organic substances are lipids. Fatshave the same element (carbon, hydrogen, and oxygen) as carbohydrates, butt he hydrogen content is higher. Cholesterol is a fatlikesteroid alcohol, mostlysynthesized in the liver. Some cholesterol is absorbed from the diet. High blood levels of one or more of the lipids, particu larly cholesterol or trig lycerides, is called hyperlipidemia.④
+Vitamin, an organic compound that cannot be manufact ured by the body, is needed in small quantities to catalyze metabolic process.⑤
+Vitamins are generally classified as fat soluble or water soluble. Fat-soluble vitamins include A, D, E, and K. Water-soluble vitamins include C and the B-complex vitamins: B1, B3, B6, B9, B1 2, etc. The body cannot store water-soluble vitamins, thus people must get a daily supply in the diet. The body can store fat-soluble vitamin, so a daily supply of fat-soluble vitamin is therefore not absolutely
+①
+②
+③
+④
+⑤
+
+【翻译】
+非必需氨基酸是人体可以制造的氨基酸。正氮气平衡指数氮气输入超过输出。③正氮平衡状态通常存在于以下条件下：儿童和青春期、怀孕和体育锻炼阶段，当肌肉生长增加时。摄入过多的蛋白质不会导致正氮平衡的增加，但会导致体重增加。当氮输出量超过摄入量时，存在负氮平衡。这种状态通常发生在一个人饮食中必需氨基酸和卡路里含量不足或暴露于异常压力（例如创伤）时。脂肪是一组有机物质（脂肪、油、蜡和相关化合物） ，它们油腻且不溶于水，但可溶于酒精或乙醚。这些有机物质是脂质。脂肪含有与碳水化合物相同的元素（碳、氢和氧） ，但氢含量更高。胆固醇是一种脂肪样类固醇醇，主要在肝脏中合成。一些胆固醇从饮食中吸收。一种或多种脂质ds的高血液水平，特别是胆固醇或甘油三酯，被称为高脂血症。④维他命Vita min是一种身体无法制造的有机化合物，需要少量来分解代谢过程。⑤维生素一般分为脂溶性或水溶性。脂溶性维生素包括A、D、E和K。水溶性维生素包括C和B复合维生素： B1、B3、B6、B9、B1 2等。人体不能储存水溶性维生素，因此人们必须在饮食中获得日常供应。人体可以储存脂溶性维生素，所以日常供应的脂溶性维生素不是绝对的① ② ③ ④ ⑤
+
+当 ⼈处于 饥饿 状态时, 机体 ⾸先 消耗其 储存 的脂肪, 然 后将蛋 ⽩质消 耗掉 。
+必 需氨基 酸是 机体不 能⾃⼰ 产⽣ 、必须 靠外 界供给 的氨 基酸。
+正 氮平衡 指氮 的摄⼊ 量超过 了排 出量的 状况 。
+⾎ 中⼀种 或多 种脂质 的⽔平 升⾼, 尤其 是当 胆固醇 或⽢ 油三酯 升⾼时, 即 称为⾼ 脂⾎ 症。
+维 ⽣素, ⼀种 不能由 机体⾃ ⾏合 成的有 机化 合物, 所需 量很⼩, 在代 谢的 过程中 起酶 的作⽤ 。
+
+83
+
+【原文】
+necessary. Microminerals are those that people require daily in amounts less than 100 mg.
+They include iron, zinc, manganese, iodine, fluoride, copper, cobalt, chromium, and selenium.
+Clinical nutrition is concerned with the diagnosis and treatment of diseases that affect the intake, absorption, and metabolism of dietary constit uents and with the promotion of health through the prevention of diet related diseases.①
+Adult diseases of clinical nutrition encompass the most common causes of mortality in the developed world. They include obesity,
+hyper tension,
+diabetes,
+dyslipidemias, increased risks of cardiovascular disease, somecancers, and pulmonary failure, intestinal disorders related to inadequate nutrient absorption,
+eating disorders, and malnu trition associated with chronic illness and surgical trauma.
+Scientific advances on the relationship between dietary substances and the cellular mechanisms of disease occur with regularity and frequency. Yet, despite the prevalence of nutritional disorders in clinical medicine and despite increasing scientific evidence on the significance of dietary modification to disease prevention, presen tday practitioners of medicine are typically untrained in the relationship of diet to health and disease. In the absence of reliable medical advice on nutrition, patients increasingly turn to herbal dietary supplements, costlydietschemes for weight reduction, and other unproved and potentially harmful remedies.
+Standardization of curricula for nutrition education of medical students is increasingly relevant to the cost-effective integration of nutritional concepts into medical practice.
+
+【翻译】
+必需。微量矿物质是人们每天需要的量少于100毫克的微量矿物质。它们包括铁、锌、锰、碘、氟化物、铜、钴、铬和硒。临床营养学关注的是影响膳食成分摄取、吸收和代谢的疾病的诊断和治疗，以及通过预防膳食相关疾病来促进健康。①成人临床营养疾病包括发达国家最常见的死亡原因。它们包括肥胖、高张力、糖尿病、血脂异常、心血管疾病风险增加、某些癌症和肺功能衰竭、与营养吸收不足相关的肠道疾病、饮食失调以及与慢性疾病和手术创伤相关的营养不良。关于膳食物质与疾病细胞机制之间关系的科学进展以规律和频率发生。然而，尽管营养紊乱在临床医学中普遍存在，尽管越来越多的科学证据表明饮食改变对疾病预防的重要性，但当今的医学从业者在饮食与健康和疾病的关系方面通常没有经验。在缺乏可靠的营养医疗建议的情况下，患者越来越多地转向草药膳食补充剂、昂贵的减肥饮食计划以及其他未经证实且可能有害的补救措施。医学生营养教育课程的标准化与将营养理念经济高效地纳入医学实践越来越相关。
+
+Daily Language
+1. Do you know what you must pay attention to in your diet?
+您知道在饮⻝上有哪些问题是您必须注意的吗?
+2. You should control the quantities of energy you take in, especially the amount of the fats.
+您应该控制您摄⼊能量的总量, 尤其对摄⼊脂肪的量应该严加控制。
+3. You should eatmorefish, vegetable, and fruit. Also you should do exercises for weight reduction.
+您应该多吃⻥、蔬菜和⽔果。同时您还应该进⾏体育锻炼以减轻体重。
+
+Vocabulary
+1. nutrient [蔠n j u蓎t r i蓈nt] adj. 营养的, 滋养的 n. 营养素, 滋养物
+2. organic [蓋
+蓎
+蔠
+蓐 nik] adj. 器官的; 有机的; 器质的
+①
+
+临床 营养 学是关 于诊 断和治 疗影响 饮⻝ 成分的 摄⼊ 、吸收 和代 谢的疾 病, 并且 通 过预 防 饮⻝ 相 关疾 病 ⽽促 进
+健 康的学 科。
+
+84
+
+Unit 22
+
+Shock
+
+【原文】
+1. State the definition of shock;
+2. State the pathophysiology of shock;
+3. List the complications of shock;
+4. List the classes of shock and their causes.
+
+【翻译】
+1.说明电击的定义； 2.阐述休克的病理生理学； 3.列出休克的并发症； 4.列出休克的症状及其原因。
+
+【原文】
+Shock is a life-threatening condition that occurs when cardiovascular system is unable to meet the oxygen and nutritional needs of the body's cells and is usually reflected by a sudden drop in blood pressure. Insufficient blood pressure may be due to a variety of factors. Common causes include inadequate cardiac output ①
+due to heart fail ure②,
+a sudden loss of blood volume due to hemorrhage, or a sudden decrease in peripheral vascular resistance③
+
+【翻译】
+电击是心血管系统无法满足人体细胞的氧气和营养需求时发生的危及'生命的情况，通常反映在血压的突然下降上。血压不足可能是由于多种因素造成的。常见原因包括心力衰竭导致的卡IAC输出量不足①、出血导致的血容量突然下降或外周血管阻力突然下降③
+
+due to
+
+【原文】
+anaphylaxis.
+Adult respiratory coagu lation (DIC) ⑤,
+distress syndrome (A RDS) ④,
+d issem inated and m ultisystem organ failure (MS OF) ⑥
+in travascular are three especially serious conditions that may follow a prolonged episode of shock. Clients with ARDS will usually develop pulmonary fail ure⑦
+despite high levels of supplemen tal oxygen and mechanical ventilation ⑧. DIC results from ischemic damage to the endotheliallining of blood vessels and may precipitate shock and death. MSOF is a major cause of mortality following shock. It usually begins with respiratory failure, followed by failure of the kidneys, heart,
+liver, and finally cerebral and gastrointestinal functioning.
+Different forms of shock are categorized and named by the cardiovascular characteristics that occur. The four shock categories are: (1) hypovolemic shock ⑨ caused by a decrease in the circulating blood volume. Hypovolaemia normally results from a haemorrhage, which can be either internal, such as bleeding from the spleen, or external, for example, from trauma;
+
+【翻译】
+过敏性休克：成人呼吸性凝血（ DIC ） ⑤、窘迫综合征（ A RDS ） ④、播散性及多系统器官衰竭（ MS OF ） ⑥是伴随长时间休克发作的三种特别严重的病症。尽管补充氧气和机械通气水平很高，但ARDS患者通常会出现脉搏失败⑦ ⑧。DIC是由血管内皮内膜缺血损伤引起的，可能导致休克和死亡。MSOF是电击后死亡的主要原因。它通常始于呼吸衰竭，随后是肾脏、心脏、肝脏的衰竭，最后是脑和胃肠功能的衰竭。不同形式的休克根据发生的心血管特征进行分类和命名。四种休克类别是： （ 1 ）由循环血容量减少引起的低血容量休克⑨。低血容量症通常由出血引起，出血可以是内部的，如脾脏出血，也可以是外部的，如外伤；
+
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+⑨
+
+⼼ 输出量 。
+⼼ 脏衰竭 。
+外 周⾎管 阻⼒ 。
+成 ⼈呼吸 窘迫 综合征 。
+弥 散性⾎ 管内 凝⾎。
+多 系统器 官功 能衰竭 。
+肺 衰竭。
+机 械通⽓ 。
+低 ⾎容量 性休 克。
+
+86
+
+【原文】
+Unit 22
+(2) cardiogenic shock ①
+
+【翻译】
+22号机组（ 2 ）心源性休克①
+
+【原文】
+caused by cardiac failure;
+
+【翻译】
+由心力衰竭引起；
+
+Shock
+
+【原文】
+(3) extracardiac obstructive shock ②
+caused by a blockage of blood flow in the cardiovascular circuitoutsidet he heart; and (4)
+distribu tive shock ③ caused by excessive dilation of the venules and ar terioles. Most cases of clinical shock showsome components of each of these categories. However, this classification system is helpful in understanding the causes of shock.
+When in shock, the person's blood pressure is verylow. Depending on the specific cause and type of shock, symptoms will include one or more of the following:
+瞌Anxiet y or agitation
+瞌Confusion
+瞌Pale, cool, clammy skin
+瞌Low or no urine output ④
+瞌Bluish lips and fingernails
+瞌Dizziness, light-headedness, or faintness
+瞌Profuse sweating, moistskin
+瞌Rapid butweak pulse
+瞌Shallow and rapid breathing
+瞌Chest pain
+瞌U nconsciousness Assessment and treatment of the patient will depend on the type of shock, as signs and symptoms differ for each. The aim of the care is to re-establish perfusion of the vital organs and to prevent the shock from progressing. Regular observations are essential; the frequency depends on the patien'ts condition, but at a bare minimum they should be recorded half hourly. The nurse should check for anyfall in blood pressure and changes in heart rate, as well as the strength of the pulse, as a weak and thready pulse is indicative of shock. The patient should ideally be monitored for cardiac rate and rhythm ⑤,
+blood pressure, and pulse oximetry ⑥. The nurse should regularly assess the patien'ts conscious level and assessment should be used in conjunction with the Glasgowcom a score⑦,
+with any deterioration reported immediately. The patien'ts respiratory rate should be measured, and the depth and pattern noted. Highflow oxygen should be given to any patient in shock, so pulse oximetry and blood
+gases⑧ are taken to provide an assessment of the patient's respiratory status. Nurses should observe for tachypnea and respiratory tiredness, as these indicate that the patient might require mechanical ventilation.
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+
+【翻译】
+（ 3 ）由心脏外心血管回路血流阻塞引起的心外阻塞性休克② ； （ 4 ）由小静脉和小动脉过度扩张引起的分布性休克③。大多数临床休克病例都显示了这些类别的某些组成部分。然而，这种分类系统有助于了解休克的原因。休克时，患者'的血压非常低。根据电击的具体原因和类型，症状将包括以下一种或多种：瞌焦虑或躁动瞌混淆瞌苍白、凉爽、湿滑的皮肤排尿量瞌低或无尿量④瞌蓝色的嘴唇和指甲头瞌晕、头晕或晕眩瞌大量出汗、皮肤潮湿脉搏瞌快速但微弱呼吸瞌浅和快速瞌胸痛患者的昏瞌迷评估和治疗将取决于电击类型，因为每种类型的体征和症状都不同。护理的目的是撕裂建立重要器官的灌注并防止电击进展。定期观察是必不可少的；频率'取决于患者的病情，但至少应每半小时记录一次。护士应检查血压下降和心率变化以及脉搏强度，因为脉搏微弱且准备就绪表示休克。理想情况下，应监测患者的心率和节律⑤、血压和脉搏肟尝试⑥。护士应定期评估患者的意'识水平，并应结合格拉斯哥昏迷评分⑦进行评估，并立即报告任何恶化。应'测量患者的呼吸频率，并记录深度和模式。应向任何休克患者提供高流量氧气，因此应采用脉搏肟试剂和血气⑧来评估患者'的呼吸状态。护士应观察呼吸急促和呼吸疲劳，因为这表明患者可能需要机械通气。① ② ③ ④ ⑤ ⑥ ⑦ ⑧
+
+⼼ 源性休 克。
+⼼ 外阻塞 性休 克。
+分 布性休 克。
+尿 量。
+⼼ 率和⼼ 律。
+脉 搏氧含 量。
+格 拉斯哥 评分 。
+⾎ ⽓分析 。
+
+87
+
+【原文】
+Patients in shock should be keptwarm, but should not be warmed too quickly, as this will cause peripheral vasodilation and could cause hypotention. A central venous ca theter①
+should be inserted to measure the fluid status of the patient. The central venous pressure
+(CVP) ②
+should be measured hourly to monitor the circulating fluid level of the patient.
+
+【翻译】
+休克患者应保持温暖，但不应过快加热，因为这会导致周围血管舒张，并可能导致低血压。应插入中心静脉导管①以测量患者的液体状态。应每小时测量静脉压（ CVP ） ② ，以监测患者的循环液体水平。
+
+【原文】
+Strict asepsis③ must be maintained at all times to prevent infection.
+Strict fluid balance is essential and any losses and inpu ts④ need to be recorded. If large amounts of fluids are to be administered, they should be warmed prior to transfusion, as this will reduce the incidence of hypothermia. A urinary ca theter⑤ should be inserted and hourly urine measurements recorded. The nurse must ensure that if the patient is actively bleeding ⑥,
+blood hasbeen cross-matched and intravenous fluids are being administered as quickly as possible, especially if the patient is bleeding excessively externally. The volume of blood lost should ideally be placed. A ny patient in shock requires a minimum of twowidebore cannulas for rapid in travenous fluid and drug administration.
+The patient should lie i nflat ⑦ in the acute stage of shock and regular positional changes should be given to monitor pressure areas and to prevent fluid from accumulating in the lungs.
+It is essential when nursing a patient in shock to explain allt he procedures to the patient and relatives. Time should be taken to keep relatives informed of the situation, and it is imperative that the patient is reassured and is allowed to ask questions regarding his or her care.
+
+【翻译】
+必须始终保持严格的无菌③ ，以防止感染。严格的流体平衡是必不可少的，任何损失和输入④都需要记录。如果要施用大量液体，应在输血前加热，因为这将降低低温的发生率。应插入导尿管⑤并记录每小时的尿液测量值。护士必须确保如果患者主动出血⑥ ，血液已经交叉匹配，并且正在尽快施用静脉输液，特别是如果患者外出血过多。理想情况下，应放置流失的血量。任何休克患者都需要至少两根宽口径套管才能快速静脉输液和给药。患者在急性休克阶段应平卧⑦ ，并应定期改变体位，以监测压力区域并防止液体积聚在肺部。护理休克患者时，必须向患者和亲属解释所有程序。应花时间让亲属了解情况，并且必须让患者放心，并允许其询问有关其护理的问题。
+
+【原文】
+Daily Language
+1. He is anxious and agitated.
+他有些烦躁不安。
+2. His vital signs are not stable.
+他的⽣命体征不稳定。
+3. His heart rate is about 135 times per minute, and the pulse is weak and thready.
+他的⼼率在每分钟 135 次左右, 脉搏细弱。
+4. His blood pressure keeps around 70/ 56 mmHg.
+他的⾎压⼀直在 70/ 56 mmHg 左右波动。
+5. His respiratory rate is about 35 times per minute, and it's shallow and rapid.
+他的呼吸浅快, 次数在每分钟 35 次左右。
+6. He looks pale, and the skin is cool and clammy.
+①
+②
+③
+④
+⑤
+⑥
+⑦
+
+【翻译】
+日常语言1.他焦虑不安。他有些烦躁不安。2.他的生命体征不稳定。他的⽣命体征不稳定。3.他的心率大约是每分钟135次，脉搏微弱而微弱。他的⼼率在每分钟135次左右, 脉搏细弱。 4.他的血压保持在70/56 mmHg左右。他的⾎压⼀直在70/56 mmHg 左右波动。 5。他的呼吸频率约为每分钟35次，而且呼'吸浅而迅速。他的呼吸浅快， 次数在每分钟 35 次左右。 6.他脸色苍白，皮肤凉爽湿漉漉的。① ② ③ ④ ⑤ ⑥ ⑦
+
+中 ⼼静脉 插管 。
+中 ⼼静脉 压, 缩写为 CVP 。
+严 格⽆菌 (技 术操作) 。
+出 ⼊量。
+尿 管。
+活 跃性出 ⾎。
+平 卧。
+
+88
+
+Uuit 23
+
+Pain
+
+【原文】
+1. State the concept of pain and the types of pa in;
+2. Describe the characteri stics of different types of pa in;
+3. Sum up the approaches to pain management;
+4. Discuss what nurses should do to relieve pain.
+
+【翻译】
+1.阐述疼痛的概念和疼痛的类型； 2.描述不同类型疼痛的特征； 3.总结疼痛管理的方法； 4.讨论护士应该采取哪些措施来缓解疼痛。
+
+【原文】
+Pain is a universal experience. How we feelpain is a complicated process that is carried out by the nervous system.① It is any sensation caused by stimuli that injure or destroy tissue.
+Pain can be caused by temperature, pressure, or chemicals released by damaged tissues. The process of pain is not fully understood. It is curren tly thought that pain is mediated by the stimulation or inhibition of gating mechanisms located in the spinalcord, the central control system of the cortical an dlimbic areas of the pain, and a central biasing system located in the brainstem. This theory is called the gate control theory of pain and was developed by Melzack and Wall.②
+Although this is not a completely validated theory, it does provide a comprehensive view of what we presently know about pain.
+Pain serves a useful purpose in many instances. It provides us with a warningt hat our body is at risk of, or is, being damaged. This gives us time to react and remove the damaging stimulus, e. g. when you burn your hand on the oven. Sometimes though, pain comes from tissue damage that we cannot move a way from such as in flamm ation i njoints, or a tumor pressing on organs i nt he body.③
+problems.④
+Pain can alsowarn of emotional or stress related Pain is a subjective symptom. It is exactly what you say it is and hurts when you say it hurts.⑤ No one can fully appreciate the pain of another. In other words, no two persons feel the same degree of pain in the sameway. There is no direct relation between stimulus and individual response.
+There are twomain types of pain: acute and chronic pain. Acute pain generally occurs suddenly, is temporary, and eases of itsown accord ⑥, or after successful treatment of the
+①
+②
+③
+④
+⑤
+⑥
+
+【翻译】
+疼痛是一种普遍的体验。我们如何感受疼痛是一个由神经系统执行的复杂过程。①由刺激引起的任何损伤或破坏组织的感觉。疼痛可能是由温度、压力或受损组织释放的化学物质引起的。疼痛的过程尚不完全清楚。它完全认为疼痛是由位于脊髓的门控改变的刺激或抑制介导的，疼痛的皮质和肢体区域的中枢控制系统，以及位于脑干的中枢偏置系统。这个理论被称为疼痛的门控理论，由Melzack和Wall开发。②虽然这不是一个完全有效的理论，但它确实为我们目前对疼痛的了解提供了一个全面的视角。在许多情况下，疼痛是有用的。它向我们发出警告，我们的身体有受损的风险或正在受损。这使我们有时间做出反应并消除有害的刺激，例如当您在烤箱上烫伤手时。有时，疼痛来自我们无法摆脱的组织损伤，例如关节炎症或肿瘤压迫身体器官。③问题。④疼痛也可以警告情绪或压力相关的疼痛是一种主观症状。这正是你所说的，当你说它很痛的时候，它会很痛。⑤没有人能完全体会到另一个人的痛苦。换句话说，没有两个人以相同的方式感受到相同程度的痛苦。刺激和个人反应之间没有直接关系。疼痛有两种主要类型：急性和慢性疼痛。急性疼痛一般突然发生，属暂时性，自行缓解⑥ ，或在① ② ③ ④ ⑤ ⑥治疗成功后
+
+我 们对疼 痛的 感受是 ⼀个由 神经 系统传 导的 复杂的 过程 。
+⽬前 普遍 认为疼 痛是 通过刺 激或抑 制位 于脊髓 段的 ⻔控机 制、 ⼤脑⽪ 层和 边缘 的 疼痛 感 受区 和 位于 脑 ⼲的 边
+缘 系统来 调节 的。该 学说被 称为 " 疼痛 ⻔控 理论", 是 由 Melzack 和 Wall 创⽴的 。
+有 时候, 疼痛 来⾃我 们⽆法 回避 的组织 损伤, 如关 节炎 症、体 内压迫 器官 的肿瘤 等。
+疼 痛也可 提示 与情绪 或焦虑 相关 的健康 问题 。
+当 ⼀个⼈ 述说 疼痛存 在时它 就存 在。
+⾃ 动地减 轻。
+
+91
+
+【原文】
+underlying problem. Chronic pain persists, or recurs for prolonged and of tenindef in ite periods of ti me.① There are two aspects to feeling pain: the actual physical sensation and the emotional response. Sensitivity and reaction to pain are influenced by previous experience with pain, age, sex, emotional factors, and cultural background. Fear and anxiety about pain decrease an individual'sthreshold and tolerance for pa in,
+cope with the pain.
+
+【翻译】
+潜在问题。慢性疼痛持续存在，或在很长一段时间内反复发作，持续时间较长，常常不稳定。①感觉疼痛有两个方面：实际的身体感觉和情绪反应。对疼痛的敏感性和反应受到以前对疼痛、年龄、性别、情绪因素和文化背景的经历的影响。对疼痛的恐惧和焦虑会降低DIVI DUAL的阈'值和对疼痛的耐受性，从而应对疼痛。
+
+【原文】
+which reduces his/ her ability to
+
+【翻译】
+这降低了他/她
+
+②
+
+【原文】
+A naw areness of the client's usual response to painful stim ulienables the nurse to better evaluate the level of pain and f acilitates the development of effective strategies to minimize the pain experience.③
+The pain control nurse may assess the following: the site of pain; the nature of pain (how long it lasts, how quickly it starts, whether it is intermit tent or constant); what the pain feels like; what makes the clien'tspainfeel better or worse; how bad the pain is; and how the client'spain affects his/ her daily life.
+Major types of physiologic pain are superficial pain, visceral pain, referred pain,
+radiating pain, phantompain, etc. Superficial pain is of cu taneous origin, usually due to trauma, which causes strong stimulation of a large number of nociceptors. It is well localized and may have a bright, pricking quality or be dull and burning.④ Both types are usually of short duration. Visceral pain originates in the deeper structures of the body, which are poorly localized. It is often associated with, or manifested solely by, referred pain and tends to have an aching quality. Nausea and vomiting are frequently present. Referred pain can most often be experienced at a focus of the body separated and removed from the organ where the noxiousstimul us is occurring. Usually the pain is initiated in one of the visceral organs and referred to an area of the body surface.⑤
+Also, pain may originate in a viscus and be referred to another deeparea of the body not exactly coinciden t with the location of the viscus producing the pain. The knowledge of these different types of referred pain is extremely important in diagnosis because many visceral ailments cause no other signs excep t referred pain.
+Radiating pain is a sensation that pain is extending from the initial site to another point. This can be possibly due to recruitment of neurons in adjacent cordseg ments.⑥
+Phantompa in is a sensation in a bodypart that hasbeen amputated.⑦ Event hough the nerves supplying the amputated part were severed, the remaining neurons may continue to send impulses to the samearea of the brain as before.
+Nurses may use a variety of tools to assess clients' pain. They may use a pain scale to
+①
+②
+③
+④
+⑤
+⑥
+⑦
+
+【翻译】
+了解客户对疼'痛刺激的通常反应，使护士能够更好地评估疼痛程度，并制定有效的策略来最大限度地减少疼痛体验。③疼痛控制护士可以评估以下内容：疼痛部位；疼痛的性质（疼痛持续多长时间，开始多快，是否间歇或持续） ；疼痛感觉如何；是什么让clien'tspain感觉更好或更糟；疼痛有多严重；以及客户'的疼痛如何影响他/她的日常生活。生理性疼痛的主要类型是浅表性疼痛、内脏性疼痛、转诊性疼痛、放射性疼痛、范汤姆疼痛等。浅表性疼痛源于新生皮肤，通常是由于创伤引起的，这会导致大量伤害感受器的强烈刺激。它具有良好的局部性，可能具有明亮、刺痛的品质，或者暗沉而灼热。④两种类型的持续时间通常都很短。内脏疼痛起源于身体更深层的结构，其局限性较差。它通常与涉及的疼痛有关，或仅表现为涉及的疼痛，并且往往具有疼痛性质。经常出现恶心和呕吐。所指的疼痛通常可以在身体的焦点处经历，该焦点与发生有害刺激的器官分离和移除。通常，疼痛始于其中一个内脏器官，指的是身体表面的一个区域。⑤此外，疼痛可能起源于内脏，并被引用到身体的另一个深部区域，与产生疼痛的内脏的位置不完全一致。对这些不同类型的转诊疼痛的了解在诊断中极为重要，因为许多内脏疾病除了转诊疼痛外不会引起其他症状。放射性疼痛是疼痛从初始部位延伸到另一点的感觉。这可能是由于相邻脐带段中的神经元募集。⑥潘汤姆疼痛（ Phantompain ）是mpu配备的身体部位的一种感觉。⑦尽管供给截肢部分的神经被切断，但剩余的神经元可能继续向与以前相同的大脑区域发送脉冲。护士可以使用各种工具来评估客户的'疼痛。他们可以使用疼痛量表来① ② ③ ④ ⑤ ⑥ ⑦
+
+慢 性疼痛 持续 时间⻓, 或常 常不 定时的 反复 发作。
+疼 痛引起 的恐 惧和焦 虑会降 低个 ⼈的疼 痛阈 值和疼 痛忍 耐⼒, 从⽽降 低他/ 她 应对疼 痛的 能⼒。
+了解 病⼈ 对疼痛 刺激 的反应 可帮助 护⼠ 更好地 评价 病⼈的 疼痛 程度, 制定 出有 效 的护 理 策略 来 减轻 病 ⼈的 疼
+痛。
+它 (⽪肤 痛) 定位准 确, 表 现为 锐痛、 刺痛 (或钝 痛) 或烧灼 痛。
+牵涉 痛⼤多 发⽣ 于⼈体 的某 ⼀部 位, ⽽ 该部 位 与 受 到 有 害 刺 激 的 器 官 并 不 相关 。 通 常 痛觉 产 ⽣ 于 某 内 脏 器
+官, ⽽牵 涉到 身体表 ⾯。
+(放射 痛) 可 能与 相邻脊 髓节 段的神 经元的 聚集 现象有 关。
+幻 觉痛是 源于 身体已 被截除 部位 的⼀种 感觉 。
+
+92

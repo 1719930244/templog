@@ -1,0 +1,283 @@
+Day 08 | Unit 15-16
+
+Unit 15
+
+【原文】
+In jec tions
+1. List the major nursing diagnose s for pati ents who are receiving injection;
+2. List the common ways of giving injections;
+3. Describe the purpos es of each injection and the requirements for selecting sites for each of them;
+4. S tate the common proc edures of injection excep t for intravenous injection.
+
+【翻译】
+注射离子1.列出接受静脉注射的患者的主要护理诊断； 2.列出常见的注射方式； 3.描述每次注射的目的以及为每次注射选择注射部位的要求； 4.说明静脉注射以外的常见注射程序。
+
+【原文】
+The safe preparation and administration of intradermal, subcutaneous, int ramuscular,
+and int ravenous medications is a routine nursing responsibilit y that requires dexterity, sterile technique, a knowledge of t he actions, usual dosage, desired effects, and potential side effects of t he drug being given; and a knowledge of how and w here to give the drug. The latter requirement necessitates knowledge of human anatomy. Because drugs given by these routes not only are absorbed more quickly than by mout hbut also are irretrievable once injected, a firm mathematics foundation and routine practice of the three checks and seven con firm ations① are mandatory.
+The major nursing diagnosis to keep in mind when giving injection of medications is High Risk for Injury. Patients can be injured by medications given in t he w rong dosage, at the wrong time, by an incorrect route, or in an incorrect site. They can also be injured by the omission of essen tial medications or the administration of an incorrect medication. Alt hough t his nursing diagnosis will not appear in t he nursing care plan, it applies to every sit uation in w hich a patien t is being given medications. Anot her nursing diagnosis when administering medications is Knowledge Deficit. In t his case t he knowledge deficit would be related to some aspect of the medication regimen, for example, the need to learn how to safely administer injections.
+To give any injection, a syringe, a needle, a swab and disinfectan t to clean the skin,
+and a medication are needed.
+In traderm al injections can be used for diagnostic purposes, such as allergy testi ng ② and tuberculin testi ng ③,
+①
+②
+③
+and some vaccinations. In tradermal injections are placed just below the
+
+【翻译】
+皮内、皮下、肌肉内和静脉内药物的安全制备和给药是一种常规护理责任，需要掌握方法、无菌技术、行动知识、常用剂量、预期效果和给药的潜在副作用；以及如何以及在何处给药的知识。后一项要求需要人体解剖学知识。由于这些路线给出的药物不仅比口服吸收更快，而且一旦注射就无法挽回，因此必须有坚实的数学基础和三次检查和七次骗局的常规实践①。在注射药物时要记住的主要护理诊断是高风险伤害。错误的剂量、错误的时间、错误的路线或错误的部位可能会使患者受伤。他们也可能因不服用基本药物或服用不正确的药物而受伤。虽然这种护理诊断不会出现在护理计划中，但它适用于患者接受药物治疗的每种情况。给药时的另一个护理诊断是知识缺陷。在这种情况下，知识缺陷将与药物治疗方案的某些方面有关，例如，需要学习如何安全地注射。要进行任何注射，需要注射器、针头、拭子和消毒剂来清洁皮肤，以及药物。在交易者中， MAL注射可用于诊断目的，例如过敏检测②和结核菌素检测③、① ② ③和一些疫苗接种。在经皮注射中，放置在
+
+三 查七对 。
+过 敏试验 。
+结 核菌素 试验 。
+
+56
+
+【原文】
+Unit 15 Injections epidermis. Sites commonly used are the i nner surface of the forearm ①,
+upper arm ②,
+
+【翻译】
+单元15注射表皮。常用部位为前臂内表面①、上臂内表面②、
+
+【原文】
+dorsal aspect of the and t he upper back ③. The dosage given int radermally is very small, usually less than 0. 2 ml.
+Subcutaneous injection of medications is to ensure slow absorption, as the fatty tissue has less blood flow. Medications given subcu taneously include epinephrine, growt h hormone,
+insulin, ery thropoietin, and some vaccines. Because there is subcutaneous tissue all over the body, various sites can be used for subcu taneous injections. These sites include outer aspect of the upper arm ④,
+anterior aspects of t he thigh ⑤,
+lower abdominal wall ⑥,
+and upper back. Usually, no more than 1 ml of solution is given subcutaneously. Larger amounts increase the client's discomfort, and may cause poor absorption.
+In tramuscular injection of medications is for quick absorption. It is used when larger doses are needed than can be given subcutaneously, when a drug is too irritating to be given subcutaneously, or when a drug cannot be taken orally. A keypoint is t he selection of a safe site, which should be away from large nerves, bones, and blood vessels. The sites for in tramuscular injection should be rotated when therapy requires repeated injections. The amount of 3 ml is considered t he maximum for one site. Several sites are available for in tramuscular injections, such as dorsogluteal site, deltoid muscle site, femoral quadriceps site and so on. T he dorsoglu teal site f or admi nistering an in tram uscular in jection is lateral and sligh tly superior, on t he one third point of line draw n from the coccyx to the iliacspine.⑦
+Anot her method of locating t he dorsogluteal site is to divide t he buttock in to 4 quadran ts, and t he injection is given in t he upper outer quadran t. T he deltoid m uscle site for in tram uscular in jection is located by palpating t he lower edge of t he acrom ion. A t the midpoint,
+with the axilla on the la teral aspect of the upper arm,
+
+【翻译】
+背面和上背部③。经皮给药剂量非常小，通常小于0. 2 ml。皮下注射药物是为了确保吸收缓慢，因为脂肪组织的血流量较少。皮下注射的药物包括肾上腺素、生长激素、胰岛素、红细胞生成素和一些疫苗。由于全身都有皮下组织，因此可以使用各种部位进行皮下注射。这些部位包括上臂外侧④、大腿前侧⑤、下腹壁⑥和上背部。通常，皮下给药的溶液不超过1 ml。较大的剂量会增加客户的不适'感，并可能导致吸收不良。在肌间注射药物是为了快速吸收。当需要比皮下给药剂量更大的剂量时，当药物刺激性太大而不能皮下给药时，或当药物不能口服时使用。一个关键点是选择一个安全的部位，该部位应远离大神经、骨骼和血管。当治疗需要反复注射时，肌束注射部位应旋转。3 ml的量被认为是一个研究中心的最大量。有几个部位可用于肌束注射，如背臀肌部位、三角肌部位、股四头肌部位和即将到来的部位。在从尾骨到髂棘线的三分之一点上，用于肌肉内注射的背蓝青色部位是外侧的，略微优于肌肉内注射部位。⑦定位背臀位点的另一种方法是将臀部分为4个象限ts ，并在上外象限进行注射。用于肌内注射的del to id肌肉部位通过触诊acrom离子的下边缘来定位。在中点，腋窝在上臂外侧，
+
+in line
+
+【原文】
+a triangle is for med.⑧
+In tramuscular injections in to the deltoid muscle should be limited to 1 ml of solution and used only for adults. The femoral quadriceps site is used to infants and small children because it is t he largest and most well developed muscle mass in t he infants.
+The percu taneous insertion of a plastic or metal needle in to a vein is used for withdrawing blood, giving direct int ravenous medication, and administering intravenous infusion of fluid,
+nut rient, or blood. T he common sites for venipuncture and peripheral in travenous therapy include the dorsum of the hands and t he inner sides of the elbows and arms. The considerations in choosing a site for venipunct ure or cannulation include: 1) Is the patien t in shock or
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+
+【翻译】
+形成一个三角形。⑧三角肌中的三角肌注射液应限于1ml溶液，仅供成人使用。股四头肌部位用于婴幼儿，因为它是婴儿中最大和最发达的肌肉群。皮下将塑料或金属针头插入静脉用于抽血、直接静脉内给药和静脉输注液体、营养物或血液。静脉穿刺和外周静脉治疗的常见部位包括手背以及肘部和手臂的内侧。选择静脉穿刺或插管部位的注意事项包括： 1 ）患者是否休克或① ② ③ ④ ⑤ ⑥ ⑦ ⑧
+
+前 臂内侧 。
+上 臂背⾯ 。
+上 背部。
+上 臂外侧 。
+⼤ 腿前⾯ 。
+下 腹壁。
+进 ⾏肌⾁ 注射 的臀⼤ 肌注射 点是 尾⻣与 髂脊 连线的 外侧 稍偏上 1/ 3 处 。
+肌⾁ 注射 的三⻆ 肌注 射点可 通过触 摸肩 峰下缘 进⾏ 定位。 在上 臂外侧 ⾯, 与腋 窝 成⼀ 直 线的 中 点处 形 成⼀ 块
+三 ⻆形肌 ⾁。
+
+57
+
+【原文】
+circulatory collapse? 2) What kind of medication is to be administered? 3) What is the planned duration of therapy? 4) In w hat conditions are the patien '
+tsveins? 5) What are the patient's psychological responses to the therapy? The in travenous site should be changed every two or t hree days to reduce t he risk of infection and damage to vessel. To avoid it, t he nurse must use asep tic technique①
+strictly during venipuncture, and use sterile technique for all equipment, as well as change in travenous tube, fluid, and dressing according to standard requirements.
+The common procedures of injections (excep t for in travenous injection) include:
+1. Confirm the physician's order.
+2. Assemble equipmen t (such as choosing t he appropriate needles and syringes).
+3. Identify t he patien t.
+4. Explain t he procedure to the patient and place him/ her in appropriate position.
+5. Wash your hands.
+6. Follow t he principles of asep tic technique.
+7. Draw the medication solution into t he syringe and eliminate t he air from it.
+8. Choose t he appropriate site without excessive pigment, nodules, lesions or hair.
+9. Sterilize t he area.
+10. Dart needle into tissue quickly at a required angle.
+11. Aspirate by pulling back on barrel, assessing for blood return.
+12. Injectt he drug into t he body after judging no blood.
+13. Remove t he needle quickly.
+14. Press the site with a swab.
+15. Assist t he patien t to a comfortable position.
+16. Wash your hands.
+17. Record the administration of t he medication.
+18. Observe and evaluate t he response of the client to t he medication.
+
+【翻译】
+循环衰竭？ 2 ）应服用什么样的药物？ 3 ）计划的治疗持续时间是多少？ 4 ）病人静脉在哪'些情况下？ 5 ）患者对治疗的'心理反应是什么？静脉部位应每两三天更换一次，以降低感染和血管损伤的风险。为避免这种情况，护士必须在静脉穿刺时严格使用无菌抽搐技术① ，对所有设备使用无菌技术，并根据标准要求更换静脉输液管、液体和敷料。注射的常见程序（静脉注射除外）包括： 1.确认医生'的命令。2.组装设备（例如选择合适的针头和注射器）。3.识别患者。4.向患者解释程序，并将他/她放置在适当的位置。5.洗手。6.遵循asep tic技术的原则。7.将药物溶液吸入注射器并排出其中的空气。8.选择不含过多色素、结节、病灶或头发的合适部位。9.对该区域进行消毒。10.飞镖针以所需角度快速刺入组织。11.通过拉回桶来吸气，评估血液回流。12.判断无血液后，将药物注入体内。13.快速移除针头。14.用拭子按压部位。15.帮助患者保持舒适的姿势。16.洗手。17.记录药物给药。18.观察和评估客户对药物的反应。
+
+【原文】
+Daily Language
+1. Before t hat, I have to take an allergy testing for you.
+⽤药之前我必须先给你做⼀个⽪试。
+2. Please don't touch t he sterilized area.
+请不要碰到消毒的部位。
+3. Please pay attention to your reactions after administering t he intradermal injection,
+and don't go out within 15 minutes.
+①
+
+【翻译】
+日常语言1.在此之前，我必须为您进行过敏测试。⽤药之前我必须先给你做⼀个⽪试。2.请勿'触摸灭菌区域。请不要碰到消毒的部位。3.皮内注射后请留意您的反应， 15分钟内'请勿外出。①
+
+⽆ 菌技术 。
+
+58
+
+25. cannulation [蔠k nj u蔠l ei蓌
+蓈n] n. 管⼦, 套管插⼊术
+26. dressing [蔠d resi蓓] n. 敷料
+27. nodule [蔠n蓋d j u蓎l] n. 节结
+28. lesion [蔠l蓎
+i蓏 (蓈) n] n. 损害, 身体上的伤害
+29. dart [dɑ蓎t] v. ⻜奔, 投掷 n. ⻜快的动作
+30. barrel [蔠b r蓈l] n. 桶, 筒, 活塞筒
+
+【原文】
+Questions on Reading
+1. What are t he major nursing diagnoses for patien ts who are receiving injection?
+2. What are t he common ways for giving injections?
+3. Compare t he differences in purposes of int radermal injection, subcutaneous injection,
+int ramuscular injection, and int ravenous injection.
+4. How do you select the sites for administering each of the injection?
+5. What are t he common procedures of injections excep t for in travenous injection?
+
+【翻译】
+关于阅读的问题1.接受注射的患者的主要护理诊断是什么？ 2.常见的注射方式有哪些？ 3.比较皮内注射、皮下注射、肌肉注射和静脉注射的用途差异。4.您如何选择每次注射的施用部位？ 5.除静脉注射外，常见的注射程序是什么？
+
+60
+
+Unit 16
+
+【原文】
+Blood Transf usi on
+1. Expla in the purpo ses for blood transfusion;
+2. S tate the characteristics of whole blood and blood product;
+3. S tate what a nurse should pay attention to when administrating blood and blood products.
+
+【翻译】
+输血1.解释输血融合的目的； 2.说明全血和血液制品的特点； 3.说明护士在给药血液和血液制品时应注意什么。
+
+【原文】
+A dmi nistration of blood ①
+and blood products②
+is an effective t reatment to restore blood volu me, replace clotting f actors, and improve oxygen carrying capacity ③. Whatever t he st rongpoin t is, potential complications must be concerned. Nurses must recognize these complications and try to preven t them as well as be able to intervene appropriately.
+Whole blood may be ordered as a part of patient t herapy or, because blood can be divided in to its component parts, only t he special componen ts needed in a patient'st herapy may be used. The followings discuss t he indications and cont raindications for administrating w hole blood and some of its componen ts.
+W hole blood transf usion ④ is most commonly used in instance of acute massive blood loss or for total blood exchange i nneona tes⑤. Whole blood is not indicated when blood volume is normal or increased. Because blood products give the on ly needed elements to the reci pien t,
+this practice makes it possible to provi de more needs with fewer donations and to decrease the risk of comp lication,
+such as blood carried disease and circul atory overload,
+
+【翻译】
+血液①和血制品②的dmi浓缩是恢复血容量、替代凝血因子、提高携氧能力③的有效治疗方法。无论优点是什么，都必须关注潜在的并发症。护士必须认识到这些并发症，并努力预防，同时能够进行适当的干预。全血可以作为患者治疗的一部分，或者，由于血液可以分成其组成部分，因此仅可以使用患者治疗所需'的特殊成分。以下讨论全血及其部分成分给药的适应证和禁忌证。全血输注④最常用于急性大量失血或霓虹灯总换血⑤。当血量正常或增加时，不指示全血。由于血液制品为反馈提供了唯一需要的元素，因此这种做法可以以更少的捐赠提供更多的需求，并降低并发症的风险，例如血栓形成疾病和循环负荷过重，
+
+to the
+
+【原文】
+reci pien t.⑥ Common blood products are as t he following:
+Packedred blood cells⑦ are t he blood product remaining after up to 80% of t he plasma is removed from t he w hole blood. Because t he red blood cells provi de the same oxygen-carrying capacity as whole blood but in smaller volu me, they may be used in situations i nw hich the pa tien t is at risk for circu latory overload buthas the need of hemoglobin for itsox ygen-
+
+【翻译】
+⑥常见血液制品领域如下：填充红细胞⑦是从全血中去除高达80 ％的血浆后剩余的血液制品。由于红细胞提供与全血相同的携氧能力，但体积较小，因此它们可能用于患者有循环过载风险但需要血红蛋白来获取氧气的情况。
+
+①
+②
+③
+④
+⑤
+⑥
+⑦
+
+输 ⾎。
+成 分⾎。
+恢 复⾎容 量、 补充凝 ⾎因⼦ 以及 提⾼机 体携 氧能⼒ 。
+输 注全⾎ 。
+新 ⽣⼉全 ⾎置 换。
+由于 成分 ⾎只向 受⾎ 者提供 需要的 ⾎液 成分, 这就 使得较 少的 献⾎者 能满 ⾜ 更多 ⼈ 的需 求, 同 时降 低 受⾎ 者
+由 于输⾎ 引发 的并发 症, 如 ⾎液 传染性 疾病 和循环 负荷 过重。
+压 积红细 胞。
+
+61
+
+【原文】
+carrying capacity.①
+Typing and crossmatching is needed before the use of red blood cells.
+
+【翻译】
+承载能力。①在使用红细胞之前需要进行分型和交叉配对。
+
+【原文】
+Platelets are used i n cases of thrombocytopenia caused by lack of platelet production,
+resu lting in postponed bleed ing time.②
+They are only indicated for t reatmen t of life-
+t hreatening hemorrhage. Platelets should be type-compatible, butRH antigens are not found on platelets. The risk for acquiring blood-carried disease is t he same as for whole blood.
+Plasma is the fluid portion of the blood remaining after the red blood cells, platelets, and leukocytes have been removed. F resh frozen plasma can be stored for 12 months and provides clotting factors, proteins, and fluid volume. Plasma protein fraction is the portion of the plasma remaining after fibrinogen and globulin have been removed. This componen t is used when t he replacement of int ravascular volume is necessary. The risk of hepatitis is eliminated because of a pasteurizing process.
+Hum an seru m albumin ③
+increases the colloidal osmotic pressure of the blood ④ and is usually recommended as a treat ment for shock, burns, and hypoproteinemia. Typing and crossmatching is not required.
+Cryoprecipitate is prepared from fresh frozen plasma and con tains clotting factor Ⅷ— the factor lacking in hemophiliacs. It holds a very small quantity of red cells, w hich makes crossmatching unnecessary. But it is usually advisable to give ABO compatible if t he total volume is more than 100 ml. I t may be stored frozen for 12 mont hs, and the risk for blood-carried disease is still present.
+The followings are general guidelines for administration of blood and blood products:
+1. The transfusion should be started within 30 minu tes after t he blood is removed from refrigerated storage in the facility's blood bank. Blood or blood product should not be stored in t he refrigerators on the nursing unit, because refrigerators used for blood storage are monitored to keep t he right temperature.
+2. N urses should stay with the patient for the first 15 minutes or first 50 ml of the t ransfusion to observe for reactions and complications. Blood should be infused slowly during t his time. Factors including the blood product being used, t he patient'sage, and clinical condition determine t he rate of administ ration.
+3. Because red cells settle to the bottom and plasma rises to t he top, gentlemixing of w hole blood is necessary before and during the transfusion. Squeeze the bag gently every
+20 ～30 minutes to prevent red cells settling.
+4. If blood hangs at room temperat ure longer than 4 ～ 6 hours, abandon it immediately in order to avoid t he danger of bacteria proli feration and red blood cells hemolysis⑤.
+①
+②
+③
+④
+⑤
+
+【翻译】
+血小板用于缺乏血小板产生引起的血小板减少症，导致出血时间推迟。②仅用于治疗危及生命的出血。血小板应与类型相容，但血小板上未发现RH抗原。获得携带血液疾病的风险与获得全血的风险相同。血浆是去除红细胞、血小板和白细胞后剩余血液的液体部分。新鲜冷冻血浆可以储存12个月，并提供凝血因子、蛋白质和液体体积。血浆蛋白级分是去除纤维蛋白原和球蛋白后血浆中剩余的部分。当需要更换血管内容积时，使用此组件。通过巴氏杀菌过程消除了肝炎的风险。③中的人血清白蛋白增加了血液的胶体渗透压④ ，通常推荐作为休克、烧伤和低蛋白血症的治疗方法。不需要打字和交叉匹配。冷沉淀由新鲜冷冻血浆制备，含有凝血因子Ⅷ —血友病患者缺乏的因子。它含有非常少量的红细胞，这使得无需横切。但如果总容量超过100毫升，通常建议给予ABO兼容性。可能冷冻保存12个月，携带血液疾病的风险仍然存在。以下是血液和血液制品给药的一般指南： 1.血液从设施血库的冷藏库中取出后，应在30分钟内开始'输血。血液或血液制品不应储存在护理单元的冰箱中，因为用于血液储存的冰箱被监控以保持正确的温度。2.护士应在前15分钟或前50毫升输血期间与患者呆在一起，以观察反应和并发症。在此期间应慢慢输血。使用的血液制品、患者'年龄和临床状况等因素决定了给药率。3.由于红细胞沉降到底部，血浆上升到顶部，因此在输血之前和输血过程中需要温和混合全血。每隔20 ～ 30分钟轻轻挤压袋子，防止红细胞沉淀。4.如果血液在室温下悬挂超过4 ～ 6小时，应立即放弃，以避免细菌增殖和红细胞溶血的危险⑤。① ② ③ ④ ⑤
+
+因为 红细 胞的携 氧能 ⼒与全 ⾎⼀样, ⽽ 容量较 ⼩, 故可⽤ 于有 循环负 荷过 重危 险 但⼜ 需 要⾎ 红 蛋⽩ 来 提⾼ 机
+体 携氧能 ⼒的 病⼈。
+⾎ ⼩板制 品⽤ 于因⾎ ⼩板⽣ 成障 碍导致 的⾎ ⼩板减 少症, 该症 会导致 出⾎ 时间延 ⻓。
+⼈ ⾎⽩蛋 ⽩。
+⾎ 浆胶体 渗透 压。
+细 菌繁殖 和红 细胞溶 ⾎。
+
+62
+
+【原文】
+Unit 16 Blood Transfusion
+5. Do not add medications directly to blood or a blood product. If t he tubing being used to administer blood must be used to give medications, rinse it with saline before and after.
+6. An I V of norm al saline may be p iggybacked in to t he blood t ubing to main tain access to the line in case it is necessary to d iscontin ue the blood.①
+7. Before massive t ransfusion, blood should be warmed in order to preven t a severe temperature drop. Immersing a blood-warmingcoil in a water bath at a temperat ure of 37 ℃ is t he method usually taken to achieve this purpose. Blood should not be warmed unless it is going to be given immediately. Blood t hat has been warmed should not be ret urned to the blood bank or refrigerator for futureuse.
+8. A blood pump may be used to increase flow rate when blood volume and oxygencarrying capacity need to be increased righ t away.
+9. Infectious agents may still be presen t although all blood is tested for hepatitis B virus and AIDS ②
+
+【翻译】
+单元16输血5.请勿将药物直接添加到血液或血液制品中。如果必须使用用于输血的管道来给药，请在给药前后用生理盐水冲洗。6.可能需要静脉注射生理盐水到血管中，以保持对管路的访问，以防需要停用血液。① 7.在大规模输血之前，应加热血液，以防止体温急剧下降。将血液加热线圈浸入温度为37 ℃的水中是实现此目的通常采用的方法。除非立即给予，否则不应该加热血液。已加热的血液不应送回血库或冰箱以备将来使用。8.当血容量和输氧量需要立即增加时，可以使用血泵来增加流速。9.尽管所有血液都进行了乙型肝炎病毒和艾滋病检测，但仍可能存在传染性疾病②
+
+【原文】
+antibodies. Needles should be removed with gloved hands and placed in the sharp con tainer after being used. Allbags and t ransfusion equipmen t should be disposed in the special plastic-lined containers kept in t he soiledutility room and never in t he wastebasket in t he patient's room.
+
+【翻译】
+抗体。使用后，应用戴手套的手取出针头，并放入锋利的容器中。所有袋子和输液设备应放置在存放在污秽公用设施室的特殊塑料内衬容器中，切勿放置在患者房间的废'纸篓中。
+
+Daily Language
+1. How are you feeling today?
+你今天感觉如何?
+2. I feel frail and I still get edema.
+我感觉软弱⽆⼒, ⽽且仍然有⽔肿。
+3. The blood test shows t hat your serum albumin is low. That is why you still get edema.
+⾎液检查显示你的⾎清⽩蛋⽩低, 所以你仍然有⽔肿。
+4. Administ ration of human serum albumin will alleviate your symp tom. It'sone of the blood products.
+输⼊⼈体⽩蛋⽩会减轻你的症状。它是⼀种成分⾎ (⾎液制品) 。
+5. Administ ration of blood products needs typing and cross-matching.
+输⾎液制品需要做⾎型测定和交叉配⾎。
+6. Not allt he blood products need typing and cross-matching.
+并不是输所有⾎液制品都需要⾎型测定和交叉配⾎。
+
+①
+②
+
+输 ⼊⽣理 盐⽔ 的静脉 通道应 与输 ⾎袋的 管道 相连, 以便 在不需 要输⾎ 时可 以继续 输液 。
+爱 滋病 (获得 性免疫 缺陷综 合症) 。
+
+63

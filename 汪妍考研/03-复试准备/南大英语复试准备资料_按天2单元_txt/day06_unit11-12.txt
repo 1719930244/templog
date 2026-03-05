@@ -1,0 +1,378 @@
+Day 06 | Unit 11-12
+
+Unit 11
+
+【原文】
+Vital Signs
+1. Interpret the terms: vital signs, body temperature, pulse, respiration, and blood pressure;
+2. State the normal limits of vital signs and how to measure them;
+3. Identify factors that influence each of the vital signs.
+
+【翻译】
+生命体征1.解释术语：生命体征、体温、脉搏、呼吸和血液； 2.说明生命体征的正常范围以及如何确定它们； 3.识别影响每个生命体征的因素。
+
+【原文】
+Body temperature,
+
+【翻译】
+体温
+
+偏离 正常值
+
+pulse,
+
+【原文】
+respiration,
+Variations from the normallim its①
+
+【翻译】
+呼吸，正常范围的变化①
+
+and blood
+
+【原文】
+pressure are the vital
+
+【翻译】
+压力是至关重要的
+
+signs.
+
+【原文】
+in the temperature, pulse, respirations and blood pressure readings indicate a change in the health status of the person. So it is essential that the nurses be able to take vital signs, in terpretdata, communicate them to ot hers②,
+
+【翻译】
+体温、脉搏、呼吸和血压读数表明该人的健康状况发生了变化。因此，护士必须能够采集生命体征，解读数据，与他人沟通② ，
+
+and plan
+
+【原文】
+nursing intervention appropriately. Vital signs are always assessed during a basic screening physical examination ③ and uponadm ission to the hospital ④.
+Body temperature is the balance between heat produced and heatlost by the body. It is surprisi ngly consisten t i nhealthy indivi duals.⑤
+To take the temperature, we use a thermometer. There are several kinds of t hermometers:
+
+【翻译】
+护理干预。生命体征始终在基本筛查体格检查③和入院时进行评估④。体温是身体产生的热量和散失的热量之间的平衡。令人惊讶的是，他是一个lthy ind ivi双胞胎。⑤为了测量温度，我们使用温度计。温度计有几种：
+
+【原文】
+glasst hermometer;
+electron ic thermometer; and disposable thermometer ⑥.
+To take temperature, we putt he thermometer in places that air can't reach. The three most common places to take temperature are the mouth, the rectum, and the axilla. Body temperature can be measured by two scales: either in Fahrenheit (F) or Celsius (C)
+degrees. The average normal adult oral temperature is 98. 6℉ (37℃); the rectal temperature
+99. 6 ℉ (37. 5 ℃); and the axillary temperature 98 ℉ (36. 7 ℃).
+Many factors, such as age, infection, temperature of the environment, amount of exercise, and emotional status, can affect a patient's temperature and should be considered when a temperature reading is evaluated. For example, the lowest temperature occurs between about 2 a. m and 6 a. m, and the highest between about 4 p. m and 8 p. m. In addition, studies of temperat ures in healthy older adults indicate that the normal body
+①
+②
+③
+④
+⑤
+⑥
+
+【翻译】
+将温度计玻璃化；电子温度计；和一次性温度计⑥。为了测量温度，我们将温度计放置在空气可以传'输每个温度的地方。测量体温的三个最常见部位是口腔、直肠和腋窝。可以通过两种尺度测量体温：华氏度（ F ）或摄氏度（ C ）。正常成人平均口腔温度为98. 6 ℉ （ 37 ℃ ） ；直肠温度为99. 6 ℉ （ 37. 5 ℃ ） ，腋窝温度为98 ℉ （ 36. 7 ℃ ）。许多因素，如年龄、感染、环境温度、运动量和情绪状态，都会影响患者'的体温，在评估体温读数时应予以考虑。例如，最低温度发生在大约2 a. mand 6 a.m ，最大值在约4 p. mand 8 p. m.之间。此外，对健康老年人体温的研究表明，正常人体① ② ③ ④ ⑤ ⑥
+
+偏 离正常 值。
+传 递数据 。
+全 ⾯体检 。
+⼊ 院时。
+健 康⼈的 体温 常保持 惊⼈的 ⼀致 。
+玻 璃温度 计、 电⼦温 度计和 可弃 式温度 计。
+
+40
+
+【原文】
+Unit 11 Vital Signs temperature decreases as age increases.
+Selection of the appropriate method for taking the bodyte mperature depends on several factors, such as age, consciousness level, and emotional status of the patient. For example,
+the oral method is contrain dicatedf or a small child, a confused or unconscious patient, or patients with pain, injury, or in flamm ation of the mouth.①
+Your pulse is your heart rate, or the number of times your heart beats in one minute.
+Many factors can influence the pulse rate: body temperature, age, anger, fear, exercise,
+pain, medications, and heart disease. Normally the pulse rate for an adult is between 60 to
+100 times per minute. The term bradycardia describes an adult pulse rate below 60 beats/ min,
+tachycardia refers to an adult pulse rate above 100. The quality and rhyth m of the pulse ②
+must also be observed and described. The normal pulse rhyth m is regular,
+
+【翻译】
+第11单元生命体征温度随着年龄的增长而降低。测量体温的适当方法的选择取决于几个因素，例如患者的年龄、意识水平和情绪状态。例如，口服方法是限制小孩、困惑或昏迷的患者或疼痛患者、陪审团或口腔疼痛。①您的脉搏是您的心率，或您的心脏在一分钟内跳动的次数。许多因素会影响脉搏率：体温、年龄、愤怒、恐惧、运动、疼痛、药物和心脏病。成年人的脉搏率通常在每分钟60到100次之间。术语"心动过缓"是指成人脉率低于60次/分钟， "心动过速"是指成人脉率高于100。还必须观察和描述脉搏②的质量和节律。正常脉搏节律规则，
+
+【原文】
+with a steady length of time between eachbeat.③ The most frequent site for taking the pulse is at the radial artery of the wrist because of its convenience. Butot her sites, such as carotid artery and apical pulse, may also be used. Measure the apical pulse with a stethoscope.
+Respiration is defined as the process of i nhalingox ygen-bearing air in to the lungs and exhaling carbon dioxide out of the lungs.④
+When a person inhales, his chest expands.
+
+【翻译】
+每次拍打之间的时间长度稳定。③脉搏最频繁的部位是手腕的桡动脉，因为它很方便。但也可以使用其他部位，如颈动脉和心尖脉搏。用听诊器测量心尖脉搏。呼吸被定义为将含氧空气吸入肺部并从肺部呼出二氧化碳的过程。④当一个人吸气时，他的胸部膨胀。
+
+【原文】
+When he exhales, his chest contracts. A rate of 16 to 20 is considered" normal" for the adult. Normal respirations are regular, even an dquiet.⑤ But they can be affected by allt he same factors that cause the pulse rate to vary. Different terms are used to describe the characteristics of respirations. For instance, the patient having difficulty in breathing is said to have dyspnea. Apnea describes the absence of respiration. Rapid respiration is termed hyperpnea. Count respirations by observing the number of expansions of the chest. While you are counting respirations, do not let the patient know, or he will probably not breathe naturally. A goodway is remaining you rf ingers on the patient's wrist a ftert he pulse hasbeen taken and counting the rise and fall of his chest for 30 seconds, then multip lying by 2
+and recording.⑥ During this procedure, a watchdisplaying secon ds⑦
+is needed.
+
+【翻译】
+当他呼气时，胸部收缩。对于成人来说， 16至20的比率被认为是"正常"的。正常呼吸是规律、均匀和安静的。⑤但它们可能受到导致脉率变化的所有相同因素的影响。不同的术语用于描述呼吸的特征。例如，呼吸困难的患者被称为呼吸困难。呼吸暂停是指没有呼吸。快速呼吸被称为呼吸过度。通过观察胸部的扩张次数来计算呼吸次数。在计算呼吸时，不要让患者知道，否则他可能无法自然呼吸。一个好方法是将手指放在患者'的手腕上，然后测量脉搏，计算胸部的上升和下降30秒，然后乘以2并记录。⑥在此过程中，需要一块显示秒数⑦的手表。
+
+【原文】
+Blood pressure is a measurement of the force applied to the walls of the arteries as the heart pumps blood through the body.⑧
+There are two readings when you measure blood pressure, the higher one is called the systolic and the lower onet he diastolic pressure. Normal blood pressure ranges from 110 to 140 millimeters (as the heart beats) over 60 to 90
+millimeters (as the heart relaxes). Blood pressure is usually written as 120/ 80 mmHg, for
+①
+②
+③
+④
+⑤
+⑥
+⑦
+⑧
+
+【翻译】
+血压是当心脏通过身体泵送血液时，力应用程序位于动脉壁上的测量指标。⑧测量血压时有两种读数，较高的称为收缩压，较低的称为舒张压。正常血压范围为110至140毫米（随着心脏跳动） ，超过60至90毫米（随着心脏放松）。血压通常写为120/80 mmHg ，用于① ② ③ ④ ⑤ ⑥ ⑦ ⑧
+
+⼝ 腔测量 法不 适⽤于 ⼩孩、 精神 错乱及 ⽆意 识的病 ⼈, 以及有 ⼝腔疼 痛、 创伤或 炎症 的病⼈ 。
+脉 搏的强 弱和 节律。
+正 常脉率 跳动 均匀规 则, 间 隔时 间相等 。
+呼 吸就是 将含 氧的空 ⽓吸⼊ 肺⾥ 、把⼆ 氧化 碳排出 的过 程。
+正 常的呼 吸表 现为有 规律、 均匀 、平静 。
+正确 的⽅ 法就是 在你 测完脉 搏之后 仍然 将⼿放 在病 ⼈ 的⼿ 腕 上, 数病 ⼈ 的胸 部 起伏 次 数 30 秒, 然 后 乘 以 2,
+再 做记录 。
+秒 表。
+⾎ 压是⼼ 脏喷 出的⾎ 液在动 脉⾎ 管壁上 所呈 现的压 ⼒。
+
+41
+
+【原文】
+example. A systolic blood pressure of over 160 or a diastolic pressure over 100 is termed hyper tension; a systolic blood pressure below 100 is termed hypotension, which may not require medical treatment. Variations in blood pressure can be caused by several factors, such as age, exercise, emotion, and pain. To measure the blood pressure, you need a cuff and a sphygmomanometer.
+
+【翻译】
+例如，收缩压超过160或舒张压超过100被称为高血压；收缩压低于100被称为低血压，这可能不需要医疗。血压的变化可能由几个因素引起，例如年龄、运动、情绪和疼痛。要测量血压，您需要袖带和血压计。
+
+Daily Language
+1. What's my temperature?
+我的体温多少度?
+2. It's 39 degrees Celsius.
+摄⽒ 39 度。
+3. Please roll up your sleeves. I'lltake your blood pressure.
+请把袖⼦卷起来, 我要给你测⾎压。
+4. How about my blood pressure?
+我的⾎压多⾼?
+5. It's 120 over 80.
+收缩压 120, 舒张压 80。
+6. Is it normal?
+正常吗?
+
+Vocabulary
+1. pulse [p蓊ls] n. 脉搏
+2. respiration [蔠resp蔠
+i re蓌
+i 蓈n] n. 呼吸
+3. vital [蔠v aitl] adj. ⽣命延续所必需的, 极重要的
+vital signs
+
+⽣命体征
+
+【原文】
+4. in terven tion [蔠i n 蓈
+t (蓎)蔠ven蓌
+蓈n] n. ⼲涉, ⼲预
+nursing intervention
+
+【翻译】
+4.在terven tion [蔠in 蓈 t (蓎)蔠 ven蓌 蓈n] n. ⼲涉 ，⼲预护理干预
+
+护理措施
+
+5. thermometer [蓑
+蓈
+蔠m蓋m it蓈(r)] n. 温度计, 体温计
+6. disposable [d is蔠p蓈uz蓈b l] a. ⼀次性的; ⽤后即可丢弃的
+7. rectum [蔠re k t蓈m] n. 直肠
+rectal [蔠re kt (蓈) l] adj. 直肠的
+8. axilla [k蔠si l蓈] n. 胳肢窝, 腋窝
+axillary [k蔠si l蓈r i] adj. 腋窝的
+9. scale [skeil] n. 刻度, 标度
+10. Fahrenheit [蔠f r蓈n hait, 蔠f蓇
+蓎r-] adj. 华⽒温度计的
+42
+
+n. 华⽒温度计
+
+Unit 12
+
+【原文】
+Health Assessment
+1. Describe the purposes of health a sses sment;
+2. State the sources of information for the as ses sment;
+3. Describe the means that ensure a successful as ses sment.
+
+【翻译】
+健康评估1.描述健康评估的目的； 2.说明as s sment的信息来源； 3.描述确保成功评估的方法。
+
+【原文】
+Health assessment is the first step of the nursing process. It forms the basis of nursing care. Whether the patient is young or old, male or female, well or ill, assessment is an ongoing process of evaluating the whole person as a physical, psychosocial, and functional being. Hence, when we assess the person,
+the holistic assessment should include physical and psychosocial aspects.①
+Health assessment is the orderly collection of information regarding the patient's health state. It aims to recognize the patien'ts current health state,
+problems,
+and areas for health promotion.②
+actual and potential health The sources of the information for the assessment include the health history, physical assessment, and laboratory and diagnostic data.
+The health history interview is a way of gat hering subjective data, often from the patient.
+However, i nsome instances, such as trauma, coma, infant, and toddler, the historian may be someone other than the patient.③
+Note the name of the historian as well as the relationship between the historian and the patient. In addition, assess the reliability of the historian. The health history is considered subjective because nurses cannot confirm all information. A complete health history includes patient'sprofile (providing demographics that may be linked to health status), reason for seeking healthcare and chiefcompla in t (CC) ④,
+history of the present illness,
+communicable diseases,
+
+【翻译】
+健康评估是护理过程的第一步。它是护理的基础。无论患者是年轻还是年老，是男性还是女性，是健康还是疾病，评估是将整个人作为身体、心理和功能存在进行评估的持续过程。因此，当我们评估这个人时，整体评估应该包括身体和社会心理方面。①健康评估是对患者健康状况信息的有'序收集。它旨在识别当前的健康'状况、问题和健康促进领域。②实际和潜在的健康用于评估的信息来源包括健康史、身体评估以及实验室和诊断数据。健康史访谈是收集主观数据的一种方式，通常来自患者。然而，在某些情况下，如创伤a、昏迷、婴儿和托德，历史学家可能不是病人。③记下历史学家的姓名以及历史学家与患者之间的关系。此外，评估历史学家的可靠性。健康史被认为是主观的，因为护士无法确认所有信息。完整的健康史包括患者的个'人资料（提供可能与健康状况相关的人口统计数据） ，寻求医疗保健的原因和主要疾病（ CC ） ④ ，目前的疾病史，传染病，
+
+past
+
+【原文】
+allergies,
+
+【翻译】
+allergies health
+
+【原文】
+history (medical,
+injuries/ accidents,
+surgical,
+medications,
+disabilities/ handicaps,
+
+【翻译】
+病史（医疗、伤害/事故、手术、药物治疗、残疾/残障、
+
+blood
+
+【原文】
+t ransfusions, childhood illness, and immunizations), family health history, social history
+(alcohol use, tobacco use, druguse, sexual practice, travel history, work environment,
+home environment, hobbies, stress, education, economic status, etc.), health maintenance
+①
+②
+③
+④
+
+【翻译】
+输血、儿童疾病和免疫接种）、家族健康史、社会史（酒精使用、烟草使用、吸毒、性行为、旅行史、工作环境、家庭环境、爱好、性生活、教育、经济状况等）、健康维护① ② ③ ④
+
+当 我们评 估这 个⼈ (这⾥指 病⼈) 时, 整体 的评估 应该 包括⽣ 理和⼼ 理社 会等⽅ ⾯。
+它 (健康 评估) 的⽬ 的在于 认识病 ⼈当 前的健 康状 态、现 存的 和潜在 的健 康 问题, 以 及 需要 进 ⾏健 康 促进 的
+⽅ ⾯。
+然 ⽽, 在 ⼀些 情况下, 如 (病⼈) 外伤 、昏 迷或是 婴幼 ⼉, 其 病史的 提供 者则可 能是 其他⼈ 。
+主 诉, 缩 写为 CC。
+
+44
+
+【原文】
+Unit 12 Health Assessment activities, such as sleep, exercise, stress management, and health check-ups.
+The CC is the sign (objective finding) or symptom (subjective finding) that causes the patient to seek healthcare ①.
+
+【翻译】
+单元12健康评估活动，如睡眠、运动、压力管理和健康检查。CC是导致患者寻求医疗保健的体征（客观发现）或症状（主观发现） ①。
+
+【原文】
+The cause for seeking healthcare and CC should be recorded as direct quotes from the patient.② The duration of the signs/ symptoms should also be included in the CC. The history of the presen tillness (HPI)
+patien'tsCC and the events surrounding it.③
+is a chronological accoun t of the Nine characteristics of eachCC can be ascertained for a complete HPI. These characteristics include location, radiation, quality,
+quantity (the severity, volume, number, or extent of the CC), associated manifestations,
+aggravating factors, alleviating factors, setting, and timing. The patient may refer to the CC using terms such as minor, moderate, or severe.
+Taking a whole health history from a patient may require 30 to 60 minutes. So, tell the patient the amount of time that will be required before the interview starts.
+The health history usually represents the first step of patient assessment and is usually performed previous to the physical assessment ④.
+
+【翻译】
+寻求医疗保健和CC的原因应记录为患者的直接报价。②体征/症状的持续时间也应包括在CC中。当前疾病（ HPI ）患者的历史及其'周围的事件。③每个CC的九个特征的时间顺序可以确定为完整的HP I。这些特征包括位置、辐射、质量、数量（ CC的严重程度、体积、数量或范围）、相关表现、加重因素、缓解因素、设置和时间。患者可以使用轻微、中度或重度等术语来指CC。从患者身上获取整个健康史可能需要30至60分钟。因此，告诉患者在面试开始前需要多少时间。健康史通常代表患者评估的第一步，通常在身体评估之前进行④。
+
+【原文】
+Analysis of the in formation gathered from patien tsreveals areas need ingnotice i nt he physical assessment.⑤
+Physical assessment findings form a second source of information in the assessment. These f i ndingscompose the objective data, or in formation that is observable,
+verifiable by more than one person.⑥
+measu rable, and These data are also recognized as physical signs of illness or wellness. The physical assessment data can be obtained through a body-system or head-to-toe approach. Inspection, palpation, percussion, and auscultation are the techniques used by the nurse to assess patients during a physical examination. Physical assessment of a patient serves many purposes:
+1. Confirmation of the complain tsthat cause the patient to seek healthcare.
+2. Screening of general well-being. The findings will serve baseline information for furt her assessments.
+3. Monitoring of current health problems.
+4. Formation of diagnoses and treat ments.
+The final source of information in the assessment phase is laboratory and diagnostic data.
+Results of serum,
+
+【翻译】
+从患者收集的形式分析揭示了身体评估中需要通知的区域。⑤物理评估结果构成评估中的第二个信息来源。这些数据构成了客观数据，或可观察的形式，可由多个人验证。⑥可测量的，这些数据也被认为是疾病或健康的物理迹象。物理评估数据可以通过身体系统或从头到脚的方法获得。检查、触诊、叩诊和听诊是护士在体检期间用于评估患者的技术。对患者的身体评估有多种用途： 1.确认导致患者寻求医疗保健的投诉。2.一般幸福感筛查。研究结果将为进一步评估提供基线信息。3.监测当前的健康问题。4.形成诊断和治疗方法。评估阶段的最终信息来源是实验室和诊断数据。血清结果，
+
+urine,
+
+pus,
+
+【原文】
+or other body- fluid st udies,
+cultures,
+radiographicst udies, and diagnostic procedures constit ute objective dat a about the patien'tsstat us.⑦
+Usually, the nurse is the first person from the healthcare group to interact with the patient. She will often assume the role of mediator between the patient and the large health
+①
+②
+③
+④
+⑤
+⑥
+⑦
+
+【翻译】
+或其他体液研究、培养、无线电图形研究和诊断程序构成有关'患者状况的客观数据。⑦通常，护士是医疗保健组中第一个与患者互动的人。她经常担任患者与大健康之间的调解人角色① ② ③ ④ ⑤ ⑥ ⑦
+
+求 医。
+寻 求健康 照顾 的原因 和主诉 应该 直接引 ⽤病 ⼈的原 话。
+现 病史是 按时 间顺序 将病⼈ 的主 诉和相 关问 题进⾏ 的记 录。
+体 格检查 。
+分 析从病 ⼈处 收集的 信息, 可以 提示我 们在 体检中 需要 关注之 处。
+(体格 检查) 结果 得到的 数据 或资料 是客观 的, 它们可 经由 多⼈观 察、 测量和 证实。
+⾎清 、尿 液、脓 液或 其他体 液检查 、细 菌培养 、放 射线检 查和 其他诊 断⽅ 法 检查 的 结果, 组 成 了病 ⼈ 身体 状
+况 的客观 资料 。
+
+45
+
+【原文】
+care system. She can foster an at mosphere of safety,
+
+【翻译】
+护理系统。她可以培养一个at mo安全领域，
+
+harmony,
+
+【原文】
+and comfort by approach ingeach patient with an accep table, respect ful, and nonjudgmental attitude.①
+The patient is an active and equal participant in the interview process and should feelfree to openly communicate feelings, thoughts, perceptions, and factual information. When the nurse begins to approach the patient, she should follow the instructions for a successful assessment:
+1. Provide the patient with privacy for physical examination and redressing.
+2. Sit opposite the patient who is sitting or lying on the bed.
+3. Start the interview with a pleasant introduction.
+4. Offer the patient with an explanation of what is to follow and a proper timeframe for the interview.
+5. Tell the patient that you will be jottingdown notes during the interview to help discussion and ensure accuracy of information.
+6. Advise the patient about potential discomfort or sensations prior to performing procedures.
+7. Have the patient make as few position changes as possible.
+8. Ensure that all needed equipments are available and arranged in a logical manner.
+9. Askt he patient about pain or other sensations potentially associated with certain assessment.
+10. Offer cleaning wipes or tissues to the patient following certain examination (e. g.,
+the pelvic examination).
+11. Collect all available information of the patients.
+12. Respect the patient'smodesty.
+The assessment phase is fluid and dynamic.②
+Nurses are constantly compiling,
+validating, interpreting, and recording the data. With this information,
+the nurse is prepared for the next phase: nursing diagnosis.
+
+【翻译】
+以一种可接受、尊重和非j udg的心态接近每位患者。①患者是面试过程中积极、平等的参与者，应通过ts、看法和事实信息自由地公开表达自己的感受。当护士开始接近患者时，她应遵循成功评估的说明： 1.为患者提供体检和矫正的隐私。2.坐在坐在或躺在床上的患者对面。3.以愉快的介绍开始面试。4.向患者说明要遵循的内容和适当的访谈时间框架。5.告诉患者，您将在访谈期间记下笔记，以帮助讨论并确保信息的准确性。6.在进行手术前，告知患者潜在的不适或感觉。7.让患者尽可能少地改变姿势。8.确保所有必要的设备都可用，并以合乎逻辑的方式安排。9.询问患者与某些评估可能相关的疼痛或其他感觉。10.在进行某些检查（例如盆腔检查）后，为患者提供清洁湿巾或纸巾。11.收集患者的所有可用信息。12.尊重患者'的谦虚。评估阶段是流动和动态的。②护士不断对数据进行汇编、验证、解释和记录。有了这些信息，护士就可以为下一阶段做好准备：护理诊断。
+
+【原文】
+Daily Language
+1. What brough t you here today? / What made you ask for healthcare today?
+今天您哪⼉不舒服?
+2. What is the current treatment for this problem?
+针对这个问题⽬前的治疗是什么?
+3. Are you allergic to any medications?
+你对药物过敏吗?
+①
+②
+
+【翻译】
+日常语言1.今天是什么让您来到这里？/是什么让您今天要求医疗保健？ 今天您哪⼉不舒服 ？ 2.这个问题目前的治疗方法是什么？ 针对这个问题⽬前的治疗是什么 ？ 3.您对任何药物过敏吗？ 你对药物过敏吗 ？ ① ②
+
+通 过易接 受的 、有礼 貌的和 ⽆偏 ⻅的态 度去 接近病 ⼈, 可营造 ⼀个安 全、 融洽、 舒适 的氛围 。
+评 估是⼀ 个动 态的阶 段。
+
+46

@@ -1,0 +1,280 @@
+Day 13 | Unit 25-26
+
+Unit 25
+
+Fever
+
+【原文】
+1. Identify the definition of fever;
+2. Expla in the cause of fever and the signs of fever;
+3. As sess, pl an, and implement the care for a person with fever.
+
+【翻译】
+1.识别发热的定义； 2.解释发烧的原因和发烧的体征； 3.因此，计划并实施对发烧患者的护理。
+
+【原文】
+Body temperat ure is the result of the balance between heat production and heat loss.
+Normal oral body temperature in the adult ranges from 36. 7℃ to 37. 6℃
+
+【翻译】
+体温是热量产生和热量损失之间平衡的结果。成人正常口腔体温范围为36. 7 ℃至37. 6 ℃
+
+(98. 1℉ to
+
+【原文】
+99. 6 ℉). A healthy person's body temperat ure sligh tly increases during t he day since the morning (from 6: 00 a. m.). The peak body temperature is reached at 6: 00 to 10: 00 p. m.
+and the lowest is between 2: 00 and 6: 00 a. m.
+An elevation of temperat ure above normal is referred to as fever or pyrexia. According to t he degrees of the temperature,
+fever is classified as low-grade fever,
+mild fever,
+moderate fever, and high fever ①. Temperate between 37. 6℃～38. 2℃ (99. 8℉～100. 8℉)
+is considered a low-grade fever, between 38. 3 ℃～38. 9℃ (101℉～102℉) is considered a mild fever, and between 38. 9 ℃～39. 4℃ (102℉～103℉) is considered a moderate fever.
+Any thing around 39. 4℃ (104℉) or above is considered a high fever, and delirium or convulsions may occur.
+Fever is part of our body's defense mechan ism ②. It is our body'snat ural response to fighting germs. When our bodies are figh ting infections, the body temperat ure rises. The cause of the fever is quite a complicated process. Our blood and lymphatic systems produce w hite blood cells to fight off infection. As w hite blood cells increase in number, our bodies are heated up, causing fever or a rise in body temperature. Alt hough fever is usually an indication of infection or illness, it is believed t hat fever helps t he body figh t infection by stimulating nat ural defense mechanisms. That is why it is not good to try to decrease a fever too much or too fast. When body temperature is above 105 degrees, harm can occur in the nervous system. In some people, usually children, seizures can occur when t he body temperature is above 38. 9℃. Therefore, if a fever goes too high, measures must be taken to bring t he fever down. Antipyretics are medications usually used to lower fever, such as Tylenol, aspirin,
+
+【翻译】
+99. 6 ℉ ）。一个健康的'人的体温从早上开始在白天（从早上6点开始）略有上升。体温峰值在6 ： 00-10 ： 00之间，最低点在2 ： 00-6 ： 00之间。体温高于正常值被称为发热或发热。根据发热程度，发热分为低烧、轻烧、中烧、高烧①。温度在37. 6 ℃ ～ 38. 2 ℃ （ 99. 8 ℉ ～ 100. 8 ℉ ）为低热， 38. 3 ℃ ～ 38. 9 ℃ （ 101 ℉ ～ 102 ℉ ）为轻热， 38. 9 ℃ ～ 39. 4 ℃ （ 102 ℉ ～ 103 ℉ ）为中热。39岁左右的任何东西。4 ℃ （ 104 ℉ ）以上为高烧，可发生谵妄或抽搐。发烧是我们身体防御'机制的一部分②。这是我们身体对抗细'菌的自然反应。当我们的身体与感染作斗争时，体温会上升。发烧的原因是一个相当复杂的过程。我们的血液和淋巴系统会产生白细胞来抵抗感染。随着白细胞数量的增加，我们的身体会变热，导致发烧或体温升高。虽然发烧通常是感染或疾病的指征，但人们认为发烧通过刺激自然防御机制来帮助身体对抗感染。这就是为什么尝试过多或过快地降低发烧是不好的。当体温高于105度时，可能会对神经系统造成伤害。在一些人中，通常是儿童，当体温高于38. 9 ℃时会出现癫痫发作。因此，如果发烧太高，必须采取措施降低发烧。退热药是通常用于降低发烧的药物，如泰诺、阿司匹林、
+
+①
+②
+
+发 热分为 低热 、微热 、中热 和⾼ 热。
+防 御机制 。
+
+100
+
+【原文】
+Unit 25 Fever and so on. Don't give a child aspirin products when they have chickenpox ① or the flu, w hich could result in Reye'ssyndro me ② t hat is potentially lethal.
+Fevers are primarily caused by viral or bacterial infections. However, ot her conditions may also induce a fever, such as allergic reactions, au toimmune diseases, trauma, cancer,
+excessive exposure to t he sun, intense exercise, hormonal imbalances, certain drugs, and damage to the hypothalamus. When an infection occurs, fever-inducing agen ts called pyrogens are released, triggering t he resetting of t he thermostat. In ot her circumstances, the immune system may overreact (allergic reactions) or become damaged (autoimmune diseases),
+leading to t he uncon trolled release of pyrogens. A stroke or tumor can damage the hypothalamus, causing t he body's thermostat to malfunction. Excessive exposure to t he sun or in tensely exercising in hotweat her can result in heat stroke, a condition in w hich the body'scooling mechanisms fail. Malignant hypertherm ia is a rare,
+
+【翻译】
+Unit 25 Fever and soon.当患'有水痘①或流感时，请勿给孩子服用阿司匹林产品，这可能导致Reye'的症状② ，这可能是致命的。发烧主要是由病毒或细菌感染引起的。然而，其他条件也可能诱发发烧，如过敏反应、自身免疫性疾病、创伤、癌症、过度暴露在阳光下、剧烈运动、荷尔蒙失衡、某些药物和光晕受损。当感染发生时，称为热原的发烧诱导剂被释放，触发恒温器的重置。在其他情况下，免疫系统可能反应过度（过敏反应）或受损（自身免疫性疾病） ，导致热原的失控释放。中风或肿瘤会损害下丘脑，导致身体的恒温'器发生故障。过度暴露在阳光下或在炎热的天气下剧烈运动可能导致中暑，这是人体冷却机制失'效的一种情况。恶性体温过高是罕见的，
+
+【原文】
+inherited cond ition in w hich a person develops a very high fever when given certain anesthetics or m uscle relaxan ts in preparation for surgery.③
+Symp toms of fever include chills, aching everyw here, listlessness, red cheeks, feeling hot or cold, etc., which vary depending on t he stage of the fever.
+During t he onset of a fever, t he major signs are chills, shivering, pallid skin, increased pulse rate, and rising rectal temperature even though skin reading is cool.
+In t he course of a fever, t he patient may not complain of feeling hot or cold. Instead, he may complain of headache, irritability or restlessness, or weakness.
+During t he termination of a fever, the signs include diaphoresis, reddening of t he skin,
+and possible dehydration.
+When onehas fever, even t hough t he fever may work to help him, it still makes him feel uncomfortable. N ursing interventions are as follows. During the period of chills,
+add itional bedclothes④
+
+【翻译】
+在准备手术时给予某些麻醉剂或肌肉松弛剂时出现非常高热的遗传性疾病。③发烧的症状包括发冷、到处疼痛、无精打采、脸颊发红、感觉发热或发冷等，这些症状因发烧阶段而异。在发烧期间，主要迹象是发冷、颤抖、皮肤苍白、脉搏加快和直肠温度升高，即使皮肤读数很凉爽。在发烧过程中，患者可能不会抱怨感到热或冷。相反，他可能会抱怨头痛、易怒或焦躁不安或虚弱。在发烧结束时，体征包括发汗、皮肤发红和可能的脱水。当一个人发烧时，尽管发烧可能会对他有所帮助，但仍然会让他感到不舒服。护理干预领域如下。寒冷期间，额外的床上用品④
+
+prov ide
+
+【原文】
+and note t he onset and duration of t he chill. During the stage of diaphoresis, increase circulation of air in the room to promote heat loss by vaporization.
+Because bedclothes may become wet with diaphoresis, it is important they be changed as necessary. I t is necessary to encourage the pa tien t to i ncrease fluid in take to preven t poten tial dehyd ration due to excessive fluid loss from d iaphoresis.⑤
+T he nurse should measure and record the patient's fluid intake and out put. In addition to monitoring the patient's temperature, t he nurse needs to assess t he patien '
+ts pulse and respirations. T he increase in the pulse rate and resp iratory rate is d irectly associated with the i ncrease in the basal metabolic
+
+【翻译】
+并记录冷却的开始和持续时间。在蒸发阶段，增加室内空气循环，促进蒸发热量流失。由于床上用品可能会被dia ph矿石弄湿，因此根据需要更换床上用品非常重要。有必要鼓励患者增加液体摄入量，以防止因dia ph矿石过度流失液体而导致的口服脱水。⑤护士应测量并记录患者的液'体摄入量和输出量。除了监测患者'的体温外，护士还需要评估患者的脉'搏和呼吸。脉搏和呼吸频率的增加与基础代谢的增加直接相关。
+
+①
+②
+③
+④
+⑤
+
+⽔ 痘。
+雷 若综合 征。
+恶性 的过 ⾼热是 ⼀种 很少⻅ 的遗传 性疾 病。在 准备 ⼿术时 使⽤ 麻醉药 或使 ⽤ 肌⾁ 松 弛药 后, 可 能导 致 恶性 ⾼
+热。
+增 加被褥 保暖 。
+必 须⿎励 病⼈ 多饮⽔, 以避 免因 出汗过 多导 致脱⽔ 。
+
+101
+
+【原文】
+rate an d demands for ox ygen t hat accom pany a tem perat ure rise.①
+The pulse rate can increase 10 to 15 beats per minute with a rise of each 1 degree Centigrade in temperat ure. The physician should be notified of t he patient's vital and clinical signs for appropriate diagnostic procedures.
+
+【翻译】
+速率和对伴随温度上升的氧气的需求。①每升高1摄氏度，脉搏每分钟可增加10-15次。应将患者的生命体征和临床体征通知'医生，以便进行适当的诊断程序。
+
+【原文】
+Daily Language
+1. He hasgot a low-grade fever/ high fever.
+他发低烧/ ⾼烧。
+2. You should take his temperature every two hours.
+你应该每两⼩时给他测⼀次体温。
+3. If he has a low-grade temperat ure, you don't have to give him anyt hing to lower the fever.
+如果他只是发低烧, 不必给他吃退烧药。
+4. Offer him plen ty of fluid to bring his body temperature down.
+让他多喝点⽔, 来降低体温。
+5. If t he temperat ure is over 38. 5℃ or if t he child is uncomfortable, you can give him some medicine to bring t he fever down.
+如果体温超过 38. 5 ℃, 或孩⼦感觉不舒服, 可以给他吃点退烧药。
+6. You can lower the temperature by giving him a lukewarm bath. Do not useice water or rubbing alcohol to reduce a child's temperat ure.
+你可以给他洗个温⽔浴来降温, 但不要⽤冰⽔或酒精。
+
+【翻译】
+日常语言1.他发低烧/高烧。他发低烧/⾼烧。2.您应该每两小时测量一次他的体温。你应该每两⼩时给他测⼀次体温。3.如果他的发烧程度较低，您不必'给他任何东西来降低发烧。如果他只是发低烧， 不必给他吃退烧药。 4.给他充足的液体，让他的体温下降。让他多喝点⽔, 来降低体温。 5.如果温度超过38度。5 ℃或如果孩子不舒服，可以给他一些药物来降低发烧。如果体温超过38. 5 ℃ ， 或孩⼦感觉不舒服 ， 可以给他吃点退烧药。 6.您可以给他洗个温水澡来降低体温。不要使用冰水或摩擦酒精来降低孩子在尿液'中的脾气。你可以给他洗个温⽔浴来降温, 但不要⽤冰⽔或酒精。
+
+Vocabulary
+1. pyrexia [pa蔠
+i r eksi蓈] adj. 热病的
+2. delirium [d 蔠
+i l i r蓈
+i m] n. (暂时的) 精神狂乱, 精神错乱, 精神极度兴奋
+3. convulsion [k蓈n蔠v蓊l蓌
+蓈n] n. 惊厥, 痉挛, 抽搐
+4. mechanism [蔠mek蓈n iz蓈m] n. 机构, 机制
+5. lymphatic [l i m蔠f t i k] adj. 含淋巴的, 淋巴腺的
+6. antipyretic [蔠 nt i pa蔠
+i ret i k] n. 退热药, 解热药
+7. Tylenol [蔠t a i l en蓋l] n. 羟苯基⼄酰胺 (⼀种醋氨酚牌⼦的商标)
+8. autoimmune [蓋
+蓎蓈
+t u蔠
+i mj u蓎n] adj. ⾃体免疫的
+9. hypothalamus [蔠ha i p蓈u蔠
+蓑 l蓈m蓈s] n. 视丘下部
+10. pyrogen [蔠pa i蓈r蓈ud蓏i n] n. 热原 (质)
+①
+
+呼 吸和脉 搏增 加与由 于体温 升⾼ ⽽引起 的基 础代谢 增加 和氧需 要量增 加直 接相关 。
+
+102
+
+Unit 26
+
+【原文】
+Diar rhea
+1. Interpre t the term: di arrhe a, dehydration, acute di arrhe a, and chronic dia rrhea;
+2. Describe the common cause s for di arrhe a;
+3. List the type s of diarrhea which indicate medical supervi sion;
+4. Describe the prevention me asures for dia rrhea.
+
+【翻译】
+腹泻1.解读术语： diarr he a, dehydration, acute diarr he a, and chronic diarrhea; 2.描述造成这种情况的常见原因； 3.列出表明有医学问题的腹泻类型； 4.描述腹泻的预防措施。
+
+【原文】
+The definition of diarrhea depends on what is normal for you. For some, diarrhea can be as sligh t as one loose stool perday. Ot hers may have two or more than t hree daily bowel movemen ts usually and not be considered as diarrhea. So t he best explanation of diar rhea is
+" an abnorm al i ncrease in the frequency and liquidity of one's stools. Sometimes the loose stools mixw it h blood, pus, an d mucus." ①
+Diarrhea may be considered as a symptom of more serious diseases, injury or food poisoning and can also be indicative of a chronic syndrome such as Crohn'sd isease ②. It is also a result of severe radiation sickness. T he basic physiopathology of diar rhea may be divi ded in to the general classi fication of decreased fluid absorp tion,
+motility dist urbance, or a co mbination of these.
+
+【翻译】
+腹泻的定义取决于对您来说什么是正常的。对于一些人来说，腹泻可能像每天一便便一样轻微。其他人可能每天排便两次或三次以上，不被视为腹泻。因此，对腹泻的最好解释是"大便频率和流动性的异'常增加。有时，粪便会与血液、脓液和粘液混合。"①腹泻可能被认为是更严重的疾病、损伤或食物中毒的症状，也可能是克罗恩病等'慢性综合征的指征②。这也是严重辐射病的结果。腹泻的基本生理病理学可分为体液缺失减少、运动障碍或它们的组合的一般分类。
+
+【原文】
+i ncreased fluid secretion,
+
+【翻译】
+液体分泌增加，
+
+③
+
+【原文】
+Common causes of diarrhea are bacterial infections, viral infections, parasites infections,
+food in tolerances, reaction to medicines, in testinal diseases, and functional bowel disorders.
+Some people develop diarrhea after stomach surgery or removal of the gallbladder. T he reason may be a change i n how quickly food moves through the d igestive system a fter stomach surgery or an increase i n bile in t he colon that can occur a fter gallblad der surgery.④ In many cases,
+t he cause of diarrhea cannot be found. Usually, as long as diarrhea goes a way by itself ⑤,
+t he cause often doesn't matter or a broadsearch for t he cause is not necessary.
+According to its duration, diarrhea can be divided into two groups: acute diarrhea and chronic diarrhea. Acute diarrhea may be defined as diarrhea t hat lasts less than 2 weeks. T his can nearly always be supposed to be in fective alt hough it is only confirmed in a minority of
+
+【翻译】
+腹泻的常见原因是细菌感染、病毒感染、寄生虫感染、食物耐受性、药物反应、肠道疾病和功能性肠道疾病。有些人在胃手术或切除胆囊后出现腹泻。原因可能是食物在胃部手术后通过消化系统的速度发生了变化，也可能是胆囊手术后结肠胆汁增加。④在许多情况下，无法找到腹泻的原因。通常，只要腹泻自行消失⑤ ，原因往往无关'紧要，或者不需要对原因进行广泛的搜索。根据其持续时间，腹泻可分为两组：急性腹泻和慢性腹泻。急性腹泻可定义为持续时间少于2周的腹泻。这几乎总是被认为是假设的，尽管它只是少数
+
+①
+②
+③
+④
+⑤
+
+因 此, 对 腹泻 的最好 解释是: ⼤ 便次数 和通 畅性增 加。 有时稀 便中混 有⾎ 液、脓 液和 黏液。
+克 隆重病 。
+腹 泻的基 本病 理⽣理 学改变 包括 液体吸 收减 少、分 泌增 多、肠 蠕动紊 乱和 以上各 因素 的综合 反应 。
+其 原因可 能与 胃部⼿ 术后⻝ 物经 过消化 道的 速度改 变, 或是因 为胆囊 术后 结肠内 的胆 汁增多 有关 。
+⾃ 愈。
+
+104
+
+Unit 26
+
+【原文】
+Diarrhea cases.① It is usually accompanied by abdominal pain, nausea, and vomiting. When diarrhea persists for at least 2 weeks or when it subsides and returns more than 2 to 4 weeks after the initial episode, it is considered chronic. Such diarrhea is usually painless and persistent.
+Malabsorption and malnu trition are also sequelae of chronic diarrhea.
+Severe diarrhea may be debilitating and life threatening. Diarrhea can cause dehydration,
+w hich means the body lacks enough fluid to function well. Dehydration is particularly dangerous in children and the elderly, and it must be treated quickly to avoid severe healt h problems. Common signs of dehydration include: thirst, less frequen t urination, dry skin,
+fatigue, ligh t-headedness, and dark colored urine.
+The following types of diarrhea usually indicate medical supervision is necessary:
+1. Diarrhea in infants.
+2. Moderate or severe diarrhea in young children.
+3. Diarrhea associated with bleeding.
+4. Diarrhea that persists for more than 2 weeks.
+5. Diarrhea that is related to more common illnesses such as non-cramping abdominal pain, fever, weigh t loss, etc.
+6. Diarrhea in homosexual males (tends to be more severe and may be associated with AIDS).
+7. Diarrhea in t ravelers (more likely to have foreign infections such as parasites).
+8. Diarrhea in food handlers (possible to infect other persons).
+Most types of diarrhea are harmless and will get away by t hemselves within hours to days.
+If people don'tget dehydrated, there's little to worry about. T he treat ment of diarrhea is based on the reason and is aimed at replacemen t of liquid an d electrolytes.②
+It includes the patient consuming adequate amounts of water to replace that loss, preferably mixed with electrolytes to provide necessary salt and some amount of nu trients. Oral solutions con taining glucose and elect rolytes may be sufficient to replace losses from mild diarrhea. For many people, furt her treat ment and formal medical suggestion is unnecessary. Medicines t hat stop diarrhea may be useful in some cases, but they are not suggested for people whose diarrhea is from a bacterial infection or parasite — stopping t he diarrhea trapst he organism in the in testines, prolonging t he problem. Instead, doctors usually prescribe antibiotics. Viral causes are either t reated with medication or left to runt heir course, depending on the severity of diarrhea and the type of t he virus. In situations of severe diarrhea, paren teral administration of fluids, electroly tes, vitamins, and potentially, nutrition is required.
+For t he most part diar rheas are i n fections, spread prim arily via the feca l-oral route.③
+①
+②
+③
+
+【翻译】
+腹泻病例。①通常伴有腹痛、恶心、呕吐。当腹泻持续至少2周或当它消退并在初始发作后超过2至4周返回时，它被认为是慢性的。这种腹泻通常是无痛且持续的。吸收不良和营养不良也是慢性腹泻的后遗症。严重的腹泻可能会使人虚弱并危及生命。腹泻会导致脱水，这意味着身体缺乏足够的液体来发挥作用。脱水对儿童和老年人尤为危险，必须迅速治疗，以避免严重的健康问题。脱水的常见迹象包括：口渴、排尿次数少、皮肤干燥、疲劳、头晕目眩和深色尿。以下类型的腹泻通常表明需要医疗监督： 1.婴幼儿腹泻。2.幼儿中度或重度腹泻。3.与出血相关的腹泻。4.持续2周以上的腹泻。5.与非痉挛性腹痛、发烧、体重减轻等更常见疾病相关的腹泻6.同性恋男性的腹泻（往往更严重，可能与艾滋病有关）。7.旅客腹泻（更可能有寄生虫等外来感染）。8.食物处理人员腹泻（可能感染其他人）。大多数类型的腹泻是无害的，会在几小时到几天内自行消失。如果人们'不脱水，'没什么好担心的。腹泻的治疗是基于原因，旨在治疗液体和电解质的水泥。②它包括患者消耗足够量的水来代替这种损失，最好与电解质混合以提供必要的盐和一定量的营养素。含有葡萄糖和ELECT rolytes的口服溶液可能足以替代轻度腹泻造成的损失。对于许多人来说，进一步的治疗和正式的医疗建议是不必要的。在某些情况下，止泻药物可能有用，但不建议因细菌感染或寄生虫引起的腹泻患者服用--止泻可将生物体困在肠道中，延长问题。相反，医生通常会开抗生素。根据腹泻的严重程度和病毒的类型，病毒原因要么用药物治疗，要么留待治疗。在严重腹泻的情况下，需要补充液体、电解质、维生素和潜在的营养。在大多数情况下，乳酪大黄是感染，主要通过粪口途径传播。③ ① ② ③
+
+(急性 腹泻) ⼏乎 总是被 认为 是传染 性的, 尽管 这只在 少数 病例中 得到 证实。
+应 针对腹 泻的 原因治 疗, 同 时要 补充丢 失的 液体和 电解 质。
+⼤ 多数腹 泻主 要由粪 —⼝途 径传 染。
+
+105
+
+【原文】
+Invisible organ isms such as microscop ic viruses, bacteria, or parasites from the stool that hide on hands,
+
+【翻译】
+隐形器官，如粪便中隐藏在手上的微小病毒、细菌或寄生虫，
+
+toys,
+
+【原文】
+foods, an d surfaces migh t be taken in to the mouth.①
+Then these microbes flourish in your intestines, causing damage and diarrhea. P revention is a matter of good hygiene. The measures mainly include washing your hands before preparing foods and eating clean food, washing your hands after using the bathroom, keeping your hands away from your mouth in general, washing after shaking hands with a number of people, and ot her measures t hat keep your hands clean. Preven tion of non-infectious diarrhea is directed at merely avoiding the t riggering even ts — such as taking a lactose-absorption enzyme with dairy products, or avoiding certain foods or spices, which are likely to cause loose stools. Trying to stay away from st ressful situation is simple advice to provide, but hard to follow in real life.
+
+【翻译】
+食物和表面可能会被带入口中。①然后这些微生物在肠道中繁殖，造成损伤和腹泻。预防是良好卫生的问题。这些措施主要包括在准备食物和吃干净食物之前洗手，使用卫生间后洗手，一般情况下保持双手远离嘴巴，与多人握手后洗手，以及其他保持双手清洁的措施。预防非传染性腹泻的目的仅仅是避免触发事件，例如与乳制品一起服用乳糖吸收酶，或避免某些可能导致大便疏松的食物或香料。试图远离紧张的情况是一个简单的建议，但在现实生活中很难遵循。
+
+【原文】
+Daily Language
+1. I have gotbad abdominal pain and several loose stools today. I t seems that I have diarrhea.
+我有严重的腹痛和⼏次稀便。看来我腹泻了。
+2. When did these symp toms start?
+这些症状是什么时候开始的?
+3. How many times do you have bowel movements a day?
+⼀天解了⼏次⼤便?
+4. Is t here any blood or mucus in the stools?
+⼤便中有⾎或者黏液吗?
+5. What'st he shape of the stool?
+⼤便呈什么形状?
+6. Just loose stool.
+稀便。
+7. Have you got nausea and vomiting?
+有恶⼼和呕吐症状吗?
+
+【翻译】
+日常语言1.我今天有严重的腹痛和几次大便松动。看来我腹泻了。我有严重的腹痛和⼏次稀便。看来我腹泻了。2.这些症状是什么时候开始的这些症状是什么时候开始的？ ？ 3.您每天有多少次排便⼀天解了⼏次⼤便？ 4.粪便中是否有血液或粘液？ ⼤便中有⾎或者黏液吗 ？ 5.凳'子的形状是什么⼤便呈什么形状？ 6.只是松开的凳子。稀便。7.您是否感到恶心和呕吐？ 有恶⼼和呕吐症状吗 ？
+
+Vocabulary
+1. diarrhea [da 蓈
+i 蔠r 蓈
+i] n. 痢疾, 腹泻
+2. stool [st u蓎l] n. ⼤便, 厕所
+3. pus [p蓊s] n. 脓, 脓汁
+4. mucus [蔠m j u蓎k蓈s] n. 黏液, 胶
+①
+
+看不 ⻅的 ⽣物体, 如 从⼤便 中来的 微⼩ 病毒、 细菌, 或藏 在双 ⼿、玩 具、 ⻝物 和 物体 表 ⾯的 寄 ⽣⾍ 可 能被 吃
+进 ⼝⾥。
+
+106

@@ -1,0 +1,307 @@
+Day 16 | Unit 31-32
+
+Unit 31
+
+【原文】
+Hepatitis
+1. State the transmission routes of viral hepatitis A, B, CandD.
+2. Identify the ma in signs and symptoms of viral hepatitis.
+3. Identify the prev entionmea surements for hepatitis A and B.
+
+【翻译】
+肝炎1.说明病毒性甲型肝炎、乙型肝炎、甲型肝炎的传播途径2.识别病毒性肝炎的主要体征和症状。3.确定甲型和乙型肝炎的预防措施。
+
+【原文】
+Hepatitis is an inflammation of the liver. It is caused by viruses, bacteria, alcohol,
+drug abuse①, some medicines, or serious harm to the liver. Hepatitis is a very serious health problem in parts of Asia, Africa, and the Caribbean. There are several different viruses which can cause viral hepatitis. They are hepatitis A, B, C, D, and E viruses. All of these viruses can cause acute, or short-term, viral hepatitis. Hepatitis B, C, and D viruses can also cause chronic hepatitis, in which the infection is prolonged, sometimes lifelong. Other viruses may also cause hepatitis, but they haveyet to be d iscovered and they are obviously rare causes of the disease.②
+People get viral hepatitis in manyways. Usually, people get hepatitis A or hepatitis E by eating food and drinking water infected with hepatitis A virus (HAV) or hepatitis E virus
+(HE V). People get hepatitis BorC by having unprotected sex (having sexwithout using a condom) with someone who has hepatitis BorC, being transfused with blood that is infected with the virus, sharing needles with someone infected with the virus, being acciden tallystuck by an infected needle or using tools that are infected with the virus for tattoos and body piercing, and a mother passing the virus to her child during the birth ingp rocess③. People get hepatitis Donly if they already have hepatitis B.
+Hepatitis, in its early stages, may cause flu-likesym ptoms④.
+
+【翻译】
+肝炎是肝脏的炎症。它是由病毒、细菌、酒精、药物滥用①、某些药物或严重损害肝脏引起的。肝炎在亚洲、非洲和加勒比地区的部分地区是一个非常严重的健康问题。有几种不同的病毒可导致病毒性肝炎。它们是甲型、乙型、丙型、丁型和戊型肝炎病毒。所有这些病毒都可能导致急性或短期病毒性肝炎。乙型、丙型和丁型肝炎病毒也可能导致慢性肝炎，其中感染延长，有时终身。其他病毒也可能导致肝炎，但它们尚未被发现，它们显然是该疾病的罕见原因。②人们以多种方式感染病毒性肝炎。通常，人们通过食用感染了甲型肝炎病毒（ HAV ）或戊型肝炎病毒（ HEV ）的食物和饮用水而感染甲型肝炎或戊型肝炎。人们通过与患有BorC肝炎的人进行无保护性行为（不使用避孕套进行性行为） ，输注感染病毒的血液，与感染病毒的人共用针头，不小心被感染的针头卡住或使用感染病毒的工具进行纹身和身体穿刺，以及母亲在分娩过程中将病毒传染给孩子③。只有已经患有乙型肝炎的人才会感染D型肝炎。肝炎早期可能引起流感样症状④。
+
+【原文】
+These symptoms may include malaise (a general ill feeling), fever, muscle aches, loss of appetite, nausea,
+vomiting, diarrhea, and jaundice. Some people may have no symptoms at all and may not evenknow they're infected. If hepatitis progresses, itssym ptoms begin to point to the liver as the source of illness.⑤
+Chemicals normally secreted by the liver begin to build up in the blood. This causes jaundice (a yellowing of the skin and the eyes), foul breath, and a bitter
+①
+②
+③
+④
+⑤
+
+【翻译】
+这些症状可能包括不适（一般不适感）、发烧、肌肉酸痛、食欲不振、恶心、呕吐、腹泻和黄疸。有些人可能根本没有症状，甚至可能不知道自己'再次感染。如果肝炎进展，其症状开始指向肝脏作为疾病的来源。⑤通常由肝脏分泌的化学物质开始在血液中积聚。这会导致黄疸（皮肤和眼睛发黄）、口臭和苦涩① ② ③ ④ ⑤
+
+药 物滥⽤ 。
+其 他的⼀ 些病 毒也可 能引起 肝炎, 但⾄ 今还 没被完 全弄 清楚, 但显然 这些 病毒引 起的 肝炎较 少⻅ 。
+在 分娩过 程中 。
+流 感样的 症状 。
+如 果肝炎 进⼀ 步发展, 它的 症状 以肝脏 (病 灶) 为 中⼼ 。
+
+125
+
+【原文】
+taste in the mouth. Urine turnsdark or" tea-colored, " and stools become white, light, or
+" clay-colored." There can also be abdominal pain,
+which may be centered below the right ribs (over a tender, swollen liver) or below the leftribs (over a tender spleen).①
+
+【翻译】
+在口中品尝。尿液变成深色或"茶色" ，大便变成白色、浅色或"粘土色"。"也可能有腹痛，可能集中在右侧肋骨下方（压痛，肝脏肿胀）或左侧肋骨下方（压痛脾脏）。①
+
+Viral
+
+【原文】
+hepatitis symptoms are similar no matter which type of hepatitis a person has. Very rarely, a newcase (acute) of viral hepatitis can cause liver fail ure②
+and death. It is important to know that symptoms are less common in children than adults, and people who haveHCV infection are less likely to experience symptoms.
+All of hepatitis patients should avoid alcohol, as it can worsen liver disease. There is not reatment for hepatitis A. Hepatitis A usually resolves on itsown ③
+over several weeks.
+
+【翻译】
+无论一个人患有哪种类型的肝炎，肝炎症状都是相似的。病毒性肝炎的新病例（急性）很少会导致肝衰竭②和死亡。重要的是要知道症状在儿童中不如成人常见，并且HCV感染者不太可能出现症状。所有肝炎患者都应避免饮酒，因为饮酒会加重肝病。没有甲型肝炎。甲型肝炎通常在几周内自行消退③。
+
+【原文】
+Acute hepatitis B usually resolves on itsown, butvery severe cases can be treated with lamivudine. HBV-infected persons should have a medical evaluation for liver disease every 6 ～
+12 months. Alpha-in terferon, lamivudine, and adefovir are the three drugs curren tly licensed for the treatment of persons with chronic hepatitis B. These drugs are effective in up to 40%
+of patients. Liver transplan t ④ is the lastresort, butlivers are not always available. HCVpositive persons should alsohave a medical evaluation for liver disease every 6 ～ 12 months.
+In terferon, pegylated in terferon and ribavirin ⑤ are the only drugs licensed for the treatment of persons with chronic hepatitis C. Interferon can be taken alone or in combination with ribavirin, and combination therapy is curren tly the treatment of choice.⑥
+Chronic hepatitis D can be treated with alpha-interferon. Hepatitis E usually resolves on itsown over several weeks to months.
+Hepatitis A vaccine is the best protection for hepatitis A. It is recommended for people more than two years of age who are in risk groups for HAV infection. It is recommended as a routine vaccination for children living in certain geographic areas where hepatitis A occurs at consistently higher rates than average. For a recent exposure to someone with HAV or if travel is imminent (leaving in less than 4 weeks) to an area of the world where hepatitis A is common, people should see doctor about his need for a dose of immune globulin (IG). A goodway to prevent hepatitis A is washing hands with soap and water after using the toilet,
+changing a diaper, and before preparing and eating food. Hepatitis B vaccine is the best protection for hepatitis B. Routine vaccination is recommended for all persons 0 ～ 18 years of age, and for persons of allages who are in risk groups for HBV infection. For optimal protection, all babies should be given their first dose of hepatitis B vaccine at birth before leaving the hospital. A pregnant woman should be tested for hepatitis B. In f an tsborn to
+①
+②
+③
+④
+⑤
+⑥
+
+【翻译】
+急性乙型肝炎通常会自行消退，但非常严重的病例可以用LAM IV乌丁治疗。HBV感染者应每6 ～ 12个月进行一次肝病的医学评估。α-干扰素、拉米夫定和阿德福韦是目前获准用于治疗慢性乙型肝炎患者的三种药物。这些药物对多达40%的患者有效。肝脏移植④是最后的手段，但肝脏并不总是可用的。HCV阳性患者还应每6 ～ 12个月进行一次肝病医学评估。在Terferon中，聚乙二醇化Terferon和Ribav irin ⑤是唯一获准用于治疗慢性丙型肝炎患者的药物。干扰素可以单独服用，也可以与病毒核糖核酸联合服用，联合国疗法目前是首选治疗方法。⑥慢性D型肝炎可用α-干扰素治疗。E型肝炎通常在数周至数月内自行消退。甲型肝炎疫苗是甲型肝炎的最佳保护措施。建议2岁以上的HAV感染高危人群服用。建议对生活在甲型肝炎发病率始终高于平均水平的某些地理区域的儿童进行常规疫苗接种。对于最近接触甲型肝炎病毒感染者或即将前往（不到4周后离开）甲型肝炎常见的地区，人们应该去看医生，了解他对免疫球蛋白（ IG ）的需求。预防甲型肝炎的一个好方法是在使用马桶后用肥皂和水洗手，换尿布，以及在准备和进食之前。乙型肝炎疫苗是对乙型肝炎的最佳保护。建议所有0 ～ 18岁的人群以及HBV感染高危人群中的所有年龄段的人群进行常规疫苗接种。为了获得最佳保护，所有婴儿在出院前应在出生时接种第一剂乙型肝炎疫苗。孕妇应接受乙型肝炎检测。① ② ③ ④ ⑤ ⑥出生的婴儿
+
+也有 可能 出现腹 痛, 腹痛以 右肋下 (右 肋下可 触到 质地柔 软肿 ⼤的肝 脏) 或左 肋 下 (左 肋下 可 触到 质 地柔 软
+的 脾脏) 为中 ⼼。
+肝 衰竭。
+⾃ 愈。
+肝 移植。
+利 巴⻙林 (抗 病毒药) 。
+联 合⽤药 是⽬ 前的治 疗⽅法 之⼀ 。
+
+126
+
+Unit 31
+
+【原文】
+Hepatitis HBV-in fected mothers should be given HBIG (hepatitis B immune globulin) and vaccine within 12 hours of birth.① There is no vaccine to prevent hepatitis C. Manyot her ways to helpone prevent hepatitis BandC are as follows: Don't share personal careitems, such as razors, toothbrushes, and washcloth. Consider the risks before getting a tattoo or body piercing. Avoid being stuck by sharps and needles. Usecondoms properly when having sex with someone who has hepatitis BorC. As for healthcare workers, it is important for them to stick to routine barrier precautions and safely handle needles and other sharps. In addition,
+they should be vaccinated against hepatitis B.
+
+【翻译】
+感染HBV的母亲应在出生后12小时内接种HBIG （乙型肝炎免疫球蛋白）和疫苗。①没有预防丙型肝炎的疫苗。许多其他方法可以帮助预防肝炎乐队护理，如下所示：分享'个人护理用品，如剃须刀、牙刷和毛巾。在纹身或穿刺身体之前，请考虑风险。避免被锐器和针头卡住。与BorC型肝炎患者发生性行为时，请正确使用避孕套。对于医护人员来说，坚持常规的屏障预防措施并安全地处理针头和其他锐器非常重要。此外，他们还应接种乙型肝炎疫苗。
+
+【原文】
+Daily Language
+1. You'd better have a liver function test.
+您最好做⼀个肝功检查。
+2. Please come to our hospital tomorrow morning before breakfast with an empty stomach to have a blood test. Don'teat or drink anything.
+请明天早上空腹来医院查⾎。记住什么都不要吃。
+3. Your liver is enlarged and tender to the touch.
+您的肝脏肿⼤, 有触痛感。
+4. Take the medicine I prescribe. You can't drink any alcohol and should have a goodrest. There is no special treatment. It will take you sometime to recover, so you have to be patient.
+按我开的处⽅服药。您不能喝酒, 注意休 息。该 病没有 什么 特殊 的治疗 ⽅法。 您
+需要⼀段时间才能康复, 所以您要有耐⼼。
+
+【翻译】
+日常语言1.'您最好进行肝功能检查。您最好做⼀个肝功检查。2.请明天早上早餐前空腹来我们医院验血。不要吃或喝'任何东西。请明天早上空腹来医院查⾎。记住什么都不要吃。3.您的肝脏肿大，触感柔嫩。您的肝脏肿⼤， 有触痛感。 4.服用我开的药。您可以'喝任何酒，应该好好休息。没有特殊待遇。您需要一些时间才能恢复，因此您必须耐心等待。按我开的处⽅服药。您不能喝酒,注意休 息。该 病没有 什么 特殊 的治疗 ⽅法。 您 需要⼀段时间才能康复, 所以您要有耐⼼。
+
+Vocabulary
+1. hepatitis [蔠h ep蓈
+蔠t ait is] n. 肝炎
+2. condom [蔠k蓋n d蓈m] n. 避孕套
+3. tattoo [t蓈
+蔠t u蓎, t 蔠t u蓎] v. 刺花样 n. ⽂身
+4. malaise [m 蔠le iz] n. 不舒服
+5. jaundice [蔠d蓏
+蓋
+蓎n d is] n. ⻩疸 vt. 使患⻩疸
+6. stool [st u蓎l] n. 肠内排出的粪便
+7. in terferon [蔠i nt蓈(蓎)蔠f i蓈r蓋n] n. ⼲扰素
+alpha-in terferon α-⼲扰素
+pegylated interferon
+①
+
+聚⼆醇化⼲扰素
+
+感 染了⼄ 型肝 炎病毒 的⺟亲 所⽣ 育的婴 ⼉应 当在出 ⽣ 12 ⼩时 内注 射⼄肝 免疫 球蛋⽩ 和疫 苗。
+
+127
+
+Unit 32
+
+【原文】
+Care of the Client with Surgery
+1. Briefly state the category and purposes of the surgery;
+2. Describe the nurse's tasks during the 3 phases of surgery;
+3. State the goal of the recovery room nurse;
+4. Describe the main nursing care during postoperative phase.
+⼿术是在⼿术过程中使⽤仪器治疗伤害，疾病和畸形
+Surgery is the use of instrumen ts during an operation to treat injuries, diseases, and deformities. It is usually invasive and may require an opening being made into the body for accessing the area to be treated.①
+Surgery is performed in clinics, physician'soffices,
+
+【翻译】
+护理手术客户1. Brie fly说明了手术的类别和目的； 2.描述护'士在手术3个阶段的任务； 3.说明康复室护士的目标； 4.描述术后阶段的主要护理。⼿术是在⼿术过程中使⽤仪器治疗伤害疾病和畸形手术是在手术过程中使用器械来治疗损伤、疾病和畸形。它通常是侵入性的，可能需要在身体中形成一个开口，以便进入要治疗的区域。①手术在诊所、'医生办公室、
+
+今天，由于药物和麻醉剂可以更快地恢复，⼿术是⼀种安全、有效的治疗选择
+
+【原文】
+ambulatory surgical centers, and hospitals. Today, surgery is a safe, effective treatment optiondue to medication and anesthetics that allow a quicker recovery. Laser and scope technology haveled to the development of newproced ures that of ferlessrisk, less invasive,
+faster recovery, and reduced hospitalization.②
+Surgery is scheduled based on the urgency required for a successful outcome for the client.
+Emergent or i m mediate surgery is needed when life or limb is sudden lyt hreatened and any delay in surgery would jeopardize the clien'tslife or limb.③
+
+【翻译】
+门诊外科中心和医院。今天，由于药物和麻醉剂可以更快地恢复，手术是一种安全有效的治疗选择。激光和视野镜(Scope)技术导致了新程序的开发，该程序提供了更低的风险、更少的侵入性、更快的恢复和更少的住院时间。②手术是根据客户取得成功结果所需的紧迫性来安排的。当生命或肢体突然受到威胁时，需要紧急或立即手术，手术的任何延迟都会危'及生命或肢体。③
+
+阑尾破裂或外伤性截肢
+
+【原文】
+Examples of this are ruptured
+
+【翻译】
+这方面的例子已经破裂
+
+【原文】
+appendix, or traumatic limbampu tation. Urgent surgery is the need for an operation within
+24 to 30 hours. Example for this is fracture repair. An elective surgery is one that can be planned and scheduled withou tany i m mediate time constrain ts.④ Examples for this are joint replacement and hernia repair. Optional surgery ⑤, such as cosmetic surgery, is done at the request of the client. Anyway, surgery is done for several reasons. The purposes of surgery are to cure pathologies by removing abnormal tissues or secretion, and repairing damaged structures or i nborn defects, to diagnose, to slow the progress of pathologic process, and to relieve the undesirable symptoms.⑥ The surgical process threatens the client's ability to meet basic needs. Allbody systems are affected and all needs, physical, physiologic, and
+①
+②
+③
+④
+⑤
+⑥
+
+【翻译】
+阑尾或创伤性截肢。紧急手术需要在24至30小时内进行手术。这方面的例子是骨折修复。择期手术是可以在没有任何即时时间限制的情况下进行计划和安排的手术。④例如关节置换术和疝修补术。可选手术⑤ ，如整容手术，应客户要求进行。无论如何，进行手术有几个原因。手术的目的是通过去除异常组织或分泌物、修复受损结构或新生缺陷、诊断、减缓病理过程的进展以及缓解不良症状来治愈全身肿瘤。⑥手术过程威胁到客户满足基本需'求的能力。所有身体系统都受到影响，所有需求，身体，生理和① ② ③ ④ ⑤ ⑥
+
+外 科⼿术 通常 是侵⼊ 性的, 指为 了接近 需治 疗的病 变区 域⽽将 其切开 。
+激光 和腔 镜技术 引导 了新的 ⼿术⽅ 式的 发展, 降低 了⼿术 的危 险性, 减少 了 侵⼊ 性, 加 速了 康 复并 减 少了 住
+院 时间。
+当 ⽣命或 肢体 突然受 到威胁, ⽽ 任何耽 误都 可能危 及病 ⼈的⽣ 命和肢 体时 就需要 紧急 ⼿术。
+择 期⼿术 是指 那些没 有紧急 时间 限制, 可以 按照计 划预 期安排 的⼿术 。
+⾃ 主选择 性⼿ 术。
+⼿术 的⽬ 的是: 通过 清除病 变组织 或分 泌物、 修复 被破坏 的或 先天缺 陷的 组 织结 构 来治 疗 疾病, 通 过 ⼿术 诊
+断 疾病、 阻⽌ 疾病的 恶化进 程以 及减轻 不舒 适症状 。
+
+129
+
+【原文】
+psychosocial, are compromised. A wide variety of factors influence the clien'ts response to the surgical process. These influences include the client's state of health prior to the surgery, level of growth and development, cognitive abilities, level of knowledge, level of anxiety, cultural and societal expectations, the meaning of the lostbodypart, and previous experiences with hospitalization and surgery. The nurse,
+in terven tion,
+through understanding the process and appropriate can do much to promote,
+
+【翻译】
+心理社会性，受到损害。各种各样的因素会影响clien对'手术过程的反应。这些影响包括手术前'客户的健康状况、生长发育水平、认知能力、知识水平、焦虑程度、文化和社会期望、失去的身体部位的含义，以及以前的住院和手术经历。护士，实际上，通过了解过程和适当可以做很多事情，
+
+restore,
+
+【原文】
+and mainta in the client'shigh- level wellness in the face of these threats.①
+There are three phases in the surgical process: preoperative, in traoperative, and postoperative. These three phases are referred to collectively by the word perioperative,
+which is defined as the time surrounding and during surgery.②
+The preoperative phase starts when the client is apprised of the need for surgery and ends when anesthesia is induced.
+The int raoperative phase begins with the induction of anest hesia and finishes when the surgical procedure is completed. The postoperative phase covers the time from when the surgery ends and con tinues until the healing process is completed.
+In the preoperative phase, the client undergoes a series of diagnostic tests and physical examinations to ascertain his or her present state of health. The nurse obtains a nursing history to determine the client's nursing care needs and to identify actual or potential negative health problems. Once the nursing history hasbeen obtained and negative health behaviors havebeeniden tified, the nurse can plan to intervene. All clients must sign an informed consen t before any surgical process. If the client is under 18 years of age or incapable of signingt he form, the closest relative does so. This consent not on ly gives the surgeon perm ission to perform surgery butalsostatesthat the clien thasbeen in formed of exactly what procedure is being done, its outcomes, and the possible complications.③
+Preoperative teaching serves to help relieve the fears and anxieties of the client as well as provides the client with the basic skills needed during the postoperative period. General areas of preoperative teaching include methods and rationale for coughing and deep breathing,
+incision splinting, turning, am bu lating, and exercising.④ Some preparations are carried out the day before surgery, such as laxatives or enemas, and skinshaves and cleanness. The night before surgery is often especially stressful for the client. Sleeping medications are usually ordered the night before surgery to help promote sleep.
+Final safety and preparatory checks are carried out on the day of surgery. Special preoperative checklists are usually available to have a written record of the preparations that
+
+【翻译】
+以及客户在面对这些'威胁时的高水平健康。①手术过程分为三个阶段：术前、术中和术后。这三个阶段统称为红色，称为围手术期，定义为手术周围和手术期间的时间。②术前阶段从告知患者需要手术开始，到诱导麻醉结束。术中阶段从麻醉诱导开始，手术完成后结束。术后阶段包括从手术结束到愈合过程完成的时间。在术前阶段，客户接受一系列诊断测试和身体检查，以确定他或她目前的健康状况。护士获得护理史，以确定客户'的护理需求，并确定实际或潜在的负面健康问题。一旦获得护理史并识别出负面健康行为，护士就可以计划进行干预。所有客户必须在任何手术前签署知情同意书。如果客户未满18岁或无法签署表格，则由最近的亲属签署。该同意书不仅允许外科医生进行手术，而且还表明已告知客户正在进行何种手术、其结果以及可能的并发症。③术前教学有助于缓解客户的恐惧和焦虑，并为客户提供术后所需的基本技能。术前教学的一般领域包括咳嗽和深呼吸、切口夹板、turning、am bulat ing和锻炼的方法和原理。④术前一天进行一些准备工作，如泻药或灌肠，以及皮肤剃须和清洁。手术前一晚通常对客户来说压力特别大。安眠药通常在手术前一晚订购，以帮助促进睡眠。最后的安全和预备检查在手术当天进行。特别的术前检查清单通常可以提供书面记录的准备工作，
+
+①
+
+当病 ⼈⾯ 临这些 威胁 时, 护 ⼠可以 通过 对病变 过程 的掌握 和提 供恰当 的护 理 措施 来 促进 、恢 复 和维 护 病⼈ 的
+最 佳健康 状况 。
+② " 围⼿ 术期" ⼀词 是这三 个阶 段的总 称, 指 围绕 ⼿术前 后和 ⼿术期 中的 整个阶 段。
+③ ⼿术 同意 书不仅 表明 对外科 医⽣执 ⾏⼿ 术的许 可, ⽽且声 明该 病⼈已 经被 告 知⼿ 术 ⽅法 、预 期 结果 以 及可 能
+出 现的并 发症 。
+④ ⼀ 般的术 前健 康教育 内容包 括咳 嗽与深 呼吸 、切⼝ 的保 护、翻 身、下 床活 动以及 功能 锻炼的 ⽅法 与原理 。
+
+130
+
+【原文】
+Unit 32 Care of the Client with Surgery are needed an dt he time they are done.① Preoperative medications are given approximately 30
+minutes before the scheduled time of the surgery. These drugs reduce the chance of aspiration of secretions during and immediately after surgery and enhance the induction of the desired level of anest hesia.
+The int raoperative phase begins when the client enters the surgical suite. The surgical team usually consists of the surgeon,
+
+【翻译】
+第32单元需要照顾接受手术的客户，以及完成手术的时间。①术前用药在预定手术时间前约30分钟给药。这些药物减少了手术期间和手术后立即吸入分泌物的机会，并增强了所需麻醉水平的诱导。术中阶段从客户进入手术室开始。外科团队通常由外科医生组成，
+
+【原文】
+the surgeon's assistan ts,
+the anesthetist,
+the scrub nurse, and the circu lation nurse.② The operating room nurses are in the unique position of assessing the clients' immediate physical, physiological, and psychosocial responses to operation process and communicating this information to those who care for the client postoperatively. Thus the operating room nurse acts as the bridge for the continuity of care.
+In addition, operating room nurses perform supervisory, m anagerial tasks and coordination of ancillary staff, as well as carry out the technical aspects of nursing care.
+When the surgery is completed, the incision is appropriately dressed and the client is transferred to the postoperative recovery room. Records of the clien'ts vital signs during surgery, medications received, blood transfused, and anyot her immediately pertinent information are transferred with the client. They provide data for comparison in the recovery room. The goal of the recovery room nurse is to mainta in adequacy of a ll vital functions, to prevent early complications of surgery, and to relieve discomfort.③
+The client remains in the recovery room until he or she has completely reacted from the anest hesia and vital signs are stable. And then, the client is transferred to his or her ward.
+In the early postoperative period, the nurse assesses the passage and function of all drainage tubes and adjusts them as necessary. The client's levels of orien tation, consciousness and feelings are assessed. Because the client may still be verygroggy, special measures must be taken to ensure safety.④ Maybe the siderails are raised, the bed is in the lower position,
+and the callbell is available to the person. The nurse puts the client in the comfortable position and helps him or her change the position in termitten tly. It is common for clients to experience pain after surgery, so pain control should be concerned allt he time. In order to decrease the client's anxiety or fear, any questions the clien tasks should be answered and the family members should be allowed to seet he client.
+As the initial postoperative period ends, the client begins to meetmore of his or her own healthcare needs. Nursing actions are those that will help to maximize the clien'ts recovery and assist the client to attain the highest level of well being within the usual life setting.
+Physiologic care is still a focus in this phase, and it requires a great deal of energy as the
+
+【翻译】
+外科医生'的助手、麻醉师、擦洗护士和循环护士。②手术室护士处于评估客户对手术过程的'即时生理、心理和社会反应的独特位置，并将此信息传达给手术后照顾客户的人员。因此，手术室护士充当了护理连续性的桥梁。此外，手术室护士还负责辅助人员的监督、管理和协调工作，并开展护理技术方面的工作。手术完成后，对切口进行适当的穿着，并将患者转移到术后恢复室。手术期间'的生命体征记录、接受的药物、输血以及任何其他立即相关的信息都会传输给客户。它们提供数据供恢复室进行比较。康复室护士的目标是确保所有重要功能的充分性，预防手术的早期并发症，并缓解不适。③病人待在康复室，直至麻醉反应完全，生命体征稳定。然后，客户被转移到他或她的病房。在术后早期，护士评估所有引流管的通道和功能，并根据需要进行调整。评估'客户的方向、意识和感受水平。由于客户可能仍然非常昏昏沉沉，因此必须采取特殊措施以确保安全。④也许侧栏杆升高，床在较低的位置，呼叫铃可供房客使用。护士将客户置于舒适的姿势，并帮助他或她改变末端的姿势。患者在手术后经常感到疼痛，因此应始终关注疼痛控制。为了减轻客户'的焦虑或恐惧，应回答客户提出的任何问题，并允许家庭成员见客户。随着初始术后阶段的结束，客户开始满足他或她自己的更多医疗保健需求。护理行动将有助于最大限度地提高'患者的康复能力，并帮助客户在日常生活环境中获得最高水平的幸福感。生理护理仍然是这个阶段的重点，它需要大量的能量，因为
+
+①
+②
+③
+④
+
+通 常要列 出专 ⻔的术 前准备 清单, 上⾯ 记录 需要完 成的 术前准 备以及 完成 时间。
+外 科⼿术 组成 员通常 包括外 科医 ⽣及其 助⼿ 、麻醉 师、 洗⼿护 ⼠和巡 回护 ⼠。
+复 苏室护 ⼠的 护理⽬ 标是维 持 (病⼈) 重要 器官的 功能 、预防 术后早 期并 发症、 减轻 不舒适 感。
+因 为病⼈ 可能 仍然处 于昏昏 欲睡 的状态, 这 时需要 采⽤ 特殊措 施来保 证病 ⼈的安 全。
+
+131
+
+【原文】
+healing process con tinues.①
+Protein, vitamin, and calorie in takes are increased to meet the energy needs of the healing process. The nurse can assist in this area by suggesting foods that will promote elimination, and by teaching the client the relationship between exercise and elimination. A mbulation is steadilyp rogressed to increase muscle strength and endurance as well as to promote healing.② The nurse needs to continue careful observation of the wound,
+since many wound disruptions can occur at this time. Sutures are usually removed around 7 to
+10 days after surgery, depending on the amount and type of tissues involved and the progression of healing.
+Manynew health behaviors may have to be learned during the postoperative period.
+Although the nurse hasbeen teaching all along, this is when the major emphasis will be placed on the teaching-learning process. Self -care skills, changes in habits, an dmod i fication of environment and lifestyle are so me of the behaviors with which the client may require help.③
+The family should be included in this teaching-learning activity so that they too are aware of the client's capabilities and limitations and can assist the client in meeting healthcare needs.
+Many resources exist within the community to assist the client in the latter part of the postoperative period. The nurse helps the client to make the plan for resuming activities of the daily living and contacts the community nurse in order to keep continuity of nursi ngcare.④
+
+【翻译】
+愈合过程仍在继续。①摄入的蛋白质、维生素和卡路里增加，以满足愈合过程的能量需求。护士可以在这方面提供帮助，建议促进消除的食物，并教导客户运动和消除之间的关系。Mbula tion正在进步，以提高肌肉力量和耐力以及促进愈合。②护士需要继续仔细观察伤口，因为此时可能会发生许多伤口破坏。通常在手术后7至10天左右切除缝合线，这取决于所涉及的组织的数量和类型以及愈合的进展。在术后期间可能需要学习许多新的健康行为。虽然护士一直在教学，但这是主要强调教学过程的时候。自我护理技能、生活变化以及环境和生活方式的改变是客户可能需要帮助的一些行为。③应将家庭纳入此教学活动，以便他们也了解客户'的能力和局限性，并能够帮助客户满足医疗保健需求。社区内有许多资源可以在术后后期为客户提供帮助。护士帮助客户制定恢复日常生活活动的计划，并联系社区护士，以保持护理的连续性。④
+
+【原文】
+Daily Language
+1. Would you sign this informed consen t, please?
+请你签署这份⼿术同意书。
+2. I will give you skinshave. Please take it easy.
+我要给你备⽪, 请放松。
+3. Can you remove my sutures in fivedays?
+你可以在这 5 天内给我拆线吗?
+4. The client'sarm is in rupture, and she needs an emergency surgery.
+这个病⼈的⼿臂⽪肤破损, 需要做紧急⼿术。
+5. Please take a deep breath.
+请做深呼吸。
+6. You should take ambulation as early as possible.
+你应该尽早下床活动。
+7. I can not sleep. May I havesome sleeping pills?
+①
+②
+③
+④
+
+【翻译】
+日常语言1.请您签署本知情同意书？ 请你签署这份⼿术同意书。 2.我会给您刮胡子。请放松。我要给你备⽪， 请放松。 3.你能在五天内取出我的缝合线吗？ 你可以在这 5 天内给我拆线吗 ？ 4.客户'的手臂破裂，需要紧急手术。这个病⼈的⼿臂⽪肤破损， 需要做紧急⼿术。 5.请深呼吸。请做深呼吸。6.您应该尽早服用mbulation。你应该尽早下床活动。7.我睡不着，我可以吃点安眠药吗？ ① ② ③ ④
+
+⽣ 理⽅⾯ 的护 理依然 是这个 阶段 的重点, 在 病⼈愈 合过 程中需 要⼤量 的能 量。
+逐 渐进⾏ 下床 活动, 以增强 肌⾁ 的⼒量 和耐 ⼒并促 进康 复。
+病 ⼈的某 些⾏ 为, 如 ⾃护技 能、 习惯的 改变 、环境 和⽣ 活⽅式 的改善 需要 别⼈的 帮助 来完成 。
+护 ⼠要帮 助病 ⼈制定 出恢复 ⽇常 ⽣活⾏ 为的 计划, 并与 社区护 ⼠联系 以保 持护理 照顾 的连续 性。
+
+132
